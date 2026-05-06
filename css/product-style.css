@@ -1,0 +1,207 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #f5f6f7;
+  color: #111;
+  padding: 20px;
+}
+
+
+.main-content {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+
+.image-section {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-section img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #fff;
+  display: block;
+}
+
+
+
+.details-sidebar {
+  flex: 1;
+  background: #fff;
+  padding: 24px;
+  position: sticky;
+  top: 20px;
+}
+
+.price-tag {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.secondary-text {
+  font-size: 14px;
+  color: #757575;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.info-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.info-table td:first-child {
+  color: #757575;
+  text-transform: uppercase;
+  font-size: 12px;
+  width: 40%;
+}
+
+.description-box {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ebebeb;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background-color: #007782;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #007782;
+  border: 1px solid #007782;
+}
+
+@media (max-width: 800px) {
+  .main-content {
+    flex-direction: column;
+  }
+  .details-sidebar {
+    position: static;
+    width: 100%;
+  }
+}
+
+
+.image-carousel {
+  position: relative;
+  width: 100%;
+}
+
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: auto;        
+  overflow: hidden;
+}
+
+.carousel-image {
+  position: relative; 
+  width: 100%;
+  height: auto;        
+  object-fit: contain; 
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: none;      
+}
+
+.carousel-image.active {
+  opacity: 1;
+  display: block;
+}
+
+.carousel-prev,
+.carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.carousel-prev {
+  left: 10px;
+}
+
+.carousel-next {
+  right: 10px;
+}
+
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+}

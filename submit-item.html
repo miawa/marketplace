@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Item | Marketplace</title>
+    <style>
+        :root {
+            --primary-blue: #00767d;
+            --bg-gray: #f4f7f6;
+            --text-dark: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .formBox {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .brand-logo {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .msg {
+            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .msg.error { background: #fef2f2; color: #b91c1c; display: block; }
+        .msg.success { background: #f0fdf4; color: #15803d; display: block; }
+    </style>
+</head>
+<body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+
+<div class="formBox">
+    <div class="brand-logo">SUBMIT ITEM</div>
+
+    <div id="msg" class="msg"></div>
+
+    <form id="itemForm">
+        <div class="input-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" placeholder="e.g. Computer Science Textbook" required>
+        </div>
+
+        <div class="input-group">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Describe the item..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="price">Price (£) *</label>
+            <input type="number" id="price" step="1.00" min="0" placeholder="0.00" required>
+        </div>
+
+        <div class="input-group">
+            <label for="brand">Brand</label>
+            <input type="text" id="brand" placeholder="e.g. Apple" value="No Brand">
+        </div>
+
+        <div class="input-group">
+            <label for="size">Size</label>
+            <input type="text" id="size" placeholder="e.g. M, 10, one size" value="One Size">
+        </div>
+
+        <div class="input-group">
+            <label for="condition">Condition *</label>
+            <select id="condition" required>
+                <option value="">Select condition</option>
+                <option value="new">New</option>
+                <option value="likeNew">Like New</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="category">Category *</label>
+            <select id="category" required>
+                <option value="">Select category</option>
+                <option value="clothing">Clothing</option>
+                <option value="shoes">Shoes</option>
+                <option value="accessories">Accessories</option>
+                <option value="electronics">Electronics</option>
+                <option value="books">Books</option>
+                <option value="home">Home & Garden</option>
+                <option value="sports">Sports</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Item</button>
+    </form>
+</div>
+
+<script>
+    const msgEl = document.getElementById("msg");
+    const btnEl = document.getElementById("submitBtn");
+    const formEl = document.getElementById("itemForm");
+
+    //for error and success messages
+    function showMsg(text, type = "error") {
+        msgEl.textContent = text;
+        msgEl.className = "msg " + type;
+    }
+
+    //checks user authenticated
+    async function checkAuth() {
+//dev bypass was only for development and creating listings without the login. uncomment it to use it
+
+       // const bypass = localStorage.getItem('devBypass');
+        //if (bypass) {
+        //    localStorage.removeItem('devBypass');
+        ////    t
+        //    return { id: null }; 
+        //}
+        const { data: { user } } = await window.supabase.auth.getUser();
+        if (!user) {
+            showMsg("You must be logged in to submit an item. Redirecting to login...");
+            setTimeout(() => window.location.href = "login.html", 2000);
+            return null;
+        }
+        return user;
+    }
+
+    //form submittion
+    formEl.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        btnEl.disabled = true;
+        showMsg("");
+
+        const user = await checkAuth();
+        if (!user) return;
+
+        const title = document.getElementById("title").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const price = parseFloat(document.getElementById("price").value);
+        const brand = document.getElementById("brand").value.trim() || "No Brand";
+        const size = document.getElementById("size").value.trim() || "One Size";
+        const condition = document.getElementById("condition").value;
+        const category = document.getElementById("category").value;
+
+        if (!title || !price || !condition || !category) {
+            showMsg("Please fill in all required fields.");
+            btnEl.disabled = false;
+            return;
+        }
+
+        try {
+            const { data, error } = await window.supabase
+                .from("items")
+                .insert({
+                    seller_id: user.id,
+                    title,
+                    description: description || null,
+                    price,
+                    brand,
+                    size,
+                    condition,
+                    category,
+                    is_sold: false
+                });
+
+            if (error) throw error;
+
+            showMsg("Item submitted successfully!", "success");
+            formEl.reset();
+            // Reset defaults
+            document.getElementById("brand").value = "No Brand";
+            document.getElementById("size").value = "One Size";
+
+        } catch (err) {
+            console.error("Error submitting item:", err);
+            showMsg("Error submitting item: " + err.message);
+        } finally {
+            btnEl.disabled = false;
+        }
+    });
+
+    // check auth again on page load
+    //pleases dont remove
+    checkAuth();
+</script>
+
+</body>
+</html>

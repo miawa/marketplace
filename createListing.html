@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Listing - Student Marketplace</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .create-listing-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .create-listing-container h1 {
+      margin-bottom: 30px;
+      color: #2f855a;
+      text-align: center;
+    }
+
+    .inputGroup {
+      margin-bottom: 20px;
+    }
+
+    .inputGroup label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .inputGroup input,
+    .inputGroup textarea,
+    .inputGroup select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #f0fdf4;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .inputGroup input:focus,
+    .inputGroup textarea:focus,
+    .inputGroup select:focus {
+      outline: none;
+      border-color: #2f855a;
+      box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.1);
+    }
+
+    .inputGrroup textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .imageUploadSection {
+      margin-bottom: 20px;
+    }
+
+    .imageUploadSection label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .imageUploadBox {
+      border: 2px dashed #b0c0b7;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+      background: #f0fdf4;
+    }
+
+    .imageUploadBox:hover {
+      border-color: #2f855a;
+      background: #f0fdf4;
+    }
+
+    .imageUploadBox.dragover {
+      border-color: #2f855a;
+      background: #f0fdf4;
+    }
+
+    .imagePeview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .imagePreviewItem {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #f0fdf4;
+    }
+
+    .imagePreviewItem img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .imagePreviewItem .remove-image {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(239, 68, 68, 0.9);
+      color: #f0fdf4;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: #2f855a;
+      color: #f0fdf4;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background: #276749;
+    }
+
+    .btn-submit:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .msg.error {
+      background: #f0fdf4;
+      color: #dc2626;
+      border: 1px solid #f0fdf4;
+    }
+
+    .msg.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .goBack {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .goBack:hover {
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <main class="main-content">
+      <div class="content-wrapper">
+        <div class="create-listing-container">
+          <a href="index.html" class="goBack">← Back to Marketplace</a>
+          <h1>Create New Listing</h1>
+
+          <form id="createListingForm">
+            <div class="inputGroup">
+              <label for="title">Title *</label>
+              <input type="text" id="title" required placeholder="e.g. Computer Science Textbook">
+            </div>
+
+            <div class="inputGroup">
+              <label for="description">Description</label>
+              <textarea id="description" placeholder="Describe your item..."></textarea>
+            </div>
+
+            <div class="inputGroup">
+              <label for="price">Price (£) *</label>
+              <input type="number" id="price" required step="1.00" min="0" placeholder="0.00">
+            </div>
+
+            <div class="inputGroup">
+              <label for="brand">Brand</label>
+              <input type="text" id="brand" placeholder="e.g. Apple" value="No Brand">
+            </div>
+
+            <div class="inputGroup">
+              <label for="size">Size</label>
+              <input type="text" id="size" placeholder="e.g. M, 8, One Size" value="One Size">
+            </div>
+
+            <div class="inputGroup">
+              <label for="condition">Condition *</label>
+              <select id="condition" required>
+                <option value="">Select condition</option>
+                <option value="New with tags">New with tags</option>
+                <option value="New without tags">New without tags</option>
+                <option value="Like New">Like new</option>
+                <option value="Very Good">Very good</option>
+                <option value="Good">Good</option>
+                <option value="Used">Used</option>
+                <option value="Poor">Poor</option>
+              </select>
+            </div>
+
+            <div class="inputGroup">
+              <label for="category">Category *</label>
+              <select id="category" required>
+                <option value="">Select category</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Textbooks">Textbooks</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="imageUploadSection
+            ">
+              <label>Images *</label>
+              <div class="imageUploadBox" id="imageUploadBox">
+                <div>
+                  <div style="font-size: 24px; margin-bottom: 10px;">Images</div>
+                  <div>Click to upload images or drag and drop</div>
+                  <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">Multiple images allowed</div>
+                </div>
+                <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+              </div>
+              <div class="imagePreview" id="imagePreview"></div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Create Listing</button>
+          </form>
+
+          <div id="msg" class="msg" style="display: none;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const form = document.getElementById('createListingForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msgEl = document.getElementById('msg');
+    const imageInput = document.getElementById('imageInput');
+    const imageUploadBox = document.getElementById('imageUploadBox');
+    const imagePreview = document.getElementById('imagePreview');
+
+    window.removeImage = removeImage;
+
+
+    //let uploadedImageUrls = [];
+    let selectedImages = [];
+
+    // basic listener to see if images being added to image upload area
+    imageUploadBox.addEventListener('click', () => {
+      imageInput.click();
+    });
+//allows drag and drop logic
+    imageInput.addEventListener('change', handleImageSelect);
+    imageUploadBox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      imageUploadBox.classList.add('dragover');});
+
+    imageUploadBox.addEventListener('dragleave', () => {imageUploadBox.classList.remove('dragover');});
+
+      imageUploadBox.addEventListener('drop', (e) => {
+
+        e.preventDefault();
+        imageUploadBox.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files);
+        handleImageFiles(files); });
+
+    //on event e when user selects the image it takes the files and puts them into an array, then passes to next function to check they're actually images
+    function handleImageSelect(e) {
+      const files = Array.from(e.target.files);
+      handleImageFiles(files);
+    }
+
+    //error checking by checking if the file being uploaded is an image and is being stored correctly with the image/ check
+
+    //so if they upload anything thats not an image it just ignores it and will only add images (if any) to the files array
+    function handleImageFiles(files) {
+      const imageFiles = files.filter(file => file.type.startsWith('image/'));
+      selectedImages = selectedImages.concat(imageFiles);
+      updateImagePreview();
+    }
+
+    //CODE IDEA? 
+    //Have it so you can change the order of images that will appear on the listing by dragging the image previews or selecting numbered order maybe?
+
+    function updateImagePreview() {
+      imagePreview.innerHTML = '';
+      selectedImages.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+
+          const previewItem = document.createElement('div');
+
+
+          previewItem.className = 'imagePreviewItem';
+          previewItem.innerHTML = `<img src="${e.target.result}" alt="Preview ${index + 1}"><button type="button" class="removeImage" onclick="removeImage(${index})">&times;</button>`;
+          imagePreview.appendChild(previewItem);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    //when pressing the x button on a preview of the image, it will remove it by finding the image at the first index of the array and removing it with splice
+    //each image should be stored in the array so 'first image of the array' basically is just the image thats being clicked on
+    function removeImage(index) {
+      selectedImages.splice(index, 1);
+
+      updateImagePreview();
+    }
+
+    
+
+    //all logic for inserting listing into database, checking listing data is valid and checking user uploading is valid 
+
+
+    // waiting for the form button to be submitted before authenticating listing
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      msgEl.style.display = 'none';
+
+      try {
+        //checks that a user is logged in and that user is an authenticated user 
+        const session = await requireAuth();
+        const user = session?.user;
+        
+        //debug just for checking user/item data for now
+        console.log('Session:', session);
+        console.log('User object:', user);
+        console.log('User ID:', user?.id);
+        console.log('User email:', user?.email);
+        
+        //if the user logged in has no user id (authenticated id) it's redirected to the login page with error
+          if (!user || !user.id) {
+            showMsg('You must be logged in to upload an item or create a listing. Redirecting to login...', 'error');
+            setTimeout(() => window.location.href = 'login.html', 2000);
+            return;
+        }
+
+        // gets all the data that the user put into the form and trims any blanks from start/end to be compatable with database
+        //if user didn't put information in for the non required fields, it defaults to those if no element in that form part
+        const title = document.getElementById('title').value.trim();
+
+        const description = document.getElementById('description').value.trim();
+
+        const price = parseFloat(document.getElementById('price').value);
+
+        const brand = document.getElementById('brand').value.trim() || 'No Brand';
+
+        const size = document.getElementById('size').value.trim() || 'One Size';
+
+        const condition = document.getElementById('condition').value;
+
+        const category = document.getElementById('category').value;
+
+
+        // checks that all required fields have something in them
+        //check for missing images too? i think it gets a warning anyway, but double check. possible image check could be
+        //selectedImages.length === 0
+
+
+        if (!title || !price || !condition || !category) {
+          showMsg('Please fill in all required fields.', 'error');
+          submitBtn.disabled = false; return;
+        }
+        if (price <= 0) {
+          showMsg('Price must be greater than 0.', 'error');
+          submitBtn.disabled = false; return;
+        }
+
+        // uploading images to supabase, gets their urls and stores to be put into the item table so can be referenced from bucket
+        let imageUrls = [];
+        if (selectedImages.length > 0) {
+        for (let i = 0; i < selectedImages.length; i++) {
+
+
+            const file = selectedImages[i];
+            const fileExt = file.name.split('.').pop();
+             const fileName = `${user.id}_${Date.now()}_${i}.${fileExt}`;
+
+            const { data, error } = await window.supabase.storage
+              .from('itemPictures')
+              .upload(fileName, file);
+
+            if (error) {
+            console.error('Error uploading image:', error);
+
+              showMsg('Error uploading images. Please try again.', 'error');
+
+              submitBtn.disabled = false;
+              return;}
+
+            const { data: { publicUrl } } = window.supabase.storage
+                .from('itemPictures')
+                .getPublicUrl(fileName);
+
+              //so images can be referenced
+            imageUrls.push(publicUrl);
+          }
+        }
+
+        // creates record of item data in items table
+          const itemData = {
+            seller_id: user.id,
+            title,
+            description: description || null,
+            price,
+            brand: brand || 'No Brand',
+            size: size || 'One Size',
+            condition,
+            category,
+            is_sold: false
+          };
+
+        //debug
+
+        console.log('item being inserted information:', itemData);
+//
+
+        //inserts all information from the itemData record into the items table 
+        const { data: itemResult, error: itemError } = await window.supabase
+          .from('items')
+          .insert([itemData])
+          .select();
+
+          if (itemError) {
+            //debug for now
+            console.error('Error creating listing:', itemError);
+
+            showMsg('Error creating listing: ' + itemError.message, 'error');
+            submitBtn.disabled = false;
+            return;
+          }
+
+        //gets the id of the item that was just created, allows reference in other tables and to display to page etc
+        const itemId = itemResult[0].id;
+        console.log('Item created with ID:', itemId);
+
+        // inserts images into table based on links from the itemImages bucket and puts item id 
+        if (imageUrls.length > 0) {
+          const imageRecords = imageUrls.map((url, index) => ({
+          item_id: itemId,
+            image_url: url,
+            //here's how the order is saved in the table, so if adding custom ordering, would reference this to save that order that was created.
+            display_order: index
+          }));
+
+          console.log('images inserted:', imageRecords);
+
+          const { error: imagesError } = await window.supabase
+            .from('item_images')
+            .insert(imageRecords);
+
+          if (imagesError) {
+
+            console.error('Error inserting images:', imagesError);
+            showMsg('Item created but error saving images. ' + imagesError.message, 'error');
+            submitBtn.disabled = false;
+
+            return;
+          }
+        }
+
+        console.log('Listing created successfully!');
+        showMsg('Listing created successfully! Redirecting...', 'success');
+        //leaves page after a readble amount of time back to main page, which is refreshed and will likely show listing that was just created
+        setTimeout(() => window.location.href = 'index.html', 2000);
+
+      } catch (error) {
+        console.error('Error:', error);
+        showMsg('An unexpected error occurred. Please try again.', 'error');
+        submitBtn.disabled = false;
+      }
+    });
+
+      function showMsg(text, type = 'error') {
+
+        msgEl.textContent = text;
+
+        msgEl.className = `msg ${type}`;
+        msgEl.style.display = 'block';
+        //}
+      }
+
+    // checks that the session user is authenticated, should be referenced before allowing users to create listing
+    document.addEventListener('DOMContentLoaded', async () => {
+
+      const session = await requireAuth();
+      const user = session?.user;
+
+
+      console.log('page is logged in on user: ', user);
+      
+      if (!user) {
+        showMsg('You must be logged in to create a listing. Redirecting to login...', 'error');
+        setTimeout(() => window.location.href = 'login.html', 2000);
+      }
+    });
+  </script>
+</body>
+</html>
