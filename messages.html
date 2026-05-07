@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages | Marketplace</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .messages-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+   
+    .inbox-panel {
+      width: 320px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inbox-header {
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inbox-back-link {
+      font-size: 13px;
+      color: #007782;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .inbox-list { flex: 1; overflow-y: auto; }
+
+    .conversation-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.15s;
+      align-items: flex-start;
+    }
+
+    .conversation-item:hover,
+    .conversation-item.active { background: #f0fdf4; }
+
+    .conversation-item.unread .conv-preview {
+      font-weight: 600;
+      color: #111;
+    }
+
+    .conv-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #e0f2f1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: #007782;
+      flex-shrink: 0;
+    }
+
+    .conv-avatar img {
+      width: 42px; height: 42px;
+      border-radius: 50%; object-fit: cover;
+    }
+
+    .conv-info { flex: 1; min-width: 0; }
+
+    .conv-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+    }
+
+    .conv-name {
+      font-weight: 600; font-size: 14px; color: #111;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .conv-time { font-size: 11px; color: #9ca3af; flex-shrink: 0; margin-left: 8px; }
+    .conv-item-title { font-size: 11px; color: #007782; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-preview { font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .unread-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%; background: #007782;
+      flex-shrink: 0; margin-top: 6px;
+    }
+
+    .inbox-empty { padding: 40px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+
+    .chat-panel {
+      flex: 1; display: flex; flex-direction: column; background: #f6f7f9;
+    }
+
+    .chat-placeholder {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #9ca3af; gap: 12px;
+    }
+
+    .chat-placeholder-icon { font-size: 48px; }
+
+    
+    .chat-header {
+      background: #fff; border-bottom: 1px solid #e5e7eb;
+      padding: 16px 24px; display: flex; align-items: center; gap: 14px;
+    }
+
+    .chat-header-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #e0f2f1; display: flex; align-items: center;
+      justify-content: center; font-weight: 700; color: #007782; font-size: 14px;
+    }
+
+    .chat-header-avatar img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+    .chat-header-info { flex: 1; }
+    .chat-header-name { font-weight: 700; font-size: 15px; color: #111; }
+    .chat-header-item { font-size: 12px; color: #007782; text-decoration: none; }
+    .chat-header-item:hover { text-decoration: underline; }
+
+   
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .message-row {
+      display: flex; gap: 8px; max-width: 80%;
+    }
+
+    .message-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+    .message-row.received { align-self: flex-start; }
+
+  
+    .offerBox {
+      border-radius: 14px;
+      overflow: hidden;
+      min-width: 230px;
+      max-width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+      border: 1px solid #e5e7eb;
+    }
+
+    .offerBoxHeader {
+      padding: 14px 16px 12px;
+    }
+
+    .message-row.sent .offerBoxHeader {
+      background: #005f66;
+      color: #fff;
+    }
+
+    .message-row.received .offerBoxHeader {
+      background: #fffbeb;
+      color: #78350f;
+      border-bottom: 1px solid #fde68a;
+    }
+
+    .offerBoxLabel {
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .offerBoxAmount {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 4px 0 2px;
+    }
+
+    .offerBoxItem {
+      font-size: 11px;
+      opacity: 0.65;
+    }
+
+    .offerBoxActions {
+      display: flex;
+      background: #fff;
+    }
+
+    .offerActionBtn {
+      flex: 1;
+      padding: 11px 4px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      border-right: 1px solid #e5e7eb;
+      transition: background 0.15s;
+      background: #fff;
+    }
+
+    .offerActionBtn:last-child { border-right: none; }
+    .offerActionBtn.accept  { color: #16a34a; }
+    .offerActionBtn.accept:hover  { background: #f0fdf4; }
+    .offerActionBtn.counter { color: #007782; }
+    .offerActionBtn.counter:hover { background: #f0fdfe; }
+    .offerActionBtn.decline { color: #dc2626; }
+    .offerActionBtn.decline:hover { background: #fef2f2; }
+
+    .offerBoxStatus {
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .offerBoxStatus.accepted  { background: #f0fdf4; color: #16a34a; }
+    .offerBoxStatus.declined  { background: #fef2f2; color: #dc2626; }
+    .offerBoxStatus.countered { background: #eff6ff; color: #2563eb; }
+    .offerBoxStatus.waiting   { background: #f9fafb; color: #9ca3af; }
+
+   
+    .buyNowBox {
+      background: #fff;
+      border: 2px solid #007782;
+      border-radius: 14px;
+      padding: 18px;
+      min-width: 210px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+
+    .buyNowBox .byn-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .buyNowBox .byn-amount {
+      font-size: 24px;
+      font-weight: 800;
+      color: #007782;
+      margin-bottom: 12px;
+    }
+
+    .buyNowBox .buy-now-btn {
+      width: 100%;
+      padding: 11px;
+      background: #007782;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .buyNowBox .buy-now-btn:hover { background: #005f66; }
+
+  
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .message-row.sent .msg-bubble {
+      background: #007782; color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-row.received .msg-bubble {
+      background: #fff; color: #111;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+
+    .msg-time {
+      font-size: 10px; color: #9ca3af;
+      align-self: flex-end; white-space: nowrap; margin-bottom: 2px;
+    }
+
+  
+    .chat-input-bar {
+      background: #fff; border-top: 1px solid #e5e7eb;
+      padding: 16px 24px; display: flex; gap: 10px; align-items: flex-end;
+    }
+
+    .chat-input-bar textarea {
+      flex: 1; padding: 10px 14px;
+      border: 1px solid #e5e7eb; border-radius: 20px;
+      font-size: 14px; resize: none; outline: none;
+      max-height: 120px; min-height: 40px; line-height: 1.4;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+
+    .chat-input-bar textarea:focus { border-color: #007782; }
+
+    .send-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #007782; border: none; color: #fff;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.2s, transform 0.1s;
+    }
+
+    .send-btn:hover { background: #005f66; }
+    .send-btn:active { transform: scale(0.93); }
+
+   
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff; border-radius: 16px; padding: 32px;
+      width: 100%; max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      margin: 20px;
+    }
+
+    .modal-box h2 { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 6px; }
+    .modal-subtitle { font-size: 13px; color: #007782; margin-bottom: 24px; }
+
+    .offer-input-wrap { position: relative; margin-bottom: 20px; }
+
+    .offer-symbol {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px; font-weight: 600; color: #374151;
+    }
+
+    .offer-input-wrap input {
+      width: 100%;
+      padding: 14px 14px 14px 32px;
+      font-size: 22px; font-weight: 600;
+      border: 2px solid #e5e7eb; border-radius: 10px;
+      outline: none; transition: border-color 0.2s; box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .offer-input-wrap input:focus { border-color: #007782; }
+
+    .modal-actions { display: flex; gap: 10px; }
+
+    .modal-cancel {
+      flex: 1; padding: 12px;
+      border: 1px solid #e5e7eb; background: #fff;
+      border-radius: 8px; font-size: 15px; cursor: pointer;
+      font-weight: 500; color: #374151; transition: background 0.2s;
+    }
+
+    .modal-cancel:hover { background: #f9fafb; }
+
+    .modal-submit {
+      flex: 2; padding: 12px;
+      background: #007782; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+
+    .modal-submit:hover { background: #005f66; }
+    .modal-submit:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    @media (max-width: 680px) {
+      .inbox-panel { width: 100%; }
+      .chat-panel { display: none; }
+      .chat-panel.mobile-open { display: flex; }
+      .inbox-panel.mobile-hide { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="messages-layout">
+
+   
+    <div class="inbox-panel" id="inboxPanel">
+      <div class="inbox-header">
+         Messages
+        <a href="index.html" class="inbox-back-link">← Back</a>
+      </div>
+      <div class="inbox-list" id="inboxList">
+        <div class="inbox-empty">Loading conversations…</div>
+      </div>
+    </div>
+
+   
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-placeholder" id="chatPlaceholder">
+        <div class="chat-placeholder-icon">💬</div>
+        <div>Select a conversation to start messaging</div>
+      </div>
+
+      <div id="chatView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+        <div class="chat-header" id="chatHeader"></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-bar">
+          <textarea id="msgInput" placeholder="Type a message…" rows="1"></textarea>
+          <button class="send-btn" id="sendBtn" title="Send">&#9658;</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div class="modal-overlay" id="offerModal">
+    <div class="modal-box">
+      <h2 id="offerModalTitle">Make an Offer</h2>
+      <div class="modal-subtitle" id="offerItemTitle"></div>
+      <div class="offer-input-wrap">
+        <span class="offer-symbol">£</span>
+        <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="1.00">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeOfferModal()">Cancel</button>
+        <button class="modal-submit" id="offerSubmitBtn" onclick="submitOffer()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+   
+    let currentUser     = null;
+    let currentConvId   = null;
+    //let currentConvData = null;
+    //let currentConvActive = false;
+
+
+    let pollingInterval = null;
+    let lastRenderedKey = '';
+
+
+    let isCounter       = false;
+  let currentConvMeta = null;
+   
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session = await requireAuth('login.html');
+      currentUser = session.user;
+      await loadConversations();
+
+      const params = new URLSearchParams(window.location.search);
+      const convParam = params.get('conversation');
+      //const convParam = params.get('messageLoad');
+      if (convParam) openConversation(convParam);
+    });
+
+    //could optimise by fetching conversations on initial load, e/g only loading last 10 messages for each convo and loading rest on scroll up
+
+    async function loadConversations() {
+      const { data, error } = await window.supabase
+        .from('conversations')
+        .select(`
+          id, item_id, buyer_id, seller_id, created_at,
+          items(title, price),
+          buyer:users!conversations_buyer_id_fkey(username, avatar_url),
+          seller:users!conversations_seller_id_fkey(username, avatar_url),
+          messages(content, created_at, sender_id, is_read)
+        `)
+        .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: false });
+        
+        //debug to check messages are loading from db or if its display issue
+//      console.log('loadConversations fired');
+//      console.log('error:', error);
+//      console.log('data:', data); 
+      const listEl = document.getElementById('inboxList');
+
+      if (error || !data || data.length === 0) {
+        listEl.innerHTML = `<div class="inbox-empty">No messages</div>`;
+        return;
+      }
+
+      listEl.innerHTML = '';
+      data.forEach(conv => {
+        const isBuyer   = conv.buyer_id === currentUser.id;
+        const otherUser = isBuyer ? conv.seller : conv.buyer;
+        const msgs      = (conv.messages || []).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+        const lastMsg   = msgs[0];
+
+        const preview   = lastMsg ? msgPreview(lastMsg.content) : 'No messages yet';
+        const time      = lastMsg ? formatTime(lastMsg.created_at) : '';
+        const hasUnread = msgs.some(m => !m.is_read && m.sender_id !== currentUser.id);
+
+        const el = document.createElement('div');
+
+        el.className = `conversation-item${hasUnread ? ' unread' : ''}`;
+        el.dataset.convId = conv.id;
+
+
+        el.onclick = () => openConversation(conv.id);
+
+        el.innerHTML = `
+          ${otherUser?.avatar_url
+            ? `<div class="conv-avatar"><img src="${otherUser.avatar_url}"></div>`
+            : `<div class="conv-avatar">${(otherUser?.username || 'Unknown')[0].toUpperCase()}</div>`}
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">@${esc(otherUser?.username || 'Unknown')}</span>
+              <span class="conv-time">${time}</span>
+            </div>
+            <div class="conv-item-title">${esc(conv.items?.title || 'Item')}</div>
+            <div class="conv-preview">${esc(preview)}</div>
+          </div>
+          ${hasUnread ? '<div class="unread-dot"></div>' : ''}
+        `;
+
+            listEl.appendChild(el);
+      });}
+
+    async function openConversation(convId) {
+      currentConvId = convId;
+
+      document.querySelectorAll('.conversation-item').forEach(el =>
+      el.classList.toggle('active', el.dataset.convId === convId));
+
+      const { data: conv, error } = await window.supabase
+        .from('conversations')
+        .select(`
+          id, item_id, buyer_id, seller_id,
+          items(id, title, price),
+          buyer:users!conversations_buyer_id_fkey(username, avatar_url),
+          seller:users!conversations_seller_id_fkey(username, avatar_url)
+        `)
+        .eq('id', convId)
+        .single();
+
+          if (error || !conv) return;
+
+      const isBuyer   = conv.buyer_id === currentUser.id;
+      const otherUser = isBuyer ? conv.seller : conv.buyer;
+      
+
+      currentConvMeta = {
+        isBuyer,
+        itemTitle : conv.items?.title,
+        itemId    : conv.item_id,
+        itemPrice : conv.items?.price,
+        sellerId  : conv.seller_id,
+        buyerId   : conv.buyer_id
+      };
+
+      document.getElementById('chatHeader').innerHTML = `
+  ${otherUser?.avatar_url
+    ? `<div class="chat-header-avatar"><img src="${otherUser.avatar_url}"></div>`
+    : `<div class="chat-header-avatar">${(otherUser?.username || 'Unknown')[0].toUpperCase()}</div>`}
+  <div class="chat-header-info">
+    
+    <a href="profile.html?user=${esc(otherUser?.username || '')}" style="color: #000000; text-decoration: none;">@${esc(otherUser?.username || '')}</a>
+    <a href="product.html?id=${conv.item_id}" class="chat-header-item">${esc(conv.items?.title || 'View item')}</a>
+  </div>
+`;
+
+      document.getElementById('chatPlaceholder').style.display = 'none';
+      document.getElementById('chatView').style.display = 'flex';
+
+      await window.supabase
+        .from('messages')
+        .update({ is_read: true })
+        .eq('conversation_id', convId)
+        .neq('sender_id', currentUser.id);
+
+      lastRenderedKey = '';
+      await loadMessages();
+
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(loadMessages, 4000);
+    }
+
+    
+    async function loadMessages() {
+      if (!currentConvId) return;
+
+      
+
+      const { data, error } = await window.supabase
+        .from('messages')
+        .select('id, content, sender_id, created_at')
+        .eq('conversation_id', currentConvId)
+        .order('created_at', { ascending: true });
+
+           
+
+         console.log('loadMessages fired');
+  console.log('error:', error);
+  console.log('data:', data);
+
+      if (error || !data) return;
+
+      const key = data.map(m => m.id + m.content).join('|');
+      if (key === lastRenderedKey) return;
+      lastRenderedKey = key;
+
+      const container = document.getElementById('chatMessages');
+      const atBottom  = container.scrollHeight - container.clientHeight <= container.scrollTop + 60;
+      container.innerHTML = '';
+
+      data.forEach((msg, idx) => {
+        console.log(`msg[${idx}] content: "${msg.content}" sender_id: ${msg.sender_id}`);
+  
+        const isSent  = msg.sender_id === currentUser.id;
+        const parts   = msg.content.split('|');
+
+        
+
+        //offer
+        if (parts[0] === 'OFFER') {
+          const status = parts[1];
+          const amount = parseFloat(parts[2]).toFixed(2);
+
+          // offer superseded if there's a newer offer or buy now message later in the thread
+          const later      = data.slice(idx + 1);
+          const oldOffer = later.some(m => m.content.startsWith('OFFER|') || m.content.startsWith('BUYNOW|'));
+
+          // seller sees action buttons on a pendingoffer they received; buyer sees "waiting"  and checks old offer status on their sent offer
+          const canAct = status === 'PENDING' && !isSent && !oldOffer;
+          const isWaiting = status === 'PENDING' && isSent && !oldOffer;
+
+            
+
+          let statusBar = '';
+          if      (status === 'ACCEPTED')  statusBar = `<div class="offerBoxStatus accepted">✓ Offer accepted</div>`;
+          else if (status === 'DECLINED')  statusBar = `<div class="offerBoxStatus declined">✕ Offer declined</div>`;
+          else if (status === 'COUNTERED') statusBar = `<div class="offerBoxStatus countered">↩ Counter offer sent</div>`;
+          else if (isWaiting)              statusBar = `<div class="offerBoxStatus waiting">Awaiting response…</div>`;
+
+          let actionBtns = '';
+          if (canAct) {
+            actionBtns = `
+              <div class="offerBoxActions">
+                <button class="offer-action-btn accept"  onclick="acceptOffer('${msg.id}', ${amount})">✓ Accept</button>
+                <button class="offer-action-btn counter" onclick="openCounterModal(${amount})">↩ Counter</button>
+                <button class="offer-action-btn decline" onclick="declineOffer('${msg.id}', ${amount})">✕ Decline</button>
+              </div>
+            `;
+          }
+
+            
+
+          const row = document.createElement('div');
+          row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+          row.innerHTML = `
+            <div class="offerBox">
+              <div class="offerBoxHeader">
+                <div class="offerBoxLabel">${isSent ? 'Your offer' : 'Offer received'}</div>
+                <div class="offerBoxAmount">£${amount}</div>
+                <div class="offerBoxItem">${esc(currentConvMeta?.itemTitle || '')}</div>
+              </div>
+              ${statusBar}
+              ${actionBtns}
+            </div>
+            <span class="msg-time">${formatTime(msg.created_at)}</span>
+          `;
+          container.appendChild(row);
+          return;
+        }
+
+        // buy now prompt
+        if (parts[0] === 'BUYNOW') {
+          const amount = parseFloat(parts[1]).toFixed(2);
+          const row = document.createElement('div');
+
+          row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+
+          if (!isSent) {
+            const alreadyBought = later.some(m => m.content.startsWith('SOLD|'));
+            row.innerHTML = alreadyBought
+
+
+
+              ? `<div class="offerBoxStatus accepted" style="border-radius:14px;padding:14px 16px;font-size:14px;">✓ Sold! Purchase complete</div>
+                <span class="msg-time">${formatTime(msg.created_at)}</span>`
+              : `<div class="buyNowBox">
+                  <div class="byn-label">Offer accepted. complete your purchase</div>
+                  <div class="byn-amount">£${amount}</div>
+                  <button class="buy-now-btn" onclick="completePurchase(${amount})">Buy Now . £${amount}</button>
+                </div>
+                <span class="msg-time">${formatTime(msg.created_at)}</span>`;
+
+                
+          } else {
+            
+            row.innerHTML = `
+              <div class="msg-bubble" style="background:#e0f2f1;color:#005f66;border:1px solid #a3d9de;font-weight:600;">
+                ✓ £${amount} accepted. waiting for buyer to complete purchase
+              </div>
+              <span class="msg-time">${formatTime(msg.created_at)}</span>
+            `;
+          }
+           container.appendChild(row);
+          return;
+        }
+
+         if (parts[0] === 'SOLD') {
+        const buyer = parts[1];
+        const title = parts[2];
+        const amt   = parseFloat(parts[3]).toFixed(2);
+        const row = document.createElement('div');
+
+        row.className = 'message-row received';
+
+        row.innerHTML = `
+          <div class="msg-bubble" style="background:#16a34a;color:#fff;font-weight:600;">
+             ${esc(buyer)} purchased ${esc(title)} for £${amt}!
+          </div>
+          <span class="msg-time">${formatTime(msg.created_at)}</span>
+            `;
+            container.appendChild(row);
+            return;
+}
+
+        // text bubble messages
+        const row = document.createElement('div');
+        row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+        row.innerHTML = `
+          <div class="msg-bubble">${esc(msg.content)}</div>
+          <span class="msg-time">${formatTime(msg.created_at)}</span>
+            `;
+            container.appendChild(row);
+          });
+
+      if (atBottom) container.scrollTop = container.scrollHeight;
+    }
+
+    // offering
+
+    async function acceptOffer(msgId, amount) {
+      // marks offer as accepted
+      await window.supabase
+        .from('messages')
+        .update({ content: `OFFER|ACCEPTED|${parseFloat(amount).toFixed(2)}` })
+        .eq('id', msgId);
+
+      // sending buynow prompt to buyer
+      await insertMsg(`BUYNOW|${parseFloat(amount).toFixed(2)}`);
+      await refresh();
+    }
+
+    async function declineOffer(msgId, amount) {
+      await window.supabase
+        .from('messages')
+        .update({ content: `OFFER|DECLINED|${parseFloat(amount).toFixed(2)}` })
+         .eq('id', msgId);
+
+      await refresh();
+       }
+
+    function openCounterModal(originalAmount) {
+
+      isCounter = true;
+        document.getElementById('offerModalTitle').textContent = 'Counter Offer';
+        document.getElementById('offerItemTitle').textContent  = currentConvMeta?.itemTitle || '';
+        document.getElementById('offerAmount').value           = originalAmount;
+        document.getElementById('offerModal').classList.add('open');
+      setTimeout(() => document.getElementById('offerAmount').focus(), 100);
+
+
+    }
+
+    function openOfferModal(itemTitle) {
+
+      isCounter = false;
+
+      document.getElementById('offerModalTitle').textContent = 'Make an Offer';
+      document.getElementById('offerItemTitle').textContent  = itemTitle || currentConvMeta?.itemTitle || '';
+      document.getElementById('offerAmount').value           = '';
+      document.getElementById('offerModal').classList.add('open');
+
+      setTimeout(() => document.getElementById('offerAmount').focus(), 100);
+    }
+
+    function closeOfferModal() {
+
+      document.getElementById('offerModal').classList.remove('open');
+      document.getElementById('offerSubmitBtn').disabled    = false;
+      document.getElementById('offerSubmitBtn').textContent = 'Send';
+
+       isCounter = false;
+    }
+
+    async function submitOffer() {
+
+      const amount = parseFloat(document.getElementById('offerAmount').value);
+
+      if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+
+      const btn = document.getElementById('offerSubmitBtn');
+
+    btn.disabled    = true;
+      btn.textContent = 'Sending…';
+
+      // marks pending offer as countered
+      if (isCounter) {
+        const { data: allMsgs } = await window.supabase
+          .from('messages')
+          .select('id, content, sender_id')
+          .eq('conversation_id', currentConvId)
+          .order('created_at', { ascending: false });
+
+        const lastPending = (allMsgs || []).find(m =>
+          m.content.startsWith('OFFER|PENDING') && m.sender_id !== currentUser.id
+        );
+
+        if (lastPending) {
+          const origAmt = lastPending.content.split('|')[2];
+
+          await window.supabase
+            .from('messages')
+            .update({ content: `OFFER|COUNTERED|${origAmt}` })
+            .eq('id', lastPending.id);
+
+
+        }
+
+      }
+
+      await insertMsg(`OFFER|PENDING|${amount.toFixed(2)}`);
+      closeOfferModal();
+//
+
+      await refresh();
+    }
+
+    async function completePurchase(amount) {
+  // marks as sold
+  await window.supabase
+    .from('items')
+    .update({ is_sold: true })
+    .eq('id', currentConvMeta.itemId);
+
+  // get buyer information
+  const { data: buyerData } = await window.supabase.from('users').select('username').eq('id', currentUser.id).single();
+
+  const username = buyerData?.username || 'Buyer';
+  await insertMsg(`SOLD|${username}|${currentConvMeta.itemTitle}|${parseFloat(amount).toFixed(2)}`);
+
+  await refresh();
+    }
+
+    //send message functions,
+    
+    //send message cheks if there's a message to be sent 
+    async function sendMessage(content) {
+
+      //currentConvId checks if there is any content in the message or content trim checks if the message is spaces or blank chars, it wont send if this is true
+      if (!currentConvId || !content.trim()) return;
+      await insertMsg(content.trim());
+      document.getElementById('msgInput').value = '';
+      await refresh();
+    }
+//uploads message to database
+    async function insertMsg(content) {
+      await window.supabase.from('messages').insert({
+        conversation_id : currentConvId,
+        sender_id       : currentUser.id,
+        content,
+        is_read         : false
+        //created_at (not necessary as supabase auto completes this)
+      });
+    }
+
+        async function refresh() {
+          lastRenderedKey = '';
+          await loadMessages();
+            await loadConversations();
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', () =>
+           sendMessage(document.getElementById('msgInput').value));
+
+        document.getElementById('msgInput').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+
+            e.preventDefault();
+
+             sendMessage(document.getElementById('msgInput').value);
+
+          }
+        });
+
+        document.getElementById('offerModal').addEventListener('click', (e) => {
+          if (e.target === document.getElementById('offerModal')) closeOfferModal();
+        });
+
+  
+    function msgPreview(content) {
+      if (!content) return '';
+
+      const p = content.split('|');
+
+      if (p[0] === 'OFFER') {
+
+        const labels = { PENDING:'Offer', ACCEPTED:'Offer accepted', DECLINED:'Offer declined', COUNTERED:'Counter offer' };
+          return `${labels[p[1]] || 'Offer'}: £${parseFloat(p[2]).toFixed(2)}`;
+      }
+      if (p[0] === 'BUYNOW') return `Buy Now: £${parseFloat(p[1]).toFixed(2)}`;
+      return content;
+    }
+
+    function formatTime(iso) {
+      const d = new Date(iso), now = new Date(), diff = now - d;
+
+      if (diff < 60000)      return 'just now';
+      if (diff < 3600000)    return `${Math.floor(diff/60000)}m ago`;
+
+      if (diff < 86400000)   return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      if (diff < 604800000)  return d.toLocaleDateString([], { weekday:'short' });
+      return d.toLocaleDateString([], { day:'numeric', month:'short' });
+    }
+
+    function esc(str) {
+      return String(str)
+
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    
+    window.openOfferModal   = openOfferModal;
+
+    window.closeOfferModal  = closeOfferModal;
+    window.submitOffer      = submitOffer;
+    window.completePurchase = completePurchase;
+    
+  </script>
+</body>
+</html>
