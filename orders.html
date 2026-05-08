@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Lifecycle | Marketplace</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/orders.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Marketplace</h2>
+      <ul>
+        <li class="profile-link" onclick="window.location.href='profile.html?'">
+          <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="sidebar-avatar">
+          My Profile
+        </li>
+        <hr class="sidebar-divider">
+        <li onclick="window.location.href='index.html'">All Items</li>
+        <li onclick="window.location.href='messages.html'">Messages</li>
+        <li class="active">Orders</li>
+        <button id="logoutBtn" style="font-size:12px; padding:5px 10px; border:1px solid #007782; background:white; color:#007782; border-radius:6px; cursor:pointer;">Log out</button>
+      </ul>
+    </aside>
+
+    <main class="main-content orders-main-content">
+      <div class="content-wrapper">
+        <div class="orders-header">
+          <div>
+            <h1>Your Orders</h1>
+            <p>Track active orders and see order history.</p>
+          </div>
+        </div>
+
+        <div class="orders-grid">
+          <section class="orders-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Active orders</h2>
+                <p>Tap any order to see its delivery timeline.</p>
+              </div>
+            </div>
+            <div class="orders-list" id="activeOrdersList">
+              <div class="empty-state">Loading active orders…</div>
+            </div>
+          </section>
+
+          <section class="orders-detail-section">
+            <div class="order-detail-card" id="orderDetailCard">
+              <div class="empty-state">
+                <strong>No active order selected</strong>
+                <p>Choose an active order from the sidebar to see the lifecycle tracker.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="order-history-panel">
+          <div class="panel-header history-header">
+            <div>
+              <h2>Order history</h2>
+              <p>Reviewed and completed purchases.</p>
+            </div>
+          </div>
+          <div class="order-history-list" id="orderHistoryList">
+            <div class="empty-state">Loading previous purchases…</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>

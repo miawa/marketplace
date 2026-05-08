@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Marketplace</title>
+  <link rel="stylesheet" href="css/global.css" />
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <h2>Marketplace</h2>
+      <ul>
+        <li class="profile-link" onclick="window.location.href='profile.html?'">
+          <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="sidebar-avatar">
+          My Profile
+        </li>
+        <hr class="sidebar-divider">
+        
+        <li class="active">All Items</li>
+        <li>Watch List</li>
+        <li>Textbooks</li>
+        <li>Electronics</li>
+        <li>Clothing</li>
+        <li>Furniture</li>
+        <li>Other</li>
+        <li onclick="window.location.href='messages.html'">Messages</li>
+        <li onclick="window.location.href='orders.html'">Orders</li>
+        <button id="logoutBtn" style="font-size:12px; padding:5px 10px; border:1px solid #007782; background:white; color:#007782; border-radius:6px; cursor:pointer;">Log out</button>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-wrapper">
+        
+        <div class="top-bar">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search for items..."
+          />
+        </div>
+
+        <div id="productGrid" class="product-grid"></div>
+
+      </div>
+    </main>
+
+  </div>
+
+ 
+  <button id="createListingBtn" class="floating-btn" title="Create Listing">
+    <span>+</span>
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/global.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
