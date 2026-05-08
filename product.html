@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <link rel="stylesheet" href="css/product-style.css">
+</head>
+<body>
+  <div class="layout">
+    <main class="main-content">
+      <div class="content-wrapper" id="productDetail"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/global.js"></script>
+  <script src="js/product.js"></script>
+
+  
+  <div id="offerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); margin:20px;">
+      <h2 style="font-size:20px; font-weight:700; color:#111; margin-bottom:6px;">Make an Offer</h2>
+      <div id="offerItemTitle" style="font-size:13px; color:#007782; margin-bottom:24px;"></div>
+      <div style="position:relative; margin-bottom:20px;">
+        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; font-weight:600; color:#374151;">£</span>
+        <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="0.01"
+          style="width:100%; padding:14px 14px 14px 32px; font-size:22px; font-weight:600; border:2px solid #e5e7eb; border-radius:10px; outline:none; box-sizing:border-box; font-family:inherit;"
+          onfocus="this.style.borderColor='#007782'" onblur="this.style.borderColor='#e5e7eb'">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button onclick="closeOfferModal()" style="flex:1; padding:12px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:15px; cursor:pointer; font-weight:500; color:#374151;">Cancel</button>
+        <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:2; padding:12px; background:#007782; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Send Offer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="buyNowModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Confirm purchase</h2>
+      <div class="modal-subtitle" id="buyNowItemTitle"></div>
+      <div class="receipt-row">
+        <span>Item price</span>
+        <strong id="buyNowItemPrice">£0.00</strong>
+      </div>
+      <div class="receipt-row">
+        <span>Delivery option</span>
+        <select id="buyNowDeliverySelect" class="modal-select"></select>
+      </div>
+      <div class="receipt-row">
+        <span>Delivery fee</span>
+        <strong id="buyNowDeliveryCost">£0.00</strong>
+      </div>
+      <div class="receipt-row">
+        <span>App fee <a href="#" id="buyNowFeeLink">What does this fee mean?</a></span>
+        <strong>£1.50</strong>
+      </div>
+      <div class="receipt-total">
+        <span>Total</span>
+        <strong id="buyNowTotalPrice">£0.00</strong>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeBuyNowModal()">Cancel</button>
+        <button id="buyNowConfirmBtn" class="modal-submit" onclick="submitBuyNow()">Buy now</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="buyNowSuccessModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Congrats on your purchase!</h2>
+      <p class="modal-text">Your order is placed and the seller will receive a shipping request.</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeBuyNowSuccessModal()">Close</button>
+        <button id="buyNowSuccessBtn" class="modal-submit" onclick="goToMessagesAfterPurchase()">Go to messages</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    //display bits
+    document.getElementById('offerModal').style.display = 'none';
+    document.getElementById('buyNowModal').style.display = 'none';
+    document.getElementById('buyNowSuccessModal').style.display = 'none';
+    const _origHandleOffer = window.handleOffer;
+    window.handleOffer = function(...args) {
+        document.getElementById('offerModal').style.display = 'flex';
+        _origHandleOffer(...args);
+    };
+    window.closeOfferModal = function() {
+
+      document.getElementById('offerModal').style.display = 'none';
+
+      document.getElementById('offerSubmitBtn').disabled = false;
+      document.getElementById('offerSubmitBtn').textContent = 'Send Offer';
+    };
+
+    window.closeBuyNowModal = function() {
+      document.getElementById('buyNowModal').style.display = 'none';
+      document.getElementById('buyNowConfirmBtn').disabled = false;
+      document.getElementById('buyNowConfirmBtn').textContent = 'Buy now';
+    };
+
+    window.closeBuyNowSuccessModal = function() {
+      document.getElementById('buyNowSuccessModal').style.display = 'none';
+    };
+
+    window.goToMessagesAfterPurchase = function() {
+      const conversationId = window._buyNowConversationId;
+      if (conversationId) {
+        window.location.href = `messages.html?conversation=${conversationId}`;
+      }
+    };
+  </script>
+</body>
+</html>
