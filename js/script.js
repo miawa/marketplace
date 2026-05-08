@@ -20,7 +20,7 @@ async function loadItems() {
         category,
         created_at,
         is_sold,
-        users!inner(username),
+        users!inner(username, avatar_url),
         item_images(image_url)
       `)
       //checks that already sold items aren't being put on main marketplace
@@ -91,7 +91,12 @@ function loadProductsToPage(filter = "", category = currentCategory) {
                   <div class="product-title">${item.title}</div>
                   <div class="product-price">${priceFormatted}</div>
                 </div>
-                <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'" style="cursor:pointer; color:#757575;">@${item.users.username}</div>
+                <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+                  <div class="product-user-name">@${item.users.username}</div>
+                  <div class="product-user-avatar">
+                    <img src="${item.users.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${item.users.username}'s avatar" onerror="this.src='https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';">
+                  </div>
+                </div>
               </div>
             `;
 
