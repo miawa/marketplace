@@ -3,9 +3,6 @@ let allItems = [];
 let currentCategory = "All Items";
 
 const grid = document.getElementById("productGrid");
-const searchInput = document.getElementById("searchInput");
-const sidebarItems = document.querySelectorAll(".sidebar li");
-const createListingButton = document.getElementById("createListingBtn");
 
 // gets items from item table in supabase
 async function loadItems() {
@@ -102,11 +99,6 @@ function loadProductsToPage(filter = "", category = currentCategory) {
   });
 }
 
-document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-  await window.supabase.auth.signOut();
-    window.location.href = 'login.html';
-    });
-
 
 searchInput?.addEventListener("input", (e) => {loadProductsToPage(e.target.value, currentCategory);});
 
@@ -121,7 +113,7 @@ item.addEventListener("click", () => {
     
 
 createListingButton?.addEventListener("click", () => {
-window.location.href = "createListing.html";
+  window.location.href = "createListing.html";
 });
 
 
