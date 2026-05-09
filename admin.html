@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Marketplace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="layout">
+    <main class="content-wrapper">
+      <section class="admin-page">
+        <header class="admin-header">
+          <div>
+            <h1>Moderator reports</h1>
+            <p>Only verified admins can access this page. Review reports and take action on listings.</p>
+          </div>
+          <div class="admin-header-actions">
+            <button class="action-btn secondary" onclick="window.location.href='index.html'">Home</button>
+            <button class="action-btn" onclick="signOut()">Logout</button>
+          </div>
+        </header>
+
+        <div id="reportStatus" class="status-banner"></div>
+
+        <div class="table-wrapper">
+          <table class="admin-table" id="reportsTable">
+            <thead>
+              <tr>
+                <th>Listing</th>
+                <th>Reported by</th>
+                <th>Reason</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reportsBody">
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

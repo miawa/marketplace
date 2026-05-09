@@ -101,7 +101,10 @@ async function loadProduct() {
         </div>
 
         <div class="details-sidebar">
-            <h1 style="font-size: 18px; margin-bottom: 8px;">${p.title}</h1>
+            <div class="details-header">
+              <h1>${p.title}</h1>
+              <button class="btn btn-report" onclick="openReportModal('${p.id}')">Report</button>
+            </div>
             <div class="price-tag">${priceFormatted}</div>
             <div class="secondary-text">
             <span>Includes Buyer Protection ⓘ</span>
@@ -461,8 +464,79 @@ async function getOrCreateConversation(itemId, sellerUsername) {
 //handles contact seller button by getting or creating conversation and then redirecting to messages page with conversation id in url so messages page knows which conversation to load
 async function handleContact(itemId, sellerUsername) {
     const convId = await getOrCreateConversation(itemId, sellerUsername);
-    if (convId) window.location.href = `messages.html?conversation=${convId}`;}
+    if (convId) window.location.href = `messages.html?conversation=${convId}`;
+}
 
+function openReportModal(itemId) {
+    window.reportItemId = itemId;
+    const reasonSelect = document.getElementById('reportReason');
+    const descriptionField = document.getElementById('reportDescription');
+    if (reasonSelect) reasonSelect.value = '';
+    if (descriptionField) descriptionField.value = '';
+    const submitBtn = document.getElementById('reportSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit report';
+    }
+    document.getElementById('reportModal').classList.add('open');
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').classList.remove('open');
+}
+
+async function submitReport() {
+    const reasonSelect = document.getElementById('reportReason');
+    const descriptionField = document.getElementById('reportDescription');
+    const reportBtn = document.getElementById('reportSubmitBtn');
+    const reason = reasonSelect?.value || '';
+    const description = descriptionField?.value.trim() || '';
+
+    if (!reason) {
+        alert('Please select a reason for reporting this listing.');
+        return;
+    }
+
+    if (reportBtn) {
+        reportBtn.disabled = true;
+        reportBtn.textContent = 'Submitting...';
+    }
+
+    try {
+        if (!window.supabase || !window.supabase.from) {
+            throw new Error('Supabase client is not initialized.');
+        }
+
+        const { data: { user } } = await window.supabase.auth.getUser();
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const reportPayload = {
+            item_id: window.reportItemId,
+            user_id: user.id,
+            reason,
+            description,
+            status: 'pending'
+        };
+
+        const { error } = await window.supabase
+            .from('reports')
+            .insert([reportPayload]);
+
+        if (error) {
+            console.error('Error saving report:', error);
+            alert('Unable to submit the report right now. Please try again later.');
+            return;
+        }
+    } catch (error) {
+        console.error('Error submitting report:', error);
+    }
+
+    closeReportModal();
+    alert('Thank you. Your report has been submitted and will be reviewed by our team.');
+}
 
 let pendingOffer = null;
 //checks what's being offered, gets information about offer to display with message
@@ -521,13 +595,28 @@ function closeOfferModal() {
     }
 }
 
-document.getElementById('offerModal')?.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('offerModal')) closeOfferModal();
+window.addEventListener('load', () => {
+    const offerModal = document.getElementById('offerModal');
+    if (offerModal) {
+        offerModal.addEventListener('click', (e) => {
+            if (e.target === offerModal) closeOfferModal();
+        });
+    }
+
+    const reportModal = document.getElementById('reportModal');
+    if (reportModal) {
+        reportModal.addEventListener('click', (e) => {
+            if (e.target === reportModal) closeReportModal();
+        });
+    }
 });
 
-window.handleOffer   = handleOffer;
+window.handleOffer = handleOffer;
 window.handleContact = handleContact;
-window.submitOffer   = submitOffer;
+window.submitOffer = submitOffer;
 window.closeOfferModal = closeOfferModal;
 window.handleBuyNow = handleBuyNow;
 window.handleWatch = handleWatch;
+window.openReportModal = openReportModal;
+window.submitReport = submitReport;
+window.closeReportModal = closeReportModal;

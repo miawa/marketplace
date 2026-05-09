@@ -77,6 +77,34 @@
     </div>
   </div>
 
+  <div id="reportModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Report this listing</h2>
+      <p class="modal-text">Choose a reason and add details to help us review this report.</p>
+      <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
+        <label for="reportReason" style="font-weight:600;">Reason</label>
+        <select id="reportReason" class="modal-select" style="width:100%;">
+          <option value="">Select a reason</option>
+          <option value="Fake, counterfeit or other intellectual property infringement">Fake, counterfeit or other intellectual property infringement</option>
+          <option value="Nudity, violence or hate speech">Nudity, violence or hate speech</option>
+          <option value="Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other">Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other</option>
+          <option value="Requests to be paid outside of Minted">Requests to be paid outside of Minted</option>
+          <option value="Misleading listing">Misleading listing</option>
+          <option value="Bulk selling">Bulk selling</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px; margin-top:16px;">
+        <label for="reportDescription" style="font-weight:600;">More information</label>
+        <textarea id="reportDescription" rows="5" style="width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:12px; resize:vertical; font-family:inherit;"></textarea>
+      </div>
+      <div class="modal-actions" style="margin-top:20px; gap:10px; flex-wrap:wrap;">
+        <button class="modal-cancel" onclick="closeReportModal()">Cancel</button>
+        <button id="reportSubmitBtn" class="modal-submit" onclick="submitReport()">Submit</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     //display bits
     document.getElementById('offerModal').style.display = 'none';
