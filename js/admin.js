@@ -96,7 +96,7 @@ async function loadReports() {
 
         const title = escapeHTML(itemMap[report.item_id] || 'View listing');
         const reporter = escapeHTML(userMap[report.user_id] || report.user_id || 'Unknown');
-        const description = escapeHTML(report.description || '...');
+        const description = escapeHTML(report.description || '-');
         const statusClass = `status-Button status-${report.status || 'pending'}`;
 
         const isPending = report.status === 'pending' || !report.status;

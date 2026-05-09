@@ -27,13 +27,18 @@ async function loadProduct() {
     }
 //gets all information about item
     try {
+    const { data: { user } } = await window.supabase.auth.getUser();
+    const currentUser = user ?? null;
+
     const { data, error } = await window.supabase
         .from('items')
         .select(`
         id,
+        seller_id,
         title,
         description,
         price,
+        old_price,
         brand,
         size,
         condition,
@@ -53,7 +58,9 @@ async function loadProduct() {
 
     //formating date and money
     const p = data;
-    const priceFormatted = `£${p.price.toFixed(2)}`;
+    const currentUserId = currentUser?.id;
+    const isOwner = Boolean(currentUserId && p.seller_id === currentUserId);
+    const priceFormatted = `£${Number(p.price).toFixed(2)}`;
 
     //FIX - need to change this to upload english date (day month year) currently in american date as this is how its stored in supabase? i think
     const uploadDate = new Date(p.created_at).toLocaleDateString();
@@ -105,7 +112,19 @@ async function loadProduct() {
               <h1>${p.title}</h1>
               <button class="btn btn-report" onclick="openReportModal('${p.id}')">Report</button>
             </div>
-            <div class="price-tag">${priceFormatted}</div>
+
+            <div class="price-row">
+              <div class="price-tag">${priceFormatted}
+                ${p.old_price ? `<span class="old-price">£${Number(p.old_price).toFixed(2)}</span>` : ''}
+              </div>
+              ${isOwner ? `<button class="btn btn-change-price" onclick="togglePriceEditor()">Change price</button>` : ''}
+            </div>
+
+            <div id="priceEditContainer" class="price-edit-container">
+              <input id="newPriceInput" type="number" min="0" step="0.01" placeholder="Enter new price" class="price-input">
+              <button class="btn btn-primary" onclick="submitPriceChange('${p.id}')">Save new price</button>
+            </div>
+
             <div class="secondary-text">
             <span>Includes Buyer Protection ⓘ</span>
             </div>
@@ -120,6 +139,10 @@ async function loadProduct() {
             </table>
 
             <div class="actions">
+            ${isOwner ? `
+              <button class="btn btn-secondary" onclick="window.location.href='createListing.html?edit=${p.id}'">Edit listing</button>
+              <button class="btn btn-secondary" style="border-color: #c53030; color: #c53030;" onclick="deleteListing('${p.id}')">Delete listing</button>
+            ` : `
             <div class="like-watch-buttons">
                 <button class="btn btn-like">Like</button>
                 <button id="watchButton" class="btn btn-watch" onclick="handleWatch('${p.id}')">Watch</button>
@@ -127,6 +150,7 @@ async function loadProduct() {
             <button class="btn btn-primary" onclick="handleBuyNow('${p.id}')">Buy now</button>
             <button class="btn btn-secondary" onclick="handleOffer('${p.id}', '${p.users.username}', '${p.title.replace(/'/g,"\\'")}')">Offer</button>
             <button class="btn btn-secondary" onclick="handleContact('${p.id}', '${p.users.username}')">Contact Seller</button>
+            `}
             </div>
 
             ${p.description ? `
@@ -148,6 +172,138 @@ async function loadProduct() {
     console.error('Error loading product:', error);
     productDetail.innerHTML = "<p>Error loading product.</p>";
     }
+}
+
+function togglePriceEditor() {
+    const container = document.getElementById('priceEditContainer');
+
+    if (!container) return;
+
+    const isVisible = container.style.display === 'flex';
+    container.style.display = isVisible ? 'none' : 'flex';
+
+    if (!isVisible) {
+
+      const input = document.getElementById('newPriceInput');
+      if (input) input.focus();
+    }
+}
+
+async function submitPriceChange(itemId) {
+    
+    const input = document.getElementById('newPriceInput');
+    if (!input) return;
+
+    const newPrice = parseFloat(input.value);
+    if (!newPrice || newPrice <= 0) {
+        alert('Please enter a valid price greater than 0.');
+        return;
+    }
+
+    const { data: { user } } = await window.supabase.auth.getUser();
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const { data: item, error: itemError } = await window.supabase
+        .from('items')
+        .select('seller_id, price')
+        .eq('id', itemId)
+        .single();
+
+    if (itemError || !item) {
+        alert('Unable to update price. Please try again.');
+        console.error(itemError);
+        return;
+    }
+
+    if (item.seller_id !== user.id) {
+        alert('You can only update your own listing.');
+        return;
+    }
+
+    if (Number(item.price) === newPrice) {
+        alert('The new price must be different from the current price.');
+        return;
+    }
+
+    const { error } = await window.supabase
+        .from('items')
+        .update({ price: newPrice, old_price: item.price })
+        .eq('id', itemId);
+
+    if (error) {
+        alert('Unable to update price. Please try again.');
+        console.error(error);
+        return;
+    }
+
+    alert('Price updated successfully.');
+    await loadProduct();
+}
+
+async function deleteListing(itemId) {
+    if (!confirm('Are you sure you want to delete this listing? This action cannot be undone.')) {
+        return;
+    }
+
+    const { data: { user } } = await window.supabase.auth.getUser();
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const { data: item, error: itemError } = await window.supabase
+        .from('items')
+        .select('seller_id, item_images(image_url)')
+        .eq('id', itemId)
+        .single();
+
+    if (itemError || !item) {
+        alert('Unable to load listing. Please try again.');
+        console.error(itemError);
+        return;
+    }
+
+    if (item.seller_id !== user.id) {
+        alert('You can only delete your own listing.');
+        return;
+    }
+
+    // Delete images from storage
+    if (item.item_images && item.item_images.length > 0) {
+        const imageUrls = item.item_images.map(img => img.image_url);
+        
+        for (const imageUrl of imageUrls) {
+            try {
+                const filePathMatch = imageUrl.match(/itemPictures\/(.+)/);
+                if (filePathMatch && filePathMatch[1]) {
+                    const filePath = filePathMatch[1];
+                    await window.supabase.storage
+                        .from('itemPictures')
+                        .remove([filePath]);
+                }
+            } catch (err) {
+                console.error('Error deleting image from storage:', err);
+            }
+        }
+    }
+
+    // Delete item from database (this will cascade delete item_images records)
+    const { error: deleteError } = await window.supabase
+        .from('items')
+        .delete()
+        .eq('id', itemId);
+
+    if (deleteError) {
+        alert('Unable to delete listing. Please try again.');
+        console.error(deleteError);
+        return;
+    }
+
+    alert('Listing deleted successfully.');
+    window.location.href = 'index.html';
 }
 
 // showing image for carousel by counting through index and updates dots underneath to show where you are on the carousel e.g how 
@@ -620,3 +776,6 @@ window.handleWatch = handleWatch;
 window.openReportModal = openReportModal;
 window.submitReport = submitReport;
 window.closeReportModal = closeReportModal;
+window.togglePriceEditor = togglePriceEditor;
+window.submitPriceChange = submitPriceChange;
+window.deleteListing = deleteListing;
