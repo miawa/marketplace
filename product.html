@@ -35,6 +35,7 @@
     </div>
   </div>
 
+<<<<<<< HEAD
   <div id="buyNowModal" class="modal-overlay">
     <div class="modal-box">
       <h2>Confirm purchase</h2>
@@ -82,6 +83,11 @@
     document.getElementById('offerModal').style.display = 'none';
     document.getElementById('buyNowModal').style.display = 'none';
     document.getElementById('buyNowSuccessModal').style.display = 'none';
+=======
+  <script>
+    //display bits
+    document.getElementById('offerModal').style.display = 'none';
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     const _origHandleOffer = window.handleOffer;
     window.handleOffer = function(...args) {
         document.getElementById('offerModal').style.display = 'flex';
@@ -94,6 +100,7 @@
       document.getElementById('offerSubmitBtn').disabled = false;
       document.getElementById('offerSubmitBtn').textContent = 'Send Offer';
     };
+<<<<<<< HEAD
 
     window.closeBuyNowModal = function() {
       document.getElementById('buyNowModal').style.display = 'none';
@@ -111,6 +118,8 @@
         window.location.href = `messages.html?conversation=${conversationId}`;
       }
     };
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
   </script>
 </body>
 </html>

@@ -40,6 +40,7 @@ async function loadItems() {
 }
 
 // actually puts items onto page
+<<<<<<< HEAD
 async function loadProductsToPage(filter = "", category = currentCategory) {
   if (!grid) return;
 
@@ -48,6 +49,10 @@ async function loadProductsToPage(filter = "", category = currentCategory) {
     return;
   }
 
+=======
+function loadProductsToPage(filter = "", category = currentCategory) {
+  if (!grid) return
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
   grid.innerHTML = "";
 
   const filteredAndSearched = allItems.filter(item => {
@@ -59,6 +64,7 @@ async function loadProductsToPage(filter = "", category = currentCategory) {
     return matchesSearch && matchesCategory;
   });
 
+<<<<<<< HEAD
   renderProductGrid(filteredAndSearched);
 }
 
@@ -67,6 +73,10 @@ function renderProductGrid(items) {
   grid.innerHTML = "";
 
   if (!items || items.length === 0) {
+=======
+  //loads a message on to main page saying no items. should seperate js and html better here
+  if (filteredAndSearched.length === 0) {
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     grid.innerHTML = `
       <div style="text-align: center; padding: 40px; color: #6b7280;">
         <div>No items found</div>
@@ -75,7 +85,12 @@ function renderProductGrid(items) {
     return;
   }
 
+<<<<<<< HEAD
   items.forEach((item) => {
+=======
+
+  filteredAndSearched.forEach((item) => {
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
 
     const filteredLoad = document.createElement("div");
@@ -117,7 +132,11 @@ sidebarItems.forEach(item => {
 item.addEventListener("click", () => {
     sidebarItems.forEach(i => i.classList.remove("active"));
       item.classList.add("active");
+<<<<<<< HEAD
         currentCategory = item.textContent.trim();
+=======
+        currentCategory = item.textContent;
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
     loadProductsToPage(searchInput?.value || "", currentCategory);});});
     
@@ -127,6 +146,7 @@ createListingButton?.addEventListener("click", () => {
   window.location.href = "createListing.html";
 });
 
+<<<<<<< HEAD
 async function loadWatchList(filter = "") {
   const { data: { user } } = await window.supabase.auth.getUser();
   if (!user) {
@@ -178,6 +198,8 @@ async function loadWatchList(filter = "") {
 
   renderProductGrid(watchItems);
 }
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
   document.addEventListener('DOMContentLoaded', () => {
   loadItems();

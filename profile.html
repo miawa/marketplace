@@ -38,21 +38,34 @@
             </div>
             <div class="user-details">
               <h1 id="userName">Loading...</h1>
+<<<<<<< HEAD
               
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
               <div class="ratings">
                 <span class="stars">★★★★★</span>
                 <span class="rating-count">(42)</span>
               </div>
               <div class="stats">
+<<<<<<< HEAD
                 <span class="stat-link" onclick="showFollowers()"><strong id="followerCount">0</strong> followers</span>
                 <span class="stat-link" onclick="showFollowing()"><strong id="followingCount">0</strong> following</span>
               </div>
               <p id="userBio" class="user-bio"></p>
+=======
+                <span><strong>12</strong> followers</span>
+                <span><strong>8</strong> following</span>
+              </div>
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
             </div>
           </div>
           <div class="header-actions">
             <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
+<<<<<<< HEAD
             <button class="btn-secondary" id="followProfileBtn">Follow</button>
+=======
+            <button class="btn-secondary">Follow</button>
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
             <button class="btn-secondary">Share</button>
           </div>
         </header>
@@ -110,6 +123,7 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <div id="followersModal" class="modal" style="display: none;">
       <div class="modal-content">
         <div class="modal-header">
@@ -132,6 +146,8 @@
       </div>
     </div>
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     <style>
       .modal {
         position: fixed;
@@ -189,6 +205,7 @@
         background: #f9f9f9;
       }
 
+<<<<<<< HEAD
       .review-content {
         display: flex;
         gap: 15px;
@@ -225,6 +242,8 @@
         min-width: 0;
       }
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
       .review-header {
         display: flex;
         justify-content: space-between;
@@ -264,6 +283,7 @@
   <script>
     let userData = null;
     let userItems = [];
+<<<<<<< HEAD
     let isOwnProfile = false;
 
     // Follow functionality
@@ -440,6 +460,8 @@
         console.error('Error loading following:', err);
       }
     }
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
     async function loadUserProfile() {
       try {
@@ -448,7 +470,11 @@
         const { data: { user: authUser } } = await window.supabase.auth.getUser();
 
         let targetUser;
+<<<<<<< HEAD
         isOwnProfile = false;
+=======
+        let isOwnProfile = false;
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
         if (userQuery) {
           // Viewing another user's profile
@@ -554,18 +580,27 @@
 
         // Populate user info
         document.getElementById('userName').textContent = targetUser.username || 'Unknown User';
+<<<<<<< HEAD
         document.getElementById('userBio').textContent = targetUser.bio || '';
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
         document.getElementById('userAvatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
         // Update ratings and stats
         document.querySelector('.stars').textContent = starsHtml;
         document.querySelector('.rating-count').textContent = `(${reviewCount})`;
+<<<<<<< HEAD
         document.getElementById('followerCount').textContent = followerCount || 0;
         document.getElementById('followingCount').textContent = followingCount || 0;
+=======
+        document.querySelectorAll('.stats span')[0].innerHTML = `<strong>${followerCount || 0}</strong> followers`;
+        document.querySelectorAll('.stats span')[1].innerHTML = `<strong>${followingCount || 0}</strong> following`;
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
         // Update sidebar
         document.querySelector('.sidebar-avatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
+<<<<<<< HEAD
         // Show/hide Edit Profile and Follow buttons based on whether it's own profile
         const editBtn = document.getElementById('editProfileBtn');
         const followBtn = document.getElementById('followProfileBtn');
@@ -578,6 +613,14 @@
             followBtn.style.display = 'inline-block';
             await updateFollowButtonState(targetUser.id);
           }
+=======
+        // Show/hide Edit Profile button based on whether it's own profile
+        const editBtn = document.getElementById('editProfileBtn');
+        if (isOwnProfile) {
+          editBtn.style.display = 'inline-block';
+        } else {
+          editBtn.style.display = 'none';
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
         }
 
         // Render items
@@ -619,6 +662,7 @@
     return productBox;
   }
 
+<<<<<<< HEAD
   //defaults on profile if no active orders
   if (active.length === 0) {
     const emptyMessage = isOwnProfile
@@ -629,11 +673,19 @@
     if (sold.length === 0) {
       return;
     }
+=======
+  if (active.length === 0 && sold.length === 0) {
+    grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:50px;">No items found.</p>`;
+    return;
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
   }
 
   active.forEach(item => grid.appendChild(makeProductBox(item)));
 
+<<<<<<< HEAD
   //adds sold section on profile if has sold items
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
   if (sold.length > 0) {
     const divider = document.createElement('div');
     divider.style = 'grid-column:1/-1;margin:24px 0 8px;font-weight:700;font-size:15px;color:#6b7280;border-top:1px solid #e5e7eb;padding-top:16px;';
@@ -641,7 +693,36 @@
     grid.appendChild(divider);
     sold.forEach(item => grid.appendChild(makeProductBox(item)));
   }
+<<<<<<< HEAD
 }
+=======
+
+      const filteredItems = userItems.filter(item =>
+        item.title.toLowerCase().includes(search)
+      );
+        // loading items for user profile, if no items found show message, otherwise show items in a grid with their information and image, clicking on item takes you to product page for that item
+      if (filteredItems.length > 0) {
+        filteredItems.forEach((item) => {
+          const productBox = document.createElement("div");
+          productBox.className = "itemBox";
+          productBox.onclick = () => window.location.href = `product.html?id=${item.id}`;
+          const imageUrl = item.item_images && item.item_images.length > 0
+            ? item.item_images[0].image_url
+            : `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==`;
+          productBox.innerHTML = `
+            <div class="image-wrapper"><img src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"></div>
+            <div class="item-info">
+              <div class="item-price">£${item.price}</div>
+              <div class="item-size">${item.size}</div>
+              <div class="item-brand">${item.brand}</div>
+            </div>`;
+          grid.appendChild(productBox);
+        });
+      } else {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 50px;">No items found.</p>`;
+      }
+    }
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
     //modal clicking and handling
 
@@ -675,10 +756,14 @@
         // fetch reviews for the current user with supabase 
         const { data: reviews, error } = await window.supabase
           .from('reviews')
+<<<<<<< HEAD
           .select(`
             id, rating, comment, created_at, reviewer_id, item_id,
             items(title, item_images(image_url))
           `)
+=======
+          .select('id, rating, comment, created_at, reviewer_id')
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
           .eq('reviewee_id', userData.id)
           .order('created_at', { ascending: false });
 
@@ -724,15 +809,19 @@
           }
 
           const reviewDate = new Date(review.created_at).toLocaleDateString();
+<<<<<<< HEAD
           
           // Get item image
           const itemImage = review.items?.item_images?.[0]?.image_url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
           const itemTitle = review.items?.title || 'Unknown Item';
           
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
         //creating look for the reviews portion with review information, image of review etc
           const reviewBox = document.createElement('div');
           reviewBox.className = 'reviewBox';
           reviewBox.innerHTML = `
+<<<<<<< HEAD
             <div class="review-content">
               <div class="item-image-container">
                 <img src="${itemImage}" alt="${itemTitle}" class="review-item-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
@@ -750,6 +839,17 @@
                 <div class="review-date">${reviewDate}</div>
               </div>
             </div>
+=======
+            <div class="review-header">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="${reviewerAvatar}" alt="${reviewerName}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                <span class="reviewer-name">${reviewerName}</span>
+              </div>
+              <span class="review-rating">${starsHtml}</span>
+            </div>
+            <p class="review-comment">${review.comment || 'No comment'}</p>
+            <div class="review-date">${reviewDate}</div>
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
           `;
           reviewsList.appendChild(reviewBox);
         });
@@ -774,6 +874,10 @@
       document.getElementById('editProfileModal').style.display = 'flex';
     });
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     document.getElementById('closeEditBtn').addEventListener('click', () => {
       document.getElementById('editProfileModal').style.display = 'none';
     });
@@ -800,6 +904,7 @@
         document.getElementById('editProfileModal').style.display = 'none';
       }
     });
+<<<<<<< HEAD
     // Follow button functionality
     document.getElementById('followProfileBtn').addEventListener('click', async () => {
       await handleFollow(userData.id);
@@ -825,6 +930,9 @@
         document.getElementById('followingModal').style.display = 'none';
       }
     });
+=======
+
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
    //allowing user to change profile information, reloads state and updates web
     document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
       e.preventDefault();

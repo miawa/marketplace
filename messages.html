@@ -118,6 +118,7 @@
       padding: 16px 24px; display: flex; align-items: center; gap: 14px;
     }
 
+<<<<<<< HEAD
     .chat-actions {
       background: #fff;
       border-bottom: 1px solid #e5e7eb;
@@ -154,6 +155,8 @@
       font-size: 14px;
     }
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     .chat-header-avatar {
       width: 38px; height: 38px; border-radius: 50%;
       background: #e0f2f1; display: flex; align-items: center;
@@ -179,6 +182,7 @@
     .message-row.sent { align-self: flex-end; flex-direction: row-reverse; }
     .message-row.received { align-self: flex-start; }
 
+<<<<<<< HEAD
     .order-status-row {
       justify-content: center;
       align-self: center;
@@ -195,6 +199,8 @@
       text-align: center;
     }
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
   
     .offerBox {
       border-radius: 14px;
@@ -460,9 +466,14 @@
 
       <div id="chatView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
         <div class="chat-header" id="chatHeader"></div>
+<<<<<<< HEAD
       <div class="chat-actions" id="chatActions" style="display:none;"></div>
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-bar">
+=======
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-bar">
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
           <textarea id="msgInput" placeholder="Type a message…" rows="1"></textarea>
           <button class="send-btn" id="sendBtn" title="Send">&#9658;</button>
         </div>
@@ -494,7 +505,10 @@
    
     let currentUser     = null;
     let currentConvId   = null;
+<<<<<<< HEAD
     let currentConvOrder = null;
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     //let currentConvData = null;
     //let currentConvActive = false;
 
@@ -612,6 +626,7 @@
         buyerId   : conv.buyer_id
       };
 
+<<<<<<< HEAD
       const { data: orderData } = await window.supabase
         .from('orders')
         .select('*')
@@ -621,6 +636,8 @@
 
       currentConvOrder = orderData || null;
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
       document.getElementById('chatHeader').innerHTML = `
   ${otherUser?.avatar_url
     ? `<div class="chat-header-avatar"><img src="${otherUser.avatar_url}"></div>`
@@ -772,6 +789,7 @@
           return;
         }
 
+<<<<<<< HEAD
         //interactable prompts in messages below, for tracking 
 
 
@@ -808,11 +826,22 @@
          if (parts[0] === 'SOLD') {
         const buyer = parts[1];
         const title = parts[2];
+=======
+         if (parts[0] === 'SOLD') {
+        const buyer = parts[1];
+        const title = parts[2];
+        const amt   = parseFloat(parts[3]).toFixed(2);
+        const row = document.createElement('div');
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
         row.className = 'message-row received';
 
         row.innerHTML = `
+<<<<<<< HEAD
             <div class="msg-bubble" style="background:#16a34a;color:#fff;font-weight:600;">
+=======
+          <div class="msg-bubble" style="background:#16a34a;color:#fff;font-weight:600;">
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
              ${esc(buyer)} purchased ${esc(title)} for £${amt}!
           </div>
           <span class="msg-time">${formatTime(msg.created_at)}</span>
@@ -821,6 +850,7 @@
             return;
 }
 
+<<<<<<< HEAD
         if (parts[0] === 'ORDERSTATUS') {
             const status = parts[1];
             const tracking = parts[3] || '';
@@ -861,6 +891,8 @@
           return;
         }
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
         // text bubble messages
         const row = document.createElement('div');
         row.className = `message-row ${isSent ? 'sent' : 'received'}`;
@@ -872,7 +904,10 @@
           });
 
       if (atBottom) container.scrollTop = container.scrollHeight;
+<<<<<<< HEAD
       renderConversationActions();
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     }
 
     // offering
@@ -1018,6 +1053,7 @@
             await loadConversations();
         }
 
+<<<<<<< HEAD
         function renderConversationActions() {
           const actions = document.getElementById('chatActions');
           if (!actions) return;
@@ -1110,6 +1146,8 @@
           await refresh();
         }
 
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
         document.getElementById('sendBtn').addEventListener('click', () =>
            sendMessage(document.getElementById('msgInput').value));
 
@@ -1139,6 +1177,7 @@
           return `${labels[p[1]] || 'Offer'}: £${parseFloat(p[2]).toFixed(2)}`;
       }
       if (p[0] === 'BUYNOW') return `Buy Now: £${parseFloat(p[1]).toFixed(2)}`;
+<<<<<<< HEAD
       if (p[0] === 'PURCHASECONFIRM') return `Purchase confirmed: ${p[1] || 'item'} for £${parseFloat(p[2] || '0').toFixed(2)}`;
       if (p[0] === 'REPORTISSUE') return `Issue reported`;
       if (p[0] === 'ORDERSTATUS') {
@@ -1151,6 +1190,8 @@
         };
         return labels[status] || 'Order update';
       }
+=======
+>>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
       return content;
     }
 
