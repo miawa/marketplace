@@ -64,17 +64,11 @@
     
   height: 40px;
   width: 40px;
-  font-size:12px; 
-  border:1px solid #ac86c9; 
-  background:#7032a0; 
-  color:#EEE; 
-  border-radius:6px; 
   cursor:pointer;
 }
 
 #logoutBtn:hover, #messageBtn:hover, .top-avatar:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 .categories {
