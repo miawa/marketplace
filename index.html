@@ -5,71 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Marketplace</title>
   <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/top-menu.css" />
 </head>
 <body>
 
   <div class="layout">
 
-    <!-- <aside class="sidebar">
-      <h2>Marketplace</h2>
-      <ul>
-        <li class="profile-link" onclick="window.location.href='profile.html?'">
-          <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="sidebar-avatar">
-          My Profile
-        </li>
-        <hr class="sidebar-divider">
-        
-        <li class="active">All Items</li>
-        <li>Textbooks</li>
-        <li>Electronics</li>
-        <li>Clothing</li>
-        <li>Furniture</li>
-        <li>Other</li>
-        <li onclick="window.location.href='messages.html'">Messages</li>
-        <button id="logoutBtn" style="font-size:12px; padding:5px 10px; border:1px solid #007782; background:white; color:#007782; border-radius:6px; cursor:pointer;">Log out</button>
-      </ul>
-    </aside> -->
-
-    <!-- <main class="main-content"> -->
       <main class="content-wrapper">
-        <img src="images/logo.png" alt="Minted Site Logo" class="top-logo" />
-        <div class="top-bar">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search for items..."
-            />
-            <div class="profile-options">
-              <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-              <button id="messageBtn" onclick="window.location.href='messages.html'">Messages</button>
-              <button id="logoutBtn">Log out</button>
+
+        <!-- Top Menu Bar HTML -->
+        <div class="top-menu">
+          
+            <div class="logo">
+              <img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" />
+              <img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" />
             </div>
+          
+          <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for items..." />
+          </div>
+          <div class="profile-options">
+            <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+            <button id="messageBtn" onclick="window.location.href='messages.html'">Messages</button>
+            <button id="logoutBtn">Log out</button>           
+          </div> 
         </div>
+        <!-- End Top Menu Bar HTML -->
+
         <h2 class="header-general">Categories</h2>
         <div class="categories">
           <ul>            
             <li class="active">
-              <div class="menu-img"><img class="menu-img" src="images/all.png" alt="All Items">
-              <span class="menu-text">All Items</span></div>
+              <div class="menu-img">
+                <img class="menu-img" src="images/all.png" alt="All Items" onclick="loadProductsToPage('','All Items');">
+                <span class="menu-text">All Items</span>
+              </div>
             </li>
             <li>
-              <div class="menu-img"><img src="images/textbook.png" alt="Textbooks">
+              <div class="menu-img"><img src="images/textbook.png" alt="Textbooks" onclick="loadProductsToPage('','Textbooks');">
               <span class="menu-text">Textbooks</span></div>
             </li>
             <li>
-              <div class="menu-img"><img src="images/electronics.png" alt="Electronics">
+              <div class="menu-img"><img src="images/electronics.png" alt="Electronics" onclick="loadProductsToPage('','Electronics');">
               <span class="menu-text">Electronics</span></div>
             </li>
             <li>
-              <div class="menu-img"><img src="images/clothing.png" alt="Clothing">
+              <div class="menu-img"><img src="images/clothing.png" alt="Clothing" onclick="loadProductsToPage('','Clothing');">
               <span class="menu-text">Clothing</span></div>
             </li>
             <li>
-              <div class="menu-img"><img src="images/furniture.png" alt="Furniture">
+              <div class="menu-img"><img src="images/furniture.png" alt="Furniture" onclick="loadProductsToPage('','Furniture');">
               <span class="menu-text">Furniture</span></div>
             </li>
             <li>
-              <div class="menu-img"><img src="images/other.png" alt="Other">
+              <div class="menu-img"><img src="images/other.png" alt="Other" onclick="loadProductsToPage('','Other');">
               <span class="menu-text">Other</span></div>
             </li>
           </ul>

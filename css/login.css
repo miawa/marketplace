@@ -1,13 +1,6 @@
-:root {
-    --primary-blue: #00767d;
-    --bg-gray: #f4f7f6;
-    --text-dark: #333;
-    --white: #ffffff;
-}
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-gray);
+    background-color: #f4f7f6;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,8 +8,29 @@ body {
     margin: 0;
 }
 
+.title {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.site-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.site-logo-text {
+    width: 100px;
+    height: 50px;
+    object-fit: contain;
+}
+
 .loginClass {
-    background: var(--white);
+    background: #FFF;
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -50,14 +64,14 @@ input {
 
 input:focus {
     outline: none;
-    border-color: var(--primary-blue);
+    border-color: #7032a0;;
 }
 
 .forgotPassword {
     display: block;
     text-align: right;
     font-size: 0.85rem;
-    color: var(--primary-blue);
+    color: #7032a0;
     text-decoration: none;
     margin-top: -10px;
     margin-bottom: 20px;
@@ -65,7 +79,7 @@ input:focus {
 
 .btnLogin {
     width: 100%;
-    background-color: var(--primary-blue);
+    background-color: #7032a0;
     color: white;
     padding: 12px;
     border: none;
@@ -105,7 +119,7 @@ input:focus {
 }
 
 .footer-text a {
-    color: var(--primary-blue);
+    color: #7032a0;
     text-decoration: none;
     font-weight: 600;
 }

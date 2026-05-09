@@ -5,22 +5,16 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.content-wrapper {
-    margin: 0 auto;
-    width: 98%;
-    padding: 1% 1%;
-    max-width: 1100px;
-    flex-direction: column;
-  }
-
 body {
   background: #f6f7f9;
 }
 
-.layout {
-    display: flex;
-    min-height: 100vh;
-  }
+a {
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
 
 .content-wrapper {
   display: flex;
@@ -31,58 +25,24 @@ body {
   text-align: center;
 }
 
-.top-logo {
+/* .top-logo {
   width: 300px;
   height: auto;
   object-fit: contain;
   margin: 0 auto 10px auto;
-}
+} */
 
-#searchInput {
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  font-size: 15px;
-  outline: none;
-  transition: 0.15s ease;
-}
 
-.top-bar {
+
+/* .top-bar {
   margin-bottom: 20px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
+} */
 
-.profile-options {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  justify-content: center;
-}
 
-.top-avatar {
-  width: 30px;
-  height: 30px;
-  object-fit: cover;
-  vertical-align: middle;
-}
-
-#searchInput:focus {
-  border-color: #007782;
-  box-shadow: 0 0 0 3px rgba(0, 119, 130, 0.08);
-}
-
-#logoutBtn, #messageBtn {
-  font-size:12px; 
-  padding:5px 10px; 
-  border:1px solid #007782; 
-  background:white; 
-  color:#007782; 
-  border-radius:6px; 
-  cursor:pointer;
-}
 
 .categories {
   display: flex;
@@ -141,7 +101,7 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #2f855a;
+  background: #7032a0;
   border: none;
   color: white;
   font-size: 24px;
@@ -156,7 +116,7 @@ body {
 }
 
 .floating-btn:hover {
-  background: #276749;
+  background: #ac86c9;
   transform: scale(1.05);
   box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
@@ -166,23 +126,6 @@ body {
 }
 
 @media (max-width: 600px) {
-  #searchInput {
-    flex: 100%;
-  }
-
-  .top-bar {
-    display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: auto auto;
-    column-gap: 0px;
-    height: auto;
-    margin-bottom: 40px;
-  }
-
-  .profile-options {
-    margin-top: 10px;
-  }
-
   #searchInput {
     flex: 100%;
   }
@@ -293,19 +236,6 @@ body {
     padding: 1% 1%;
     max-width: 1100px;
     flex-direction: column;
-  }
-
-  .top-bar {
-    column-gap: 20px;
-    height: 40px;
-    margin-bottom: 40px;
-  }
-
-  .profile-options {
-  }
-
-  #searchInput {
-    flex: 60%;
   }
 
   .categories {

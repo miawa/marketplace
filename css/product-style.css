@@ -8,42 +8,31 @@
 body {
   background: #f5f6f7;
   color: #111;
-  padding: 20px;
 }
 
-
 .main-content {
-  max-width: 1050px;
+  max-width: 1100px;
+  width: 98%;
+  padding: 1% 1%;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
   gap: 20px;
+  background: #fff;
   align-items: flex-start;
 }
 
-
 .image-section {
-  flex: 1.5;
+  flex: 400px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
-
-.image-section img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  background: #fff;
-  display: block;
-}
-
-
 
 .details-sidebar {
-  flex: 1;
+  width: 100%;;
   background: #fff;
-  padding: 24px;
-  position: sticky;
-  top: 20px;
+  align-items: center;
 }
 
 .price-tag {
@@ -87,7 +76,6 @@ body {
   line-height: 1.5;
 }
 
-
 .actions {
   display: flex;
   flex-direction: column;
@@ -107,45 +95,28 @@ body {
 }
 
 .btn-primary {
-  background-color: #007782;
+  background-color: #7032a0;
   color: white;
 }
 
 .btn-secondary {
   background-color: transparent;
-  color: #007782;
-  border: 1px solid #007782;
+  color: #7032a0;
+  border: 1px solid #7032a0;
 }
-
-@media (max-width: 800px) {
-  .main-content {
-    flex-direction: column;
-  }
-  .details-sidebar {
-    position: static;
-    width: 100%;
-  }
-}
-
-
-.image-carousel {
-  position: relative;
-  width: 100%;
-}
-
 
 .carousel-container {
-  position: relative;
-  width: 100%;
-  height: auto;        
+  width: 100%;     
   overflow: hidden;
+  flex: 80%;
+  margin-bottom: 20px;
 }
 
 .carousel-image {
-  position: relative; 
-  width: 100%;
-  height: auto;        
-  object-fit: contain; 
+  height: 400px; 
+  width: auto;
+  margin: 0 auto;
+  object-fit: cover; 
   opacity: 0;
   transition: opacity 0.3s ease;
   display: none;      
@@ -157,26 +128,16 @@ body {
 }
 
 .carousel-prev,
-.carousel-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
+.carousel-next {  
   color: white;
   border: none;
-  padding: 12px;
+  margin: 0 20px;
   cursor: pointer;
   font-size: 18px;
-  border-radius: 50%;
-  z-index: 10;
-}
-
-.carousel-prev {
-  left: 10px;
-}
-
-.carousel-next {
-  right: 10px;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .carousel-prev:hover,
@@ -185,11 +146,11 @@ body {
 }
 
 .carousel-dots {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
+  height: 100%;
+  flex: 20px;
   display: flex;
+  flex-direction: row;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -197,11 +158,12 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: #7032a0;
   cursor: pointer;
   transition: background 0.3s ease;
+  align-self: center;
 }
 
 .dot.active {
-  background: white;
+  background: #ac86c9;
 }

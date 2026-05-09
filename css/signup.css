@@ -5,10 +5,9 @@
     --white: #ffffff;
     --border: #ddd;
 }
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-gray);
+    background-color: #f4f7f6;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,7 +16,7 @@ body {
 }
 
 .signupBox {
-    background: var(--white);
+    background: #FFF;
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -26,13 +25,25 @@ body {
     text-align: center;
 }
 
-.mainTitle {
-    color: var(--primary-blue);
-    font-size: 1.8rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    margin-bottom: 25px;
-    text-transform: uppercase;
+.title {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.site-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.site-logo-text {
+    width: 100px;
+    height: 50px;
+    object-fit: contain;
 }
 
 .step { display: none; }
@@ -54,7 +65,7 @@ label {
 input, textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border);
+    border: 1px solid #DDD;
     border-radius: 6px;
     box-sizing: border-box;
     font-size: 0.95rem;
@@ -62,7 +73,7 @@ input, textarea {
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: var(--primary-blue);
+    border-color: #7032a0;
 }
 
 
@@ -92,7 +103,7 @@ input:focus, textarea:focus {
     display: inline-block;
     margin-top: 10px;
     font-size: 0.8rem;
-    color: var(--primary-blue);
+    color: #7032a0;
     cursor: pointer;
     font-weight: 600;
     text-decoration: underline;
@@ -100,7 +111,7 @@ input:focus, textarea:focus {
 
 .btn-action {
     width: 100%;
-    background-color: var(--primary-blue);
+    background-color: #7032a0;
     color: white;
     padding: 12px;
     border: none;
@@ -119,7 +130,7 @@ input:focus, textarea:focus {
     color: #777;
 }
 
-.footer-text a { color: var(--primary-blue); text-decoration: none; }
+.footer-text a { color: #7032a0; text-decoration: none; }
 
 textarea { resize: none; height: 80px; }
 

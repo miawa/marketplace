@@ -61,7 +61,6 @@ async function loadProduct() {
 
         //FIX - need to fix the dots on carousel - doesn't show 
         imageSection = `
-            <div class="image-carousel">
             <div class="carousel-container">
                 ${p.item_images.map((img, index) => `
                 <img src="${img.image_url}" alt="${p.title} ${index + 1}" class="carousel-image ${index === 0 ? 'active' : ''}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
@@ -69,13 +68,14 @@ async function loadProduct() {
             </div>
             
             <div class="carousel-dots">
+                <button class="carousel-prev" onclick="prevImage()">&#10094;</button>
                 ${p.item_images.map((_, index) => `
                 <span class="dot ${index === 0 ? 'active' : ''}" onclick="showImage(${index})"></span>
                 `).join('')}
+                
+                <button class="carousel-next" onclick="nextImage()">&#10095;</button>
             </div>
-            <button class="carousel-prev" onclick="prevImage()">&#10094;</button>
-            <button class="carousel-next" onclick="nextImage()">&#10095;</button>
-            </div>
+            
         `;
         }
     } else {
@@ -84,7 +84,6 @@ async function loadProduct() {
 
     //puts all product info from the items table that was called earlier onto screen
     productDetail.innerHTML = `
-        <div class="main-content">
         <div class="image-section">
             ${imageSection}
         </div>
@@ -102,7 +101,7 @@ async function loadProduct() {
             <tr><td>Condition</td><td><strong>${conditionFormatted}</strong></td></tr>
             <tr><td>Category</td><td><strong>${p.category.replace(/\b\w/g, l => l.toUpperCase())}</strong></td></tr>
             <tr><td>Uploaded</td><td><strong>${uploadDate}</strong></td></tr>
-            <tr><td>Seller</td><td><strong><a href="profile.html?user=${p.users.username}" style="color: #007782; text-decoration: none;">@${p.users.username}</a></strong></td></tr>
+            <tr><td>Seller</td><td><strong><a href="profile.html?user=${p.users.username}" style="color: #7032a0; text-decoration: none;">@${p.users.username}</a></strong></td></tr>
             </table>
 
             <div class="actions">
@@ -116,7 +115,6 @@ async function loadProduct() {
                 <p>${p.description}</p>
             </div>
             ` : ''}
-        </div>
         </div>
     `;
 

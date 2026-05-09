@@ -4,11 +4,32 @@
   <meta charset="UTF-8">
   <title>Product Details</title>
   <link rel="stylesheet" href="css/product-style.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/top-menu.css">
 </head>
 <body>
-  <div class="layout">
-    <main class="main-content">
-      <div class="content-wrapper" id="productDetail"></div>
+  <div class="content-wrapper">
+
+    <!-- Top Menu Bar HTML -->
+    <div class="top-menu">
+      <div class="logo">
+        <img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" />
+        <img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" />
+      </div>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search for items..." />
+      </div>
+      <div class="profile-options">
+        <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+        <button id="messageBtn" onclick="window.location.href='messages.html'">Messages</button>
+        <button id="logoutBtn">Log out</button>           
+      </div> 
+    </div>
+
+    <main class="main-content" id="productDetail">
+      <!-- <div class="content-wrapper" id="productDetail">
+
+      </div> -->
     </main>
   </div>
 
@@ -21,16 +42,16 @@
   <div id="offerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); margin:20px;">
       <h2 style="font-size:20px; font-weight:700; color:#111; margin-bottom:6px;">Make an Offer</h2>
-      <div id="offerItemTitle" style="font-size:13px; color:#007782; margin-bottom:24px;"></div>
+      <div id="offerItemTitle" style="font-size:13px; color:#7032a0; margin-bottom:24px;"></div>
       <div style="position:relative; margin-bottom:20px;">
-        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; font-weight:600; color:#374151;">£</span>
+        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; font-weight:600; color:#7032a0;">£</span>
         <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="0.01"
-          style="width:100%; padding:14px 14px 14px 32px; font-size:22px; font-weight:600; border:2px solid #e5e7eb; border-radius:10px; outline:none; box-sizing:border-box; font-family:inherit;"
-          onfocus="this.style.borderColor='#007782'" onblur="this.style.borderColor='#e5e7eb'">
+          style="width:100%; padding:14px 14px 14px 32px; font-size:22px; font-weight:600; border:2px solid #7032a0; border-radius:10px; outline:none; box-sizing:border-box; font-family:inherit;"
+          onfocus="this.style.borderColor='#7032a0'" onblur="this.style.borderColor='#e5e7eb'">
       </div>
       <div style="display:flex; gap:10px;">
         <button onclick="closeOfferModal()" style="flex:1; padding:12px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:15px; cursor:pointer; font-weight:500; color:#374151;">Cancel</button>
-        <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:2; padding:12px; background:#007782; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Send Offer</button>
+        <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:2; padding:12px; background:#7032a0; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Send Offer</button>
       </div>
     </div>
   </div>
