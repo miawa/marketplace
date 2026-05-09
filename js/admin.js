@@ -166,7 +166,7 @@ async function setReportStatus(reportId, newStatus) {
 
     showStatus('An unexpected error occurred.', 'error');
     console.error('setReportStatus error:', error);
-
+    
   }
 }
 
