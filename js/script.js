@@ -14,6 +14,7 @@ async function loadItems() {
         title,
         description,
         price,
+        old_price,
         brand,
         size,
         condition,
@@ -91,6 +92,7 @@ function renderProductGrid(items) {
       //currently no placeholder image
 
     const priceFormatted = `£${item.price.toFixed(2)}`;
+    const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
     // const priceFormatted = `£${item.price.toLocaleString('en-GB', { minimumFractionDigits: 2 })}`;
 
     //puts all information about product on screen, stops when clicked off
@@ -100,7 +102,7 @@ function renderProductGrid(items) {
               <div class="product-body">
                 <div class="title-row">
                   <div class="product-title">${item.title}</div>
-                  <div class="product-price">${priceFormatted}</div>
+                  <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
                 </div>
                 <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'" style="cursor:pointer; color:#757575;">@${item.users.username}</div>
               </div>
@@ -146,6 +148,7 @@ async function loadWatchList(filter = "") {
         title,
         description,
         price,
+        old_price,
         brand,
         size,
         condition,

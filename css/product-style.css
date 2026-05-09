@@ -77,10 +77,53 @@ body {
   background: #f5f7fa;
 }
 
+.price-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 .price-tag {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 4px;
+}
+
+.old-price {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #c53030;
+  text-decoration: line-through;
+  opacity: 0.9;
+}
+
+.price-edit-container {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.price-edit-container .price-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f8fafc;
+}
+
+.btn-change-price {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #007782;
+  background: #fff;
+  color: #007782;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .secondary-text {

@@ -172,6 +172,14 @@ body {
   color: #2f855a;
 }
 
+.old-price {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #c53030;
+  text-decoration: line-through;
+  opacity: 0.9;
+}
 
 .product-user {
   font-size: 13px;

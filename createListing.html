@@ -27,7 +27,7 @@
 
             <div class="inputGroup">
               <label for="price">Price (£) *</label>
-              <input type="number" id="price" required step="1.00" min="0" placeholder="0.00">
+              <input type="number" id="price" required step="0.01" min="0.01" placeholder="0.00">
             </div>
 
             <div class="inputGroup">
@@ -99,6 +99,10 @@
     const imageInput = document.getElementById('imageInput');
     const imageUploadBox = document.getElementById('imageUploadBox');
     const imagePreview = document.getElementById('imagePreview');
+    const urlParams = new URLSearchParams(window.location.search);
+    const editItemId = urlParams.get('edit');
+    const isEditMode = Boolean(editItemId);
+    let editItem = null;
 
     window.removeImage = removeImage;
 
@@ -111,33 +115,72 @@
       imageInput.click();
     });
 //allows drag and drop logic
-    imageInput.addEventListener('change', handleImageSelect);
+    imageInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      await handleImageFiles(files);
+    });
     imageUploadBox.addEventListener('dragover', (e) => {
       e.preventDefault();
       imageUploadBox.classList.add('dragover');});
 
     imageUploadBox.addEventListener('dragleave', () => {imageUploadBox.classList.remove('dragover');});
 
-      imageUploadBox.addEventListener('drop', (e) => {
+      imageUploadBox.addEventListener('drop', async (e) => {
 
         e.preventDefault();
         imageUploadBox.classList.remove('dragover');
         const files = Array.from(e.dataTransfer.files);
-        handleImageFiles(files); });
+        await handleImageFiles(files); });
 
     //on event e when user selects the image it takes the files and puts them into an array, then passes to next function to check they're actually images
-    function handleImageSelect(e) {
+    async function handleImageSelect(e) {
       const files = Array.from(e.target.files);
-      handleImageFiles(files);
+      await handleImageFiles(files);
     }
 
     //error checking by checking if the file being uploaded is an image and is being stored correctly with the image/ check
 
     //so if they upload anything thats not an image it just ignores it and will only add images (if any) to the files array
-    function handleImageFiles(files) {
+    async function handleImageFiles(files) {
       const imageFiles = files.filter(file => file.type.startsWith('image/'));
-      selectedImages = selectedImages.concat(imageFiles);
+      const resizedFiles = await Promise.all(imageFiles.map(file => resizeImageFile(file)));
+      selectedImages = selectedImages.concat(resizedFiles);
       updateImagePreview();
+    }
+
+    async function resizeImageFile(file) {
+      const maxDimension = 1200;
+      const quality = 0.7;
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            const ratio = Math.min(maxDimension / width, maxDimension / height, 1);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error('Image resize failed')); return;
+              }
+              const fileName = file.name.replace(/\.[^.]+$/, '.jpg');
+              const resizedFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: Date.now() });
+              resolve(resizedFile);
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = () => reject(new Error('Invalid image file'));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error('Failed to read image'));
+        reader.readAsDataURL(file);
+      });
     }
 
     //CODE IDEA? 
@@ -277,24 +320,30 @@
         console.log('item being inserted information:', itemData);
 //
 
-        //inserts all information from the itemData record into the items table 
-        const { data: itemResult, error: itemError } = await window.supabase
-          .from('items')
-          .insert([itemData])
-          .select();
+        //inserts or updates the item record in the items table
+        const { data: itemResult, error: itemError } = isEditMode
+          ? await window.supabase
+              .from('items')
+              .update(itemData)
+              .eq('id', editItemId)
+              .select()
+              .single()
+          : await window.supabase
+              .from('items')
+              .insert([itemData])
+              .select()
+              .single();
 
           if (itemError) {
-            //debug for now
-            console.error('Error creating listing:', itemError);
-
-            showMsg('Error creating listing: ' + itemError.message, 'error');
+            console.error('Error saving listing:', itemError);
+            showMsg('Error saving listing: ' + itemError.message, 'error');
             submitBtn.disabled = false;
             return;
           }
 
-        //gets the id of the item that was just created, allows reference in other tables and to display to page etc
-        const itemId = itemResult[0].id;
-        console.log('Item created with ID:', itemId);
+        //gets the id of the item that was just created or updated, allows reference in other tables and to display to page etc
+        const itemId = itemResult.id;
+        console.log('Listing saved with ID:', itemId);
 
         // inserts images into table based on links from the itemImages bucket and puts item id 
         if (imageUrls.length > 0) {
@@ -314,7 +363,7 @@
           if (imagesError) {
 
             console.error('Error inserting images:', imagesError);
-            showMsg('Item created but error saving images. ' + imagesError.message, 'error');
+            showMsg(isEditMode ? 'Listing updated but there was an error saving new images. ' + imagesError.message : 'Item created but error saving images. ' + imagesError.message, 'error');
             submitBtn.disabled = false;
 
             return;
@@ -322,9 +371,9 @@
         }
 
         console.log('Listing created successfully!');
-        showMsg('Listing created successfully! Redirecting...', 'success');
+        showMsg(isEditMode ? 'Listing updated successfully! Redirecting...' : 'Listing created successfully! Redirecting...', 'success');
         //leaves page after a readble amount of time back to main page, which is refreshed and will likely show listing that was just created
-        setTimeout(() => window.location.href = 'index.html', 2000);
+        setTimeout(() => window.location.href = isEditMode ? `product.html?id=${itemId}` : 'index.html', 2000);
 
       } catch (error) {
         console.error('Error:', error);
@@ -354,8 +403,44 @@
       if (!user) {
         showMsg('You must be logged in to create a listing. Redirecting to login...', 'error');
         setTimeout(() => window.location.href = 'login.html', 2000);
+        return;
+      }
+
+      if (isEditMode) {
+        document.querySelector('h1').textContent = 'Edit Listing';
+        submitBtn.textContent = 'Save changes';
+        await loadItemForEdit(editItemId, user);
       }
     });
+
+    async function loadItemForEdit(itemId, user) {
+      const { data: item, error } = await window.supabase
+        .from('items')
+        .select('id, seller_id, title, description, price, brand, size, condition, category, is_sold')
+        .eq('id', itemId)
+        .single();
+
+      if (error || !item) {
+        showMsg('Listing not found.', 'error');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+      }
+
+      if (!user || item.seller_id !== user.id) {
+        showMsg('You can only edit your own listing.', 'error');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+      }
+
+      editItem = item;
+      document.getElementById('title').value = item.title;
+      document.getElementById('description').value = item.description || '';
+      document.getElementById('price').value = item.price;
+      document.getElementById('brand').value = item.brand || 'No Brand';
+      document.getElementById('size').value = item.size || 'One Size';
+      document.getElementById('condition').value = item.condition;
+      document.getElementById('category').value = item.category;
+    }
   </script>
 </body>
 </html>
