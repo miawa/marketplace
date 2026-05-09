@@ -7,7 +7,6 @@ const productDetail = document.getElementById("productDetail");
 window.showImage = showImage;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
-<<<<<<< HEAD
 window.handleBuyNow = handleBuyNow;
 
 const DELIVERY_OPTIONS = [
@@ -19,8 +18,6 @@ const DELIVERY_OPTIONS = [
 const APP_FEE = 1.50;
 let buyNowItem = null;
 let buyNowConversationId = null;
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 
 async function loadProduct() {
     //if no id found
@@ -120,15 +117,11 @@ async function loadProduct() {
             </table>
 
             <div class="actions">
-<<<<<<< HEAD
             <div class="like-watch-buttons">
                 <button class="btn btn-like">Like</button>
                 <button id="watchButton" class="btn btn-watch" onclick="handleWatch('${p.id}')">Watch</button>
             </div>
             <button class="btn btn-primary" onclick="handleBuyNow('${p.id}')">Buy now</button>
-=======
-            <button class="btn btn-primary">Buy now</button>
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
             <button class="btn btn-secondary" onclick="handleOffer('${p.id}', '${p.users.username}', '${p.title.replace(/'/g,"\\'")}')">Offer</button>
             <button class="btn btn-secondary" onclick="handleContact('${p.id}', '${p.users.username}')">Contact Seller</button>
             </div>
@@ -142,11 +135,8 @@ async function loadProduct() {
         </div>
     `;
 
-<<<<<<< HEAD
     await updateWatchButtonState(p.id);
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
     if (p.item_images && p.item_images.length > 1) {
         window.currentImageIndex = 0;
     }
@@ -196,7 +186,6 @@ function prevImage() {
 loadProduct();
 
 
-<<<<<<< HEAD
 async function handleBuyNow(itemId) {
     const { data: { user } } = await window.supabase.auth.getUser();
     if (!user) {
@@ -423,8 +412,6 @@ async function handleWatch(itemId) {
     await updateWatchButtonState(itemId);
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 async function getOrCreateConversation(itemId, sellerUsername) {
 
     //checks what account user is logge din and if user is authenticated, otherwise returns to login
@@ -541,10 +528,6 @@ document.getElementById('offerModal')?.addEventListener('click', (e) => {
 window.handleOffer   = handleOffer;
 window.handleContact = handleContact;
 window.submitOffer   = submitOffer;
-<<<<<<< HEAD
 window.closeOfferModal = closeOfferModal;
 window.handleBuyNow = handleBuyNow;
 window.handleWatch = handleWatch;
-=======
-window.closeOfferModal = closeOfferModal;
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc

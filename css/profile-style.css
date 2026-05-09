@@ -37,7 +37,6 @@ body {
   object-fit: cover;
 }
 
-<<<<<<< HEAD
 .user-list {
   max-height: 400px;
   overflow-y: auto;
@@ -79,14 +78,11 @@ body {
   color: #757575;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 .user-details h1 {
   font-size: 24px;
   margin-bottom: 4px;
 }
 
-<<<<<<< HEAD
 .user-bio {
   margin: 8px 0 12px;
   color: #4b5563;
@@ -95,8 +91,6 @@ body {
   font-size: 14px;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 .ratings {
   color: #ffc107; /* Gold for stars */
   font-size: 14px;
@@ -114,7 +108,6 @@ body {
   gap: 15px;
 }
 
-<<<<<<< HEAD
 .stat-link {
   cursor: pointer;
   color: #007782;
@@ -124,8 +117,6 @@ body {
   text-decoration: underline;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 .btn-secondary {
   padding: 8px 16px;
   border: 1px solid #007782;
@@ -136,15 +127,12 @@ body {
   cursor: pointer;
 }
 
-<<<<<<< HEAD
 .btn-following {
   background-color: #28a745;
   color: white;
   border-color: #28a745;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 .profile-tabs {
   display: flex;
   gap: 30px;

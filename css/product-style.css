@@ -95,7 +95,6 @@ body {
   margin-top: 24px;
 }
 
-<<<<<<< HEAD
 .like-watch-buttons {
   display: flex;
   gap: 12px;
@@ -106,8 +105,6 @@ body {
   width: auto;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 .btn {
   width: 100%;
   padding: 12px;
@@ -130,7 +127,6 @@ body {
   border: 1px solid #007782;
 }
 
-<<<<<<< HEAD
 .btn-like {
   background-color: #d2d2d2;
   color: white;
@@ -146,8 +142,6 @@ body {
   color: white;
 }
 
-=======
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
 @media (max-width: 800px) {
   .main-content {
     flex-direction: column;
@@ -235,7 +229,6 @@ body {
 
 .dot.active {
   background: white;
-<<<<<<< HEAD
 }
 
 .modal-overlay {
@@ -361,6 +354,3 @@ body {
   text-decoration: underline;
   cursor: pointer;
 }
-=======
-}
->>>>>>> 00c9bab30622bc18aafdd6def1275052eeb783fc
