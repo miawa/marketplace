@@ -52,6 +52,7 @@
           </div>
           <div class="header-actions">
             <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
+            <button class="btn-secondary" id="adminBtn" style="display: none;" onclick="window.location.href='admin.html'">Admin</button>
             <button class="btn-secondary" id="followProfileBtn">Follow</button>
             <button class="btn-secondary">Share</button>
           </div>
@@ -569,15 +570,23 @@
         // Show/hide Edit Profile and Follow buttons based on whether it's own profile
         const editBtn = document.getElementById('editProfileBtn');
         const followBtn = document.getElementById('followProfileBtn');
+        const adminBtn = document.getElementById('adminBtn');
         if (isOwnProfile) {
           editBtn.style.display = 'inline-block';
           if (followBtn) followBtn.style.display = 'none';
+          // Show admin button if user is admin
+          if (targetUser.is_admin) {
+            adminBtn.style.display = 'inline-block';
+          } else {
+            adminBtn.style.display = 'none';
+          }
         } else {
           editBtn.style.display = 'none';
           if (followBtn) {
             followBtn.style.display = 'inline-block';
             await updateFollowButtonState(targetUser.id);
           }
+          adminBtn.style.display = 'none';
         }
 
         // Render items

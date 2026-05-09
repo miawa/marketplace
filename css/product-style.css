@@ -46,6 +46,37 @@ body {
   top: 20px;
 }
 
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.details-header h1 {
+  font-size: 18px;
+  margin: 0;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.btn-report {
+  width: auto;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #111;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-report:hover {
+  background: #f5f7fa;
+}
+
 .price-tag {
   font-size: 24px;
   font-weight: 600;
