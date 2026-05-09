@@ -6,36 +6,39 @@
 }
 
 .top-menu {
-  margin-bottom: 20px;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: 60px 60px;
-  column-gap: 20px;
+  column-gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .logo {
     grid-column: 1 / 1;
-    grid-row: 1 / 2;
+    grid-row: 1 / 1;
     width: auto;
     height: 130px;
     padding: 10px;
     display: flex; 
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
 .site-logo {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  align-self: center;
 }
 
 .site-logo-text {
-    width: 120px;
-    height: 60px;
-    object-fit: contain;
+  width: 120px;
+  height: 60px;
+  object-fit: contain;
 }
 
 .profile-options {
@@ -53,13 +56,15 @@
   height: 40px;
   object-fit: cover;
   vertical-align: middle;
+  cursor: pointer;
+  border-radius:6px; 
 }
 
 #logoutBtn, #messageBtn {
     
   height: 40px;
+  width: 40px;
   font-size:12px; 
-  padding:5px; 
   border:1px solid #ac86c9; 
   background:#7032a0; 
   color:#EEE; 
@@ -67,48 +72,52 @@
   cursor:pointer;
 }
 
-.search-container {
+#logoutBtn:hover, #messageBtn:hover, .top-avatar:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.categories {
   display: flex;
   flex-direction: row;
-  gap: 10px;
-  justify-content: center;
-  align-items: end;
-  grid-column: 2 / 2;
+  gap: 15px;
+  grid-column: span 2;
   grid-row: 2 / 2;
-}
-
-#searchInput {
-  padding: 10px 10px;
-  border-radius: 12px;
-    flex: 1;
   height: 40px;
-  border: 1px solid #e5e7eb;
-  font-size: 15px;
-  outline: none;
-  transition: 0.15s ease;
+  padding: 10px 0;
+  justify-content: center;
+  align-items: center;
 }
 
-#searchInput:focus {
-  border-color: #007782;
-  box-shadow: 0 0 0 3px rgba(0, 119, 130, 0.08);
+
+.menu-img {
+  object-fit: contain;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+}
+
+/* .menu-text {
+  display: none;
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  bottom: 0px;
+} */
+
+.menu-img img {
+  width: 100%;
+  height: 100%;
 }
 
 @media (max-width: 600px) {
-    .logo {
-        grid-column: 1 / 1;
-        grid-row: 2 / 2;
-        height: 60px;
-        gap: 0px;
-        padding: 0;
-        justify-content: end;
-    }
+  /* .logo {
+    grid-column: 1 / 1;
+    grid-row: 2 / 2;
+    height: 60px;
+    gap: 0px;
+    padding: 0;
+    justify-content: end;
+  } */
 
-    .site-logo {
-        width: 40px;
-        height: 40px;
-        object-fit: fill;
-    }
-    .site-logo-text {
-        display: none;
-    }
 }

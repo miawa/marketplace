@@ -7,6 +7,10 @@ const grid = document.getElementById("productGrid");
 // gets items from item table in supabase
 async function loadItems() {
   try {
+    const searchParams = new URLSearchParams(window.location.search);
+    const cat = searchParams.get('category');
+    currentCategory = (cat==null)?'All Items':cat;
+    console.log(currentCategory);
     const { data, error } = await window.supabase
       .from('items')
       .select(`
@@ -33,7 +37,7 @@ async function loadItems() {
     }
 
     allItems = data || [];
-    loadProductsToPage();
+    loadProductsToPage('', currentCategory);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -69,8 +73,7 @@ function loadProductsToPage(filter = "", category = currentCategory) {
 
     const filteredLoad = document.createElement("div");
     filteredLoad.className = "productLoad"; filteredLoad.addEventListener("click", () => {
-    
-       window.location.href = `product.html?id=${item.id}`; });
+    window.location.href = `product.html?category=${item.category}&id=${item.id}`; });
 
 
     // gets image to put for that item. if image length is less than 0, uses placeholder image
@@ -84,23 +87,23 @@ function loadProductsToPage(filter = "", category = currentCategory) {
 
     //puts all information about product on screen, stops when clicked off
     //error handling (placeholde rimage)
-          filteredLoad.innerHTML = `
-              <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/placeholder';">
-              <div class="product-body">
-                <div class="title-row">
-                  <div class="product-title">${item.title}</div>
-                  <div class="product-price">${priceFormatted}</div>
-                </div>
-                <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
-                  <div class="product-user-name">@${item.users.username}</div>
-                  <div class="product-user-avatar">
-                    <img src="${item.users.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${item.users.username}'s avatar" onerror="this.src='https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';">
-                  </div>
-                </div>
-              </div>
-            `;
+    filteredLoad.innerHTML = `
+        <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/placeholder';">
+        <div class="product-body">
+          <div class="title-row">
+            <div class="product-title">${item.title}</div>
+            <div class="product-price">${priceFormatted}</div>
+          </div>
+          <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+            <div class="product-user-name">@${item.users.username}</div>
+            <div class="product-user-avatar">
+              <img src="${item.users.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${item.users.username}'s avatar" onerror="this.src='https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';">
+            </div>
+          </div>
+        </div>
+      `;
 
-    grid.appendChild(filteredLoad);
+      grid.appendChild(filteredLoad);
   });
 }
 
@@ -122,6 +125,6 @@ createListingButton?.addEventListener("click", () => {
 });
 
 
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   loadItems();
-  });
+});
