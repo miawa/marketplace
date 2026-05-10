@@ -113,11 +113,13 @@ function renderOrderHistory() {
   historyEl.innerHTML = '';
   completed.forEach((order) => {
     const item = order.items || {};
+    const itemId = item.id || order.item_id;
+    const itemUrl = itemId ? `product.html?id=${encodeURIComponent(itemId)}` : '#';
     const card = document.createElement('div');
     card.className = 'order-history-card';
     card.innerHTML = `
       <div class="history-meta">
-        <h3>${escapeHtml(item.title || 'Unknown item')}</h3>
+        <h3><a href="${itemUrl}" class="order-history-link">${escapeHtml(item.title || 'Unknown item')}</a></h3>
         <span class="order-status-pill">${statusBadgeText(order.status)}</span>
       </div>
       <p>${formatMoney(order.total_price)}</p>
@@ -142,6 +144,9 @@ function renderOrderDetail(order) {
   const stageText = statusLabel(order.status);
 
   selectedEl.innerHTML = `
+    <div class="order-detail-header">
+      <button class="btn-secondary" id="backToOrdersBtn">Back to orders</button>
+    </div>
     <div class="order-stage-summary">
       <div class="order-meta">
         <h3>${escapeHtml(item.title || 'Unknown item')}</h3>
@@ -175,8 +180,23 @@ function renderOrderDetail(order) {
     </div>
   `;
 
+  document.getElementById('backToOrdersBtn').addEventListener('click', clearSelectedOrder);
   document.getElementById('acceptOrderBtn').addEventListener('click', acceptOrder);
   document.getElementById('reportIssueBtn').addEventListener('click', reportIssue);
+}
+
+function clearSelectedOrder() {
+  selectedOrder = null;
+  renderActiveOrders();
+  const selectedEl = document.getElementById('orderDetailCard');
+  if (selectedEl) {
+    selectedEl.innerHTML = `
+      <div class="empty-state">
+        <strong>No active order selected</strong>
+        <p>Choose an active order from the sidebar to see the lifecycle tracker.</p>
+      </div>
+    `;
+  }
 }
 
 async function getConversationForOrder(order) {

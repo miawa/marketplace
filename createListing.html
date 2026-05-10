@@ -150,35 +150,46 @@
 
     async function resizeImageFile(file) {
       const maxDimension = 1200;
-      const quality = 0.7;
+      //lower number = lower quality (smaller file size)
+      const quality = 0.5;
 
       return new Promise((resolve, reject) => {
+
         const reader = new FileReader();
+
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
+
             const canvas = document.createElement('canvas');
             let { width, height } = img;
             const ratio = Math.min(maxDimension / width, maxDimension / height, 1);
-            width = Math.round(width * ratio);
-            height = Math.round(height * ratio);
+            //if above max dimension, resizes lower and keeps image size w width/height
+              width = Math.round(width * ratio);
+              height = Math.round(height * ratio);
+
             canvas.width = width;
             canvas.height = height;
+
+            //redraws image to canvas on new size, convers to blob and gets file ready for insertion
             const ctx = canvas.getContext('2d');
+
             ctx.drawImage(img, 0, 0, width, height);
+
             canvas.toBlob((blob) => {
               if (!blob) {
                 reject(new Error('Image resize failed')); return;
               }
+
               const fileName = file.name.replace(/\.[^.]+$/, '.jpg');
               const resizedFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: Date.now() });
               resolve(resizedFile);
             }, 'image/jpeg', quality);
           };
-          img.onerror = () => reject(new Error('Invalid image file'));
+          
           img.src = reader.result;
         };
-        reader.onerror = () => reject(new Error('Failed to read image'));
+        
         reader.readAsDataURL(file);
       });
     }
@@ -406,6 +417,7 @@
         return;
       }
 
+      //just changes name page (either create/edit listing) to not confuse users
       if (isEditMode) {
         document.querySelector('h1').textContent = 'Edit Listing';
         submitBtn.textContent = 'Save changes';
@@ -413,6 +425,8 @@
       }
     });
 
+    //puts all information from existing listing into the form so user can change it and see 
+    //what it was origianllty
     async function loadItemForEdit(itemId, user) {
       const { data: item, error } = await window.supabase
         .from('items')
@@ -430,7 +444,7 @@
         showMsg('You can only edit your own listing.', 'error');
         setTimeout(() => window.location.href = 'index.html', 2000);
         return;
-      }
+        }
 
       editItem = item;
       document.getElementById('title').value = item.title;
@@ -440,6 +454,7 @@
       document.getElementById('size').value = item.size || 'One Size';
       document.getElementById('condition').value = item.condition;
       document.getElementById('category').value = item.category;
+      
     }
   </script>
 </body>

@@ -119,10 +119,10 @@ body {
 
 .btn-secondary {
   padding: 8px 16px;
-  border: 1px solid #007782;
-  background: white;
-  color: #007782;
+  background: #7032a0;
+  color: #fff;
   border-radius: 4px;
+  border: none;
   font-weight: 500;
   cursor: pointer;
 }
@@ -131,6 +131,10 @@ body {
   background-color: #28a745;
   color: white;
   border-color: #28a745;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-4px);
 }
 
 .profile-tabs {
@@ -151,9 +155,8 @@ body {
 
 .profile-tabs a.active {
   color: #111;
-  border-bottom: 2px solid #007782;
+  border-bottom: 2px solid #7032a0;
 }
-
 
 .items-grid {
   display: grid;
@@ -194,10 +197,6 @@ body {
   margin-top: 20px;
 }
 
-.sidebar {
-  width: 250px;
-  flex-shrink: 0;
-}
 
 .profileContent {
   flex-grow: 1;
@@ -217,53 +216,11 @@ body {
   background: #f2f2f2;
 }
 
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar li {
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  color: #757575;
-}
-
-
 .image-wrapper img {
   width: 100%;
   aspect-ratio: 1 / 1; 
   object-fit: cover;   
   border-radius: 4px;
-}
-
-.sidebar li.active {
-  background: #0077821a;
-  color: #007782;
-  font-weight: 600;
-}
-
-
-.sidebar-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
-
-.sidebar li.profile-link {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  color: #111;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.sidebar hr {
-  border: 0;
-  border-top: 1px solid #e5e7eb;
-  margin: 10px 0;
 }
 
 .image-section img {
@@ -291,10 +248,94 @@ body {
   overflow: hidden;
 }
 
-
 .main-layout {
   display: flex;
   gap: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.productCard {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reviewBox {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background: #f9f9f9;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.review-rating {
+  color: #ff9800;
+  font-size: 1.1rem;
+}
+
+.review-comment {
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.review-date {
+  color: #999;
+  font-size: 0.85rem;
+  margin-top: 8px;
 }
 
 

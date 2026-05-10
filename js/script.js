@@ -4,9 +4,34 @@ let currentCategory = "All Items";
 
 const grid = document.getElementById("productGrid");
 
+async function checkAdminAccess() {
+  const adminBtn = document.getElementById('adminBtn');
+  if (adminBtn) {
+    adminBtn.style.display = 'none';
+    const { data: { user } } = await window.supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await window.supabase
+        .from('users')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile?.is_admin) {
+        adminBtn.style.display = 'block';
+      }
+    }
+  }
+}
+
+checkAdminAccess();
+
 // gets items from item table in supabase
 async function loadItems() {
   try {
+    const searchParams = new URLSearchParams(window.location.search);
+    const cat = searchParams.get('category');
+    currentCategory = (cat==null)?'All Items':cat;
+    console.log(currentCategory);
     const { data, error } = await window.supabase
       .from('items')
       .select(`
@@ -21,7 +46,7 @@ async function loadItems() {
         category,
         created_at,
         is_sold,
-        users!inner(username),
+        users!inner(username, avatar_url),
         item_images(image_url)
       `)
       //checks that already sold items aren't being put on main marketplace
@@ -34,7 +59,7 @@ async function loadItems() {
     }
 
     allItems = data || [];
-    loadProductsToPage();
+    loadProductsToPage('', currentCategory);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -51,18 +76,22 @@ async function loadProductsToPage(filter = "", category = currentCategory) {
 
   grid.innerHTML = "";
 
-  const filteredAndSearched = allItems.filter(item => {
-    //allows item to be searched by title, description, brand and category. putting to lowercase basically allows any format to search it properly
-    const matchesSearch = item.title.toLowerCase().includes(filter.toLowerCase()) ||item.description?.toLowerCase().includes(filter.toLowerCase()) ||item.brand?.toLowerCase().includes(filter.toLowerCase());
+  let filteredAndSearched = allItems.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(filter.toLowerCase()) ||
+      item.description?.toLowerCase().includes(filter.toLowerCase()) ||
+      item.brand?.toLowerCase().includes(filter.toLowerCase());
     const matchesCategory = category === "All Items" || item.category === category;
-
-
-    return matchesSearch && matchesCategory;
+    const matchesCondition = activeConditions.length === 0 || activeConditions.includes(item.condition);
+    const matchesMin = minPrice === null || item.price >= minPrice;
+    const matchesMax = maxPrice === null || item.price <= maxPrice;
+    return matchesSearch && matchesCategory && matchesCondition && matchesMin && matchesMax;
   });
+
+  if (sortOrder === 'low') filteredAndSearched.sort((a, b) => a.price - b.price);
+  else if (sortOrder === 'high') filteredAndSearched.sort((a, b) => b.price - a.price);
 
   renderProductGrid(filteredAndSearched);
 }
-
 function renderProductGrid(items) {
   if (!grid) return;
   grid.innerHTML = "";
@@ -81,8 +110,7 @@ function renderProductGrid(items) {
 
     const filteredLoad = document.createElement("div");
     filteredLoad.className = "productLoad"; filteredLoad.addEventListener("click", () => {
-    
-       window.location.href = `product.html?id=${item.id}`; });
+    window.location.href = `product.html?category=${item.category}&id=${item.id}`; });
 
 
     // gets image to put for that item. if image length is less than 0, uses placeholder image
@@ -97,21 +125,76 @@ function renderProductGrid(items) {
 
     //puts all information about product on screen, stops when clicked off
     //error handling (placeholde rimage)
-          filteredLoad.innerHTML = `
-              <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/placeholder';">
-              <div class="product-body">
-                <div class="title-row">
-                  <div class="product-title">${item.title}</div>
-                  <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
-                </div>
-                <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'" style="cursor:pointer; color:#757575;">@${item.users.username}</div>
-              </div>
-            `;
+    filteredLoad.innerHTML = `
+        <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/placeholder';">
+        <div class="product-body">
+          <div class="title-row">
+            <div class="product-title">${item.title}</div>
+            <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
+          </div>
+          <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+            <div class="product-user-name">@${item.users.username}</div>
+            <div class="product-user-avatar">
+              <img src="${item.users.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${item.users.username}'s avatar" onerror="this.src='https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';">
+            </div>
+          </div>
+        </div>
+      `;
 
-    grid.appendChild(filteredLoad);
+      grid.appendChild(filteredLoad);
   });
 }
 
+
+
+// Filter state
+let activeConditions = [];
+let minPrice = null;
+let maxPrice = null;
+let sortOrder = 'newest';
+
+// Toggle dropdowns
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const menu = btn.nextElementSibling;
+    const isOpen = menu.classList.contains('open');
+    document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (!isOpen) {
+      menu.classList.add('open');
+      btn.classList.add('active');
+    }
+    e.stopPropagation();
+  });
+});
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+});
+
+// Condition checkboxes
+document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    activeConditions = [...document.querySelectorAll('.filter-menu input[type="checkbox"]:checked')].map(c => c.value);
+    loadProductsToPage(searchInput?.value || '', currentCategory);
+  });
+});
+
+// Price apply
+document.getElementById('applyPrice')?.addEventListener('click', () => {
+  minPrice = parseFloat(document.getElementById('minPrice').value) || null;
+  maxPrice = parseFloat(document.getElementById('maxPrice').value) || null;
+  loadProductsToPage(searchInput?.value || '', currentCategory);
+});
+
+// Sort
+document.querySelectorAll('input[name="sort"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    sortOrder = e.target.value;
+    loadProductsToPage(searchInput?.value || '', currentCategory);
+  });
+});
 
 searchInput?.addEventListener("input", (e) => {loadProductsToPage(e.target.value, currentCategory);});
 
@@ -171,6 +254,8 @@ async function loadWatchList(filter = "") {
     return;
   }
 
+  
+
   const watchItems = (data || [])
     .map(row => row.items)
     .filter(item => {
@@ -182,6 +267,6 @@ async function loadWatchList(filter = "") {
   renderProductGrid(watchItems);
 }
 
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   loadItems();
-  });
+});

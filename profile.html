@@ -6,6 +6,7 @@
   <title>User Profile | Marketplace</title>
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/profile-style.css">
+  <link rel="stylesheet" href="css/top-menu.css">
 </head>
 <body>
 
@@ -14,8 +15,46 @@
       <input type="text" id="searchInput" placeholder="Search items from this user...">
     </header>
 
+    <!-- Top Menu Bar HTML -->
+    <div class="top-menu">
+      
+        <div class="logo">
+          <img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" />
+          <img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" />
+        </div>
+      
+      
+      <div class="profile-options">
+        <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+        <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+        <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
+      </div>
+      
+      <div class="categories">
+          <div class="menu-img">
+            <a href="index.html?category=All Items"><img class="menu-img" src="images/all.png" alt="All Items"></a>
+          </div>
+          <div class="menu-img">
+            <a href="index.html?category=Clothing"><img class="menu-img" src="images/clothing.png" alt="Clothing"></a>
+          </div>
+          <div class="menu-img">
+            <a href="index.html?category=Electronics"><img class="menu-img" src="images/electronics.png" alt="Electronics"></a>
+          </div>
+          <div class="menu-img">
+            <a href="index.html?category=Furniture"><img class="menu-img" src="images/furniture.png" alt="Furniture"></a>
+          </div>
+          <div class="menu-img">
+            <a href="index.html?category=Textbooks"><img class="menu-img" src="images/textbook.png" alt="Textbooks"></a>
+          </div>
+          <div class="menu-img">
+            <a href="index.html?category=Other"><img class="menu-img" src="images/other.png" alt="Other"></a>
+          </div>
+      </div>
+    </div>
+    <!-- End Top Menu Bar HTML -->
+
     <div class="main-layout">
-      <aside class="sidebar">
+      <!-- <aside class="sidebar">
         <ul>
           <li class="profile-link" onclick="window.location.href='profile.html'">
             <img src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Profile" class="sidebar-avatar">
@@ -28,7 +67,7 @@
           <li>Furniture</li>
           <li>Textbooks</li>
         </ul>
-      </aside>
+      </aside> -->
 
       <div class="profileContent">
         <header class="profile-header">
@@ -59,14 +98,17 @@
         </header>
 
         <nav class="profile-tabs">
-          <a href="#" class="active">Items</a>
+          <a href="#" id='itemsTab' class="active">Items</a>
           <a href="#" id="reviewsTab">Reviews</a>
-          <a href="#">About</a>
+          <a href="#" id="aboutTab">About</a>
         </nav>
 
-        <main class="items-grid" id="userCloset"></main>
+        <main class="navContainer" id="navContainer"></main>
+        <!-- <main class="items-grid" id="userCloset"></main> -->
       </div>
     </div>
+
+
     <div id="reviewsModal" class="modal" style="display: none;">
       <div class="modal-content">
         <div class="modal-header">
@@ -76,7 +118,7 @@
         <div id="reviewsList" class="reviews-list">
         </div>
       </div>
-    </div>
+    </div> 
 
     <div id="editProfileModal" class="modal" style="display: none;">
       <div class="modal-content">
@@ -556,16 +598,22 @@
         // Populate user info
         document.getElementById('userName').textContent = targetUser.username || 'Unknown User';
         document.getElementById('userBio').textContent = targetUser.bio || '';
-        document.getElementById('userAvatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
+        const userAvatarEl = document.getElementById('userAvatar');
+        if (userAvatarEl) userAvatarEl.src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
         // Update ratings and stats
-        document.querySelector('.stars').textContent = starsHtml;
-        document.querySelector('.rating-count').textContent = `(${reviewCount})`;
-        document.getElementById('followerCount').textContent = followerCount || 0;
-        document.getElementById('followingCount').textContent = followingCount || 0;
+        const starsEl = document.querySelector('.stars');
+        if (starsEl) starsEl.textContent = starsHtml;
+        const ratingCountEl = document.querySelector('.rating-count');
+        if (ratingCountEl) ratingCountEl.textContent = `(${reviewCount})`;
+        const followerCountEl = document.getElementById('followerCount');
+        if (followerCountEl) followerCountEl.textContent = followerCount || 0;
+        const followingCountEl = document.getElementById('followingCount');
+        if (followingCountEl) followingCountEl.textContent = followingCount || 0;
 
         // Update sidebar
-        document.querySelector('.sidebar-avatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
+        const sidebarAvatarEl = document.querySelector('.sidebar-avatar');
+        if (sidebarAvatarEl) sidebarAvatarEl.src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
         // Show/hide Edit Profile and Follow buttons based on whether it's own profile
         const editBtn = document.getElementById('editProfileBtn');
@@ -603,7 +651,8 @@
     //puts all users items onto a grid on profile
 
     function renderProfile() {
-      const grid = document.getElementById('userCloset');
+      const grid = document.getElementById('navContainer');
+      if (!grid) return;
       const search = document.getElementById('searchInput').value.toLowerCase();
        grid.innerHTML = '';
 
@@ -657,24 +706,24 @@
     //modal clicking and handling
 
     document.getElementById('searchInput').addEventListener('input', renderProfile);
-    loadUserProfile();
+    setTimeout(() => loadUserProfile(), 100);
 
-    document.getElementById('reviewsTab').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await loadReviews();
-    });
+     document.getElementById('reviewsTab').addEventListener('click', async (e) => {
+       e.preventDefault();
+       await loadReviews();
+     });
 
     
-    document.getElementById('closeReviewsBtn').addEventListener('click', () => {
-      document.getElementById('reviewsModal').style.display = 'none';
-    });
+     document.getElementById('closeReviewsBtn').addEventListener('click', () => {
+       document.getElementById('reviewsModal').style.display = 'none';
+     });
 
    
-    document.getElementById('reviewsModal').addEventListener('click', (e) => {
-      if (e.target.id === 'reviewsModal') {
-        document.getElementById('reviewsModal').style.display = 'none';
-      }
-    });
+     document.getElementById('reviewsModal').addEventListener('click', (e) => {
+       if (e.target.id === 'reviewsModal') {
+         document.getElementById('reviewsModal').style.display = 'none';
+       }
+     });
 
     //modal clicking end--------------
 

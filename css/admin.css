@@ -77,7 +77,7 @@ body {
   text-decoration: underline;
 }
 
-.status-pill {
+.status-Button {
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
