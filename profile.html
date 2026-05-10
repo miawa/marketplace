@@ -24,6 +24,8 @@
       <div class="profile-options">
         <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
         <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+        <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
+        <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
         <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
       </div>
       
@@ -46,6 +48,7 @@
           <div class="menu-img">
             <a href="index.html?category=Other"><img class="menu-img" src="images/other.png" alt="Other"></a>
           </div>
+
       </div>
     </div>
     <!-- End Top Menu Bar HTML -->
@@ -88,7 +91,6 @@
           </div>
           <div class="header-actions">
             <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
-            <button class="btn-secondary" id="adminBtn" style="display: none;" onclick="window.location.href='admin.html'">Admin</button>
             <button class="btn-secondary" id="followProfileBtn">Follow</button>
             <button class="btn-secondary">Share</button>
           </div>
@@ -127,7 +129,7 @@
           <div class="input-group" style="margin-bottom: 20px;">
             <label for="avatarInput" style="display: block; margin-bottom: 10px; font-weight: 600;">Profile Picture</label>
             <div style="display: flex; align-items: center; gap: 15px;">
-              <img id="editAvatarPreview" src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="Avatar Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+              <img id="editAvatarPreview" src="images/default.png" alt="Avatar Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
               <input type="file" id="avatarInput" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
             </div>
           </div>
@@ -143,7 +145,7 @@
           </div>
 
           <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn-secondary" style="flex: 1; background-color: #00767d; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Save Changes</button>
+            <button type="submit" class="btn-secondary" style="flex: 1; background-color: #7032a0; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Save Changes</button>
             <button type="button" id="cancelEditBtn" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
           </div>
         </form>

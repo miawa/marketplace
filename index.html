@@ -53,53 +53,47 @@
           </div>
         </div>
         <!-- End Top Menu Bar HTML -->
-
       
-
-
-    <main class="main-content">
-      <div class="content-wrapper">
-        
-        <div class="top-bar">
+        <!-- <div class="top-bar"> -->
           <input
             type="text"
             id="searchInput"
             placeholder="Search for items..."
           />
-        </div>
+        <!-- </div> -->
 
         <div class="filter-bar">
-  <div class="filter-dropdown">
-    <button class="filter-btn">Condition <span>∨</span></button>
-    <div class="filter-menu">
-      <label><input type="checkbox" value="New with tags"> New with tags</label>
-      <label><input type="checkbox" value="New without tags"> New without tags</label>
-      <label><input type="checkbox" value="Like New"> Like new</label>
-      <label><input type="checkbox" value="Very Good"> Very good</label>
-      <label><input type="checkbox" value="Good"> Good</label>
-      <label><input type="checkbox" value="Used"> Used</label>
-      <label><input type="checkbox" value="Poor"> Poor</label>
-    </div>
-  </div>
+          <div class="filter-dropdown">
+            <button class="filter-btn">Condition <span>∨</span></button>
+            <div class="filter-menu">
+              <label><input type="checkbox" value="New with tags"> New with tags</label>
+              <label><input type="checkbox" value="New without tags"> New without tags</label>
+              <label><input type="checkbox" value="Like New"> Like new</label>
+              <label><input type="checkbox" value="Very Good"> Very good</label>
+              <label><input type="checkbox" value="Good"> Good</label>
+              <label><input type="checkbox" value="Used"> Used</label>
+              <label><input type="checkbox" value="Poor"> Poor</label>
+            </div>
+          </div>
 
-  <div class="filter-dropdown">
-    <button class="filter-btn">Price <span>∨</span></button>
-    <div class="filter-menu">
-      <label>Min £<input type="number" id="minPrice" min="0" placeholder="0"></label>
-      <label>Max £<input type="number" id="maxPrice" min="0" placeholder="Any"></label>
-      <button id="applyPrice">Apply</button>
-    </div>
-  </div>
+          <div class="filter-dropdown">
+            <button class="filter-btn">Price <span>∨</span></button>
+            <div class="filter-menu">
+              <label>Min £<input type="number" id="minPrice" min="0" placeholder="0"></label>
+              <label>Max £<input type="number" id="maxPrice" min="0" placeholder="Any"></label>
+              <button id="applyPrice">Apply</button>
+            </div>
+          </div>
 
-  <div class="filter-dropdown">
-    <button class="filter-btn">Sort by <span>∨</span></button>
-    <div class="filter-menu">
-      <label><input type="radio" name="sort" value="newest" checked> Newest first</label>
-      <label><input type="radio" name="sort" value="low"> Price: low to high</label>
-      <label><input type="radio" name="sort" value="high"> Price: high to low</label>
-    </div>
-  </div>
-</div>
+          <div class="filter-dropdown">
+            <button class="filter-btn">Sort by <span>∨</span></button>
+            <div class="filter-menu">
+              <label><input type="radio" name="sort" value="newest" checked> Newest first</label>
+              <label><input type="radio" name="sort" value="low"> Price: low to high</label>
+              <label><input type="radio" name="sort" value="high"> Price: high to low</label>
+            </div>
+          </div>
+        </div>
         
 
         <div id="productGrid" class="product-grid"></div>

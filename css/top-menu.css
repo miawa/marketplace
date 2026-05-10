@@ -1,6 +1,6 @@
 .top-logo {
-  width: 300px;
-  height: auto;
+  width: auto;
+  height: 50px;
   object-fit: contain;
   margin: 0 auto 10px auto;
 }
@@ -8,7 +8,7 @@
 .top-menu {
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: 60px 60px;
+  grid-template-rows: 50px 60px;
   column-gap: 10px;
   justify-content: center;
   align-items: center;
@@ -16,28 +16,27 @@
 }
 
 .logo {
-    grid-column: 1 / 1;
-    grid-row: 1 / 1;
-    width: auto;
-    height: 130px;
-    padding: 10px;
-    display: flex; 
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  grid-column: 1 / 1;
+  grid-row: 1 / 1;
+  width: auto;
+  height: 50px;
+  display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .site-logo {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   align-self: center;
 }
 
 .site-logo-text {
-  width: 120px;
-  height: 60px;
+  width: 100px;
+  height: 50px;
   object-fit: contain;
 }
 
@@ -52,8 +51,8 @@
 }
 
 .top-avatar {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   object-fit: cover;
   vertical-align: middle;
   cursor: pointer;
@@ -62,8 +61,8 @@
 
 #logoutBtn, #messageBtn, #orderHistoryBtn, #adminBtn {
     
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   cursor:pointer;
 }
 
@@ -77,18 +76,17 @@
   gap: 15px;
   grid-column: span 2;
   grid-row: 2 / 2;
-  height: 40px;
+  height: 30px;
   padding: 10px 0;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
 }
 
 
 .menu-img {
   object-fit: contain;
   cursor: pointer;
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 }
 
 /* .menu-text {
