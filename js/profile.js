@@ -118,23 +118,43 @@ async function loadUserProfile() {
 
     // Populate user info
     document.getElementById('userName').textContent = targetUser.username || 'Unknown User';
-    document.getElementById('userAvatar').src = targetUser.avatar_url || 'images/default.png';
+    document.getElementById('userBio').textContent = targetUser.bio || '';
+    const userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl) userAvatarEl.src = targetUser.avatar_url || 'images/default.png';
 
     // Update ratings and stats
-    document.querySelector('.stars').textContent = starsHtml;
-    document.querySelector('.rating-count').textContent = `(${reviewCount})`;
-    document.querySelectorAll('.stats span')[0].innerHTML = `<strong>${followerCount || 0}</strong> followers`;
-    document.querySelectorAll('.stats span')[1].innerHTML = `<strong>${followingCount || 0}</strong> following`;
+    const starsEl = document.querySelector('.stars');
+    if (starsEl) starsEl.textContent = starsHtml;
+    const ratingCountEl = document.querySelector('.rating-count');
+    if (ratingCountEl) ratingCountEl.textContent = `(${reviewCount})`;
+    const followerCountEl = document.getElementById('followerCount');
+    if (followerCountEl) followerCountEl.textContent = followerCount || 0;
+    const followingCountEl = document.getElementById('followingCount');
+    if (followingCountEl) followingCountEl.textContent = followingCount || 0;
 
     // Update sidebar
     // document.querySelector('.sidebar-avatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
-    // Show/hide Edit Profile button based on whether it's own profile
+    // Show/hide Edit Profile and Follow buttons based on whether it's own profile
     const editBtn = document.getElementById('editProfileBtn');
+    const followBtn = document.getElementById('followProfileBtn');
+    const adminBtn = document.getElementById('adminBtn');
     if (isOwnProfile) {
       editBtn.style.display = 'inline-block';
+      if (followBtn) followBtn.style.display = 'none';
+      // Show admin button if user is admin
+      if (targetUser.is_admin) {
+        adminBtn.style.display = 'inline-block';
+      } else {
+        adminBtn.style.display = 'none';
+      }
     } else {
       editBtn.style.display = 'none';
+      if (followBtn) {
+        followBtn.style.display = 'inline-block';
+        await updateFollowButtonState(targetUser.id);
+      }
+      adminBtn.style.display = 'none';
     }
 
     // Render items
@@ -147,7 +167,6 @@ async function loadUserProfile() {
 }
       
 function makeProductBox(item) {
-  console.log('called');
   const productBox = document.createElement('div');
   productBox.className = 'itemBox';
   productBox.onclick = () => window.location.href = `product.html?id=${item.id}`;
@@ -168,7 +187,7 @@ function makeProductBox(item) {
     //puts all users items onto a grid on profile
 
 function loadItems() {
-   const grid = document.getElementById('userCloset');
+
   navContainer.innerHTML = "";
   const grid = document.createElement('div');
   grid.classList.add('items-grid');
@@ -177,13 +196,8 @@ function loadItems() {
   // const search = document.getElementById('searchInput').value.toLowerCase();
   grid.innerHTML = '';
 
-  console.log(userItems);
   const active = userItems.filter(i => !i.is_sold);
   const sold   = userItems.filter(i =>  i.is_sold);
-
-  console.log(active);
-
-  console.log(sold);
 
   if (active.length === 0 && sold.length === 0) {
     grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:50px;">No items found.</p>`;
@@ -333,20 +347,193 @@ async function loadReviews() {
   }
 }
 
-    // edit profile button
+async function updateFollowButtonState(targetUserId) {
+  const followBtn = document.getElementById('followProfileBtn');
+  if (!followBtn) return;
+
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) {
+    followBtn.textContent = 'Follow';
+    followBtn.style.display = 'none';
+    return;
+  }
+
+  const { data: existing, error } = await window.supabase
+    .from('follows')
+    .select('follower_id, following_id')
+    .eq('follower_id', user.id)
+    .eq('following_id', targetUserId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error checking follow status:', error);
+    return;
+  }
+
+  const isFollowing = Boolean(existing);
+  followBtn.textContent = isFollowing ? 'Following' : 'Follow';
+  followBtn.classList.toggle('btn-following', isFollowing);
+}
+
+async function handleFollow(targetUserId) {
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const { data: existing, error: existingError } = await window.supabase
+    .from('follows')
+    .select('follower_id, following_id')
+    .eq('follower_id', user.id)
+    .eq('following_id', targetUserId)
+    .maybeSingle();
+
+  if (existingError) {
+    console.error('Error checking follow status:', existingError);
+    alert('Could not update follow status.');
+    return;
+  }
+
+  if (existing) {
+    const { error } = await window.supabase
+      .from('follows')
+      .delete()
+      .eq('follower_id', user.id)
+      .eq('following_id', targetUserId);
+
+    if (error) {
+      console.error('Error unfollowing:', error);
+      alert('Could not unfollow this user.');
+      return;
+    }
+    alert('Unfollowed successfully.');
+  } else {
+    const { error } = await window.supabase
+      .from('follows')
+      .insert({ follower_id: user.id, following_id: targetUserId });
+
+    if (error) {
+      console.error('Error following:', error);
+      alert('Could not follow this user.');
+      return;
+    }
+    alert('Followed successfully.');
+  }
+
+  await updateFollowButtonState(targetUserId);
+  await loadUserProfile(); // Refresh counts
+}
+
+async function showFollowers() {
+  try {
+    const { data: followers, error } = await window.supabase
+      .from('follows')
+      .select(`
+        follower_id,
+        users!follows_follower_id_fkey (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq('following_id', userData.id);
+
+    if (error) {
+      console.error('Error fetching followers:', error);
+      return;
+    }
+
+    const followersList = document.getElementById('followersList');
+    followersList.innerHTML = '';
+
+    if (!followers || followers.length === 0) {
+      followersList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No followers yet</p>';
+    } else {
+      followers.forEach(follow => {
+        const user = follow.users;
+        const userItem = document.createElement('div');
+        userItem.className = 'user-list-item';
+        userItem.onclick = () => window.location.href = `profile.html?user=${user.username}`;
+        userItem.innerHTML = `
+          <img src="${user.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${user.username}">
+          <div class="user-info">
+            <div class="username">@${user.username}</div>
+            <div class="full-name">${user.full_name || ''}</div>
+          </div>
+        `;
+        followersList.appendChild(userItem);
+      });
+    }
+
+    document.getElementById('followersModal').style.display = 'flex';
+  } catch (err) {
+    console.error('Error loading followers:', err);
+  }
+}
+
+async function showFollowing() {
+  try {
+    const { data: following, error } = await window.supabase
+      .from('follows')
+      .select(`
+        following_id,
+        users!follows_following_id_fkey (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq('follower_id', userData.id);
+
+    if (error) {
+      console.error('Error fetching following:', error);
+      return;
+    }
+
+    const followingList = document.getElementById('followingList');
+    followingList.innerHTML = '';
+
+    if (!following || following.length === 0) {
+      followingList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Not following anyone yet</p>';
+    } else {
+      following.forEach(follow => {
+        const user = follow.users;
+        const userItem = document.createElement('div');
+        userItem.className = 'user-list-item';
+        userItem.onclick = () => window.location.href = `profile.html?user=${user.username}`;
+        userItem.innerHTML = `
+          <img src="${user.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg'}" alt="${user.username}">
+          <div class="user-info">
+            <div class="username">@${user.username}</div>
+            <div class="full-name">${user.full_name || ''}</div>
+          </div>
+        `;
+        followingList.appendChild(userItem);
+      });
+    }
+
+    document.getElementById('followingModal').style.display = 'flex';
+  } catch (err) {
+    console.error('Error loading following:', err);
+  }
+}
+
+// edit profile button
 document.getElementById('editProfileBtn').addEventListener('click', async () => {
   const { data: { user: authUser } } = await window.supabase.auth.getUser();
   if (!authUser || !userData) return;
 
   //fills form with current correct user data
   document.getElementById('editFullName').value = userData.full_name || '';
-    document.getElementById('editBio').value = userData.bio || '';
-    document.getElementById('editAvatarPreview').src = userData.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
+  document.getElementById('editBio').value = userData.bio || '';
+  document.getElementById('editAvatarPreview').src = userData.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
 
   document.getElementById('editProfileModal').style.display = 'flex';
 });
 
-    
 document.getElementById('closeEditBtn').addEventListener('click', () => {
   document.getElementById('editProfileModal').style.display = 'none';
 });
@@ -373,7 +560,31 @@ document.getElementById('editProfileModal').addEventListener('click', (e) => {
     document.getElementById('editProfileModal').style.display = 'none';
   }
 });
+// Follow button functionality
+document.getElementById('followProfileBtn').addEventListener('click', async () => {
+  await handleFollow(userData.id);
+});
 
+// Modal close handlers
+document.getElementById('closeFollowersBtn').addEventListener('click', () => {
+  document.getElementById('followersModal').style.display = 'none';
+});
+
+document.getElementById('closeFollowingBtn').addEventListener('click', () => {
+  document.getElementById('followingModal').style.display = 'none';
+});
+
+document.getElementById('followersModal').addEventListener('click', (e) => {
+  if (e.target.id === 'followersModal') {
+    document.getElementById('followersModal').style.display = 'none';
+  }
+});
+
+document.getElementById('followingModal').addEventListener('click', (e) => {
+  if (e.target.id === 'followingModal') {
+    document.getElementById('followingModal').style.display = 'none';
+  }
+});
 //allowing user to change profile information, reloads state and updates web
 document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
   e.preventDefault();
