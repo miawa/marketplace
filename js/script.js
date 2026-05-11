@@ -76,6 +76,13 @@ function getFilteredItems() {
   return filtered;
 }
 
+  document.querySelectorAll('input[name="category"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      currentCategory = e.target.value;
+      resetAndRender();
+    });
+  });
+
 let watchListActive = false;
 
 document.getElementById('bookmarkBtn')?.addEventListener('click', () => {
