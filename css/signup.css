@@ -130,6 +130,23 @@ input:focus, textarea:focus {
     color: #777;
 }
 
+.onboard-btn {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: 0.15s;
+}
+.onboard-btn.selected {
+  border-color: #7032a0;
+  background: #ede1f7;
+  color: #7032a0;
+  font-weight: 600;
+}
+
 .footer-text a { color: #7032a0; text-decoration: none; }
 
 textarea { resize: none; height: 80px; }

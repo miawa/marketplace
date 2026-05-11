@@ -147,7 +147,7 @@ async function loadProduct() {
               <button class="btn btn-secondary" style="border-color: #c53030; color: #c53030;" onclick="deleteListing('${p.id}')">Delete listing</button>
             ` : `
             <div class="like-watch-buttons">
-                <button class="btn btn-like">Like</button>
+                <button class="btn btn-like" id="likeButton" onclick="handleLike('${p.id}', '${p.category}')">Like</button>
                 <button id="watchButton" class="btn btn-watch" onclick="handleWatch('${p.id}')">Watch</button>
             </div>
             <button class="btn btn-primary" onclick="handleBuyNow('${p.id}')">Buy now</button>
@@ -160,6 +160,7 @@ async function loadProduct() {
         </div>
     `;
 
+    await updateLikeButtonState(p.id);
     await updateWatchButtonState(p.id);
 
     if (p.item_images && p.item_images.length > 1) {
@@ -439,6 +440,16 @@ async function submitBuyNow() {
         .select('id')
         .single();
 
+        
+        await createNotification({
+        userId: user.id,
+        type: 'order_placed',
+        title: 'Order placed!',
+        message: `Your order for "${buyNowItem.title}" has been placed successfully.`,
+        imageUrl: buyNowItem.item_images?.[0]?.image_url || null,
+        link: 'orders.html'
+        });
+
     if (orderError || !order) {
         alert('Unable to complete purchase. Please try again.');
         console.error(orderError);
@@ -446,6 +457,8 @@ async function submitBuyNow() {
         btn.textContent = 'Buy now';
         return;
     }
+
+    
 
     await window.supabase
         .from('items')
@@ -740,6 +753,80 @@ is_read: false
     closeOfferModal();
     window.location.href = `messages.html?conversation=${convId}`;
 }
+
+async function handleLike(itemId, itemCategory) {
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+
+  const btn = document.getElementById('likeButton');
+  btn.disabled = true;
+
+  const liked = await toggleLike(itemId, itemCategory);
+  if (liked === true) btn.textContent = 'Liked';
+  else if (liked === false) btn.textContent = 'Like';
+
+  btn.disabled = false;
+}
+
+async function updateLikeButtonState(itemId) {
+  const btn = document.getElementById('likeButton');
+  if (!btn) return;
+
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: existing } = await window.supabase
+    .from('likes')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('item_id', itemId)
+    .maybeSingle();
+
+  btn.textContent = existing ? '♥ Liked' : '♡ Like';
+}
+
+async function toggleLike(itemId, itemCategory) {
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: existing } = await window.supabase
+    .from('likes')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('item_id', itemId)
+    .maybeSingle();
+
+  const { data: catRow } = await window.supabase
+    .from('user_category_likes')
+    .select('like_count')
+    .eq('user_id', user.id)
+    .eq('category', itemCategory)
+    .maybeSingle();
+
+  if (existing) {
+    await window.supabase.from('likes').delete().eq('id', existing.id);
+    await window.supabase
+      .from('user_category_likes')
+      .upsert({
+        user_id: user.id,
+        category: itemCategory,
+        like_count: Math.max((catRow?.like_count || 1) - 1, 0)
+      }, { onConflict: 'user_id,category' });
+    return false;
+  } else {
+    await window.supabase.from('likes').insert({ user_id: user.id, item_id: itemId });
+    await window.supabase
+      .from('user_category_likes')
+      .upsert({
+        user_id: user.id,
+        category: itemCategory,
+        like_count: (catRow?.like_count || 0) + 1
+      }, { onConflict: 'user_id,category' });
+    return true;
+  }
+}
+
+window.handleLike = handleLike;
 //dont think need both of these? can prob combine - will check
 function closeOfferModal() {
     document.getElementById('offerModal').classList.remove('open');
