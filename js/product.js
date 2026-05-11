@@ -430,25 +430,33 @@ async function submitBuyNow() {
     }
 
     const { data: order, error: orderError } = await window.supabase
-        .from('orders')
-        .insert({
-            item_id: buyNowItem.id,
-            buyer_id: user.id,
-            total_price: totalPrice.toFixed(2),
-            status: 'pending'
-        })
-        .select('id')
-        .single();
+    .from('orders')
+    .insert({
+        item_id: buyNowItem.id,
+        buyer_id: user.id,
+        total_price: totalPrice.toFixed(2),
+        status: 'pending'
+    })
+    .select('id')
+    .single();
 
-        
-        await createNotification({
-        userId: user.id,
+    const { data: notification, error: notificationError } = await window.supabase
+    .from('notifications')
+    .insert({
+        user_id: user.id,
         type: 'order_placed',
         title: 'Order placed!',
         message: `Your order for "${buyNowItem.title}" has been placed successfully.`,
-        imageUrl: buyNowItem.item_images?.[0]?.image_url || null,
+        image_url: buyNowItem.item_images?.[0]?.image_url || null,
         link: 'orders.html'
-        });
+    })
+    .select('id')
+    .single();
+
+    if (notificationError || !notification) {
+        console.error(notificationError);
+        return;
+    }
 
     if (orderError || !order) {
         alert('Unable to complete purchase. Please try again.');
