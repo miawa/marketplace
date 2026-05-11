@@ -228,6 +228,16 @@ document.querySelectorAll('input[name="sort"]').forEach(radio => {
   });
 });
 
+document.querySelectorAll('name="category"').forEach(radio => {
+  radio.addEventListener('change', async (e) => {
+
+    currentCategory = e.target.value;
+
+    resetAndRender();
+    
+  });
+});
+
 searchInput?.addEventListener("input", (e) => {
   currentFilter = e.target.value;
   resetAndRender();
