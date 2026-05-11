@@ -76,6 +76,25 @@ function getFilteredItems() {
   return filtered;
 }
 
+let watchListActive = false;
+
+document.getElementById('bookmarkBtn')?.addEventListener('click', () => {
+  watchListActive = !watchListActive;
+
+  if (watchListActive) {
+    currentCategory = "Watch List";
+    grid.innerHTML = "";
+    allLoaded = false;
+    isLoading = false;
+    loadWatchList(currentFilter);
+    document.getElementById('bookmarkBtn').style.opacity = '1';
+  } else {
+    currentCategory = new URLSearchParams(window.location.search).get('category') ?? 'All Items';
+    document.getElementById('bookmarkBtn').style.opacity = '0.5';
+    resetAndRender();
+  }
+});
+
 function resetAndRender() {
   currentPage = 0;
   allLoaded = false;

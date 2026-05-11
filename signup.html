@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | Minted</title>
     <link rel="stylesheet" href="css/signup.css" />
+    
 </head>
 <body>
 
@@ -20,7 +21,7 @@
     </div>
 
     <div id="msg" class="msg"></div>
-    <div class="step active" id="step1">
+    <div class="step" id="step1">
         <div class="input-group">
             <label>Username</label>
             <input type="text" id="username" placeholder="e.g. mike_student" autocomplete="username">
@@ -57,6 +58,7 @@
                 <input type="file" id="picUpload" hidden accept="image/*">
             </label>
         </div>
+        
 
         <div class="input-group">
             <label>Full Name</label>
@@ -71,6 +73,22 @@
         <button class="btn-action" id="finishBtn" onclick="finishSignup()">
             Finish &amp; Go to Marketplace
         </button>
+    </div>
+
+    <div class="step active" id="step3">
+      <h2 style="font-size:18px; font-weight:700; color:#111; margin-bottom:8px;">Before you start...</h2>
+      <p style="font-size:14px; color:#6b7280; margin-bottom:20px;">What are you most interested in? Pick as many as you like.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px;">
+        <button class="onboard-btn" data-category="Clothing">Clothing</button>
+        <button class="onboard-btn" data-category="Electronics">Electronics</button>
+        <button class="onboard-btn" data-category="Furniture">Furniture</button>
+        <button class="onboard-btn" data-category="Textbooks">Textbooks</button>
+        <button class="onboard-btn" data-category="Other">Other</button>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button onclick="skipInterests()" style="flex:1; padding:12px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:15px; cursor:pointer; color:#6b7280;">Skip</button>
+        <button onclick="submitInterests()" style="flex:2; padding:12px; background:#7032a0; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Let's go</button>
+      </div>
     </div>
 </div>
 
@@ -131,13 +149,14 @@
       avatarBase64 = reader.result;
         document.getElementById("avatarImg").src = reader.result;
     };
-
-
-
     reader.readAsDataURL(file);
-  });
 
-  
+   
+});
+ document.querySelectorAll('.onboard-btn').forEach(btn => {
+  btn.addEventListener('click', () => btn.classList.toggle('selected'));
+ });
+
   async function finishSignup() {
     const btn = document.getElementById("finishBtn");
     btn.disabled    = true;
@@ -161,7 +180,9 @@
         "success"
       );
 
-      setTimeout(() => window.location.href = "login.html", 3000);
+      showMsg("Account created! Choose your interests below.", "success");
+    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+    document.getElementById("step3").classList.add("active");
 
     } catch (err) {
       showMsg(err.message);
@@ -169,7 +190,26 @@
       btn.textContent = "Finish & Go to Marketplace";
     }
   }
-</script>
 
-</body>
-</html>
+   async function submitInterests() {
+    const selected = [...document.querySelectorAll('.onboard-btn.selected')].map(b => b.dataset.category);
+    if (selected.length > 0) {
+        const { data: { user } } = await window.supabase.auth.getUser();
+        if (user) {
+        for (const category of selected) {
+            await window.supabase
+            .from('user_category_likes')
+            .upsert(
+            { user_id: user.id, category: category, like_count: 3 },
+            { onConflict: 'user_id,category', ignoreDuplicates: false }
+          );
+      }
+    }
+  }
+  window.location.href = "login.html";
+}
+
+function skipInterests() {
+  window.location.href = "login.html";
+}
+</script>

@@ -25,6 +25,8 @@
           
           <div class="profile-options">
             <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+            <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
+            <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
             <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
             <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
             <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
@@ -89,7 +91,8 @@
           <div class="filter-dropdown">
             <button class="filter-btn">Sort by <span>∨</span></button>
             <div class="filter-menu">
-              <label><input type="radio" name="sort" value="newest" checked> Newest first</label>
+              <label><input type="radio" name="sort" value="recommended" checked> Recommended</label>
+              <label><input type="radio" name="sort" value="newest"> Newest first</label>
               <label><input type="radio" name="sort" value="low"> Price: low to high</label>
               <label><input type="radio" name="sort" value="high"> Price: high to low</label>
             </div>
@@ -109,9 +112,29 @@
     <span>+</span>
   </button>
 
+ <div id="scrollSentinel"></div>
+<div class="loading-spinner" id="loadingSpinner">
+  <div class="spinner"></div>
+</div>
+</div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/global.js"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/index.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/notifcations.js"></script>
 </body>
+  <footer>
+  <div class="footer-contact">
+    <strong>Contact Us</strong><br>
+    📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
+  </div>
+  <div class="footer-links">
+    <a href="terms.html">Terms of Use</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="accessibility.html">Accessibility Statement</a>
+  </div>
+  <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
+</footer>
+
 </html>
