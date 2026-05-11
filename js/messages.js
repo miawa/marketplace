@@ -1,0 +1,669 @@
+let currentUser     = null;
+let currentConvId   = null;
+let currentConvOrder = null;
+let pollingInterval = null;
+let lastRenderedKey = '';
+let isCounter       = false;
+let currentConvMeta = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+const session = await requireAuth('login.html');
+currentUser = session.user;
+await loadConversations();
+
+const params = new URLSearchParams(window.location.search);
+const convParam = params.get('conversation');
+//const convParam = params.get('messageLoad');
+if (convParam) openConversation(convParam);
+});
+
+//could optimise by fetching conversations on initial load, e/g only loading last 10 messages for each convo and loading rest on scroll up
+
+async function loadConversations() {
+    const { data, error } = await window.supabase
+    .from('conversations')
+    .select(`
+    id, item_id, buyer_id, seller_id, created_at,
+    items(title, price),
+    buyer:users!conversations_buyer_id_fkey(username, avatar_url),
+    seller:users!conversations_seller_id_fkey(username, avatar_url),
+    messages(content, created_at, sender_id, is_read)
+    `)
+    .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
+    .order('created_at', { ascending: false });
+
+    //debug to check messages are loading from db or if its display issue
+    //      console.log('loadConversations fired');
+    //      console.log('error:', error);
+    //      console.log('data:', data); 
+    const listEl = document.getElementById('inboxList');
+
+    if (error || !data || data.length === 0) {
+        listEl.innerHTML = `<div class="inbox-empty">No messages</div>`;
+        return;
+    }
+
+    listEl.innerHTML = '';
+    data.forEach(conv => {
+        const isBuyer   = conv.buyer_id === currentUser.id;
+        const otherUser = isBuyer ? conv.seller : conv.buyer;
+        const msgs      = (conv.messages || []).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+        const lastMsg   = msgs[0];
+
+        const preview   = lastMsg ? msgPreview(lastMsg.content) : 'No messages yet';
+        const time      = lastMsg ? formatTime(lastMsg.created_at) : '';
+        const hasUnread = msgs.some(m => !m.is_read && m.sender_id !== currentUser.id);
+
+        const el = document.createElement('div');
+
+        el.className = `conversation-item${hasUnread ? ' unread' : ''}`;
+        el.dataset.convId = conv.id;
+
+
+        el.onclick = () => openConversation(conv.id);
+
+        el.innerHTML = `
+        ${otherUser?.avatar_url
+        ? `<div class="conv-avatar"><img src="${otherUser.avatar_url}"></div>`
+        : `<div class="conv-avatar">${(otherUser?.username || 'Unknown')[0].toUpperCase()}</div>`}
+        <div class="conv-info">
+        <div class="conv-top">
+        <span class="conv-name">@${esc(otherUser?.username || 'Unknown')}</span>
+        <span class="conv-time">${time}</span>
+        </div>
+        <div class="conv-item-title">${esc(conv.items?.title || 'Item')}</div>
+        <div class="conv-preview">${esc(preview)}</div>
+        </div>
+        ${hasUnread ? '<div class="unread-dot"></div>' : ''}
+        `;
+
+        listEl.appendChild(el);
+    });
+}
+
+async function openConversation(convId) {
+    currentConvId = convId;
+
+    document.querySelectorAll('.conversation-item').forEach(el =>
+    el.classList.toggle('active', el.dataset.convId === convId));
+
+    const { data: conv, error } = await window.supabase
+    .from('conversations')
+    .select(`
+    id, item_id, buyer_id, seller_id,
+    items(id, title, price),
+    buyer:users!conversations_buyer_id_fkey(username, avatar_url),
+    seller:users!conversations_seller_id_fkey(username, avatar_url)
+    `)
+    .eq('id', convId)
+    .single();
+
+    if (error || !conv) return;
+
+    const isBuyer   = conv.buyer_id === currentUser.id;
+    const otherUser = isBuyer ? conv.seller : conv.buyer;
+
+
+    currentConvMeta = {
+        isBuyer,
+        itemTitle : conv.items?.title,
+        itemId    : conv.item_id,
+        itemPrice : conv.items?.price,
+        sellerId  : conv.seller_id,
+        buyerId   : conv.buyer_id
+    };
+
+    const { data: orderData } = await window.supabase
+    .from('orders')
+    .select('*')
+    .eq('item_id', conv.item_id)
+    .eq('buyer_id', conv.buyer_id)
+    .maybeSingle();
+
+    currentConvOrder = orderData || null;
+
+    document.getElementById('chatHeader').innerHTML = `
+    ${otherUser?.avatar_url ? `<div class="chat-header-avatar"><img src="${otherUser.avatar_url}"></div>`
+    : `<div class="chat-header-avatar">${(otherUser?.username || 'Unknown')[0].toUpperCase()}</div>`}
+    <div class="chat-header-info">
+    <a href="profile.html?user=${esc(otherUser?.username || '')}" style="color: #fff; text-decoration: none;">@${esc(otherUser?.username || '')}</a>
+    <a href="product.html?id=${conv.item_id}" class="chat-header-item">${esc(conv.items?.title || 'View item')}</a>
+    </div>
+    <div class='message-back' id='messageBack' onclick='hideConvo();'>← Back</div>
+    `;
+
+    document.getElementById('chatPlaceholder').style.display = 'none';
+    document.getElementById('chatView').style.display = 'flex';
+
+    // document.getElementById('chatView').style.display = 'flex';
+
+    document.getElementById('inboxPanel').classList.remove('active');
+    document.getElementById('inboxPanel').classList.add('hidden');
+
+    document.getElementById('chatPanel').classList.remove('hidden');
+    document.getElementById('chatPanel').classList.add('active');
+
+    await window.supabase
+    .from('messages')
+    .update({ is_read: true })
+    .eq('conversation_id', convId)
+    .neq('sender_id', currentUser.id);
+
+    lastRenderedKey = '';
+    clearConvoList();
+    await loadMessages();
+
+    if (pollingInterval) clearInterval(pollingInterval);
+    pollingInterval = setInterval(loadMessages, 4000);
+}
+
+function hideConvo() {
+    document.getElementById('inboxPanel').classList.remove('hidden');
+    document.getElementById('inboxPanel').classList.add('active');
+
+    document.getElementById('chatPanel').classList.remove('active');
+    document.getElementById('chatPanel').classList.add('hidden');
+
+    clearConvoList();
+};
+
+function clearConvoList() {
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = '';
+}
+
+async function loadMessages() {
+    if (!currentConvId) return;
+
+    const { data, error } = await window.supabase
+    .from('messages')
+    .select('id, content, sender_id, created_at')
+    .eq('conversation_id', currentConvId)
+    .order('created_at', { ascending: true });
+
+    console.log('loadMessages fired');
+    console.log('error:', error);
+    console.log('data:', data);
+
+    if (error || !data) {
+        return;
+    }
+
+    const key = data.map(m => m.id + m.content).join('|');
+    if (key === lastRenderedKey) return;
+    lastRenderedKey = key;
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = '';
+    const atBottom  = container.scrollHeight - container.clientHeight <= container.scrollTop + 60;
+
+    data.forEach((msg, idx) => {
+    console.log(`msg[${idx}] content: "${msg.content}" sender_id: ${msg.sender_id}`);
+
+    const isSent  = msg.sender_id === currentUser.id;
+    const parts   = msg.content.split('|');
+
+    //offer
+    if (parts[0] === 'OFFER') {
+        const status = parts[1];
+        const amount = parseFloat(parts[2]).toFixed(2);
+
+        // offer superseded if there's a newer offer or buy now message later in the thread
+        const later      = data.slice(idx + 1);
+        const oldOffer = later.some(m => m.content.startsWith('OFFER|') || m.content.startsWith('BUYNOW|'));
+
+        // seller sees action buttons on a pendingoffer they received; buyer sees "waiting"  and checks old offer status on their sent offer
+        const canAct = status === 'PENDING' && !isSent && !oldOffer;
+        const isWaiting = status === 'PENDING' && isSent && !oldOffer;
+
+        let statusBar = '';
+        if      (status === 'ACCEPTED')  statusBar = `<div class="offerBoxStatus accepted">✓ Offer accepted</div>`;
+        else if (status === 'DECLINED')  statusBar = `<div class="offerBoxStatus declined">✕ Offer declined</div>`;
+        else if (status === 'COUNTERED') statusBar = `<div class="offerBoxStatus countered">↩ Counter offer sent</div>`;
+        else if (isWaiting)              statusBar = `<div class="offerBoxStatus waiting">Awaiting response…</div>`;
+
+        let actionBtns = '';
+        if (canAct) {
+            actionBtns = `
+            <div class="offerBoxActions">
+            <button class="offer-action-btn accept"  onclick="acceptOffer('${msg.id}', ${amount})">✓ Accept</button>
+            <button class="offer-action-btn counter" onclick="openCounterModal(${amount})">↩ Counter</button>
+            <button class="offer-action-btn decline" onclick="declineOffer('${msg.id}', ${amount})">✕ Decline</button>
+            </div>
+            `;
+        }
+        const row = document.createElement('div');
+        row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+        row.innerHTML = `
+        <div class="offerBox">
+        <div class="offerBoxHeader">
+        <div class="offerBoxLabel">${isSent ? 'Your offer' : 'Offer received'}</div>
+        <div class="offerBoxAmount">£${amount}</div>
+        <div class="offerBoxItem">${esc(currentConvMeta?.itemTitle || '')}</div>
+        </div>
+        ${statusBar}
+        ${actionBtns}
+        </div>
+        <span class="msg-time">${formatTime(msg.created_at)}</span>
+        `;
+        container.appendChild(row);
+        return;
+    }
+
+    // buy now prompt
+    if (parts[0] === 'BUYNOW') {
+        const amount = parseFloat(parts[1]).toFixed(2);
+        const row = document.createElement('div');
+
+        row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+
+        if (!isSent) {
+            const alreadyBought = later.some(m => m.content.startsWith('SOLD|'));
+            row.innerHTML = alreadyBought
+            ? `<div class="offerBoxStatus accepted" style="border-radius:14px;padding:14px 16px;font-size:14px;">✓ Sold! Purchase complete</div>
+            <span class="msg-time">${formatTime(msg.created_at)}</span>`
+            : `<div class="buyNowBox">
+            <div class="byn-label">Offer accepted. complete your purchase</div>
+            <div class="byn-amount">£${amount}</div>
+            <button class="buy-now-btn" onclick="completePurchase(${amount})">Buy Now . £${amount}</button>
+            </div>
+            <span class="msg-time">${formatTime(msg.created_at)}</span>`;
+        } else {
+            row.innerHTML = `
+            <div class="msg-bubble" style="background:#e0f2f1;color:#005f66;border:1px solid #a3d9de;font-weight:600;">
+            ✓ £${amount} accepted. waiting for buyer to complete purchase
+            </div>
+            <span class="msg-time">${formatTime(msg.created_at)}</span>
+            `;
+        }
+        container.appendChild(row);
+        return;
+    }
+
+    //interactable prompts in messages below, for tracking 
+    if (parts[0] === 'PURCHASECONFIRM') {
+        const title = parts[1] || currentConvMeta?.itemTitle || 'this item';
+        const total = parseFloat(parts[2] || '0').toFixed(2);
+        const row = document.createElement('div');
+        row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+        row.innerHTML = `
+        <div class="msg-bubble" style="background:#dcfce7;color:#14532d;font-weight:600;">
+            Purchase confirmed for ${esc(title)} : £${total}.
+        </div>
+        <span class="msg-time">${formatTime(msg.created_at)}</span>
+        `;
+        container.appendChild(row);
+        return;
+    }
+
+    if (parts[0] === 'REPORTISSUE') {
+        const title = parts[1] || currentConvMeta?.itemTitle || 'this order';
+        const note = parts.slice(2).join('|');
+        const row = document.createElement('div');
+        row.className = 'message-row received';
+        row.innerHTML = `
+        <div class="msg-bubble" style="background:#fef3c7;color:#92400e;font-weight:600;">
+            Issue reported: ${esc(note || `There is an issue with ${title}.`)}
+        </div>
+        <span class="msg-time">${formatTime(msg.created_at)}</span>
+        `;
+        container.appendChild(row);
+        return;
+    }
+
+    if (parts[0] === 'SOLD') {
+        const buyer = parts[1];
+        const title = parts[2];
+
+        row.className = 'message-row received';
+
+        row.innerHTML = `
+        <div class="msg-bubble" style="background:#16a34a;color:#fff;font-weight:600;">
+            ${esc(buyer)} purchased ${esc(title)} for £${amt}!
+        </div>
+        <span class="msg-time">${formatTime(msg.created_at)}</span>
+        `;
+        container.appendChild(row);
+        return;
+    }
+
+    if (parts[0] === 'ORDERSTATUS') {
+        const status = parts[1];
+        const tracking = parts[3] || '';
+        let statusText = '';
+
+        if (status === 'pending') {
+            statusText = currentConvMeta?.isBuyer
+            ? `Your order is confirmed. The seller has 3-5 days to ship ${esc(currentConvMeta?.itemTitle || 'this item')}.`
+            : `You have 3-5 days to ship ${esc(currentConvMeta?.itemTitle || 'this item')}.`;
+        } else if (status === 'shipped') {
+            statusText = currentConvMeta?.isBuyer
+            ? `Your order has been shipped. ${tracking ? `Tracking: ${esc(tracking)}.` : ''}`
+            : `You marked this order as shipped.`;
+        } else if (status === 'delivered') {
+            statusText = currentConvMeta?.isBuyer
+            ? `Your order has been marked as delivered.`
+            : `You marked this order as delivered.`;
+        } else if (status === 'accepted') {
+            statusText = currentConvMeta?.isBuyer
+            ? `You accepted the order. Please add a review for ${esc(currentConvMeta?.itemTitle || 'this item')}.`
+            : `The buyer accepted the order.`;
+        } else {
+            statusText = 'Order update.';
+        }
+
+        const row = document.createElement('div');
+
+        row.className = 'message-row order-status-row';
+
+        row.innerHTML = `
+
+        <div class="msg-bubble order-status-bubble">
+            ${statusText}${tracking && status !== 'pending' ? `<div style="margin-top:8px; font-weight:400;">Tracking: ${esc(tracking)}</div>` : ''}
+        </div>
+        <span class="msg-time">${formatTime(msg.created_at)}</span>
+        `;
+        container.appendChild(row);
+        return;
+    }
+
+    // text bubble messages
+    const row = document.createElement('div');
+    row.className = `message-row ${isSent ? 'sent' : 'received'}`;
+    row.innerHTML = `
+    <div class="msg-bubble">${esc(msg.content)}</div>
+    <span class="msg-time">${formatTime(msg.created_at)}</span>
+    `;
+    container.appendChild(row);
+    });
+
+    if (atBottom) container.scrollTop = container.scrollHeight;
+    renderConversationActions();
+}
+
+// offering
+async function acceptOffer(msgId, amount) {
+    // marks offer as accepted
+    await window.supabase
+    .from('messages')
+    .update({ content: `OFFER|ACCEPTED|${parseFloat(amount).toFixed(2)}` })
+    .eq('id', msgId);
+
+    // sending buynow prompt to buyer
+    await insertMsg(`BUYNOW|${parseFloat(amount).toFixed(2)}`);
+    await refresh();
+}
+
+async function declineOffer(msgId, amount) {
+    await window.supabase
+    .from('messages')
+    .update({ content: `OFFER|DECLINED|${parseFloat(amount).toFixed(2)}` })
+    .eq('id', msgId);
+
+    await refresh();
+}
+
+function openCounterModal(originalAmount) {
+    isCounter = true;
+    document.getElementById('offerModalTitle').textContent = 'Counter Offer';
+    document.getElementById('offerItemTitle').textContent  = currentConvMeta?.itemTitle || '';
+    document.getElementById('offerAmount').value           = originalAmount;
+    document.getElementById('offerModal').classList.add('open');
+    setTimeout(() => document.getElementById('offerAmount').focus(), 100);
+}
+
+function openOfferModal(itemTitle) {
+    isCounter = false;
+    document.getElementById('offerModalTitle').textContent = 'Make an Offer';
+    document.getElementById('offerItemTitle').textContent  = itemTitle || currentConvMeta?.itemTitle || '';
+    document.getElementById('offerAmount').value           = '';
+    document.getElementById('offerModal').classList.add('open');
+    setTimeout(() => document.getElementById('offerAmount').focus(), 100);
+}
+
+function closeOfferModal() {
+    document.getElementById('offerModal').classList.remove('open');
+    document.getElementById('offerSubmitBtn').disabled    = false;
+    document.getElementById('offerSubmitBtn').textContent = 'Send';
+    isCounter = false;
+}
+
+async function submitOffer() {
+    const amount = parseFloat(document.getElementById('offerAmount').value);
+    if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+    const btn = document.getElementById('offerSubmitBtn');
+
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+
+    // marks pending offer as countered
+    if (isCounter) {
+        const { data: allMsgs } = await window.supabase
+        .from('messages')
+        .select('id, content, sender_id')
+        .eq('conversation_id', currentConvId)
+        .order('created_at', { ascending: false });
+
+        const lastPending = (allMsgs || []).find(m =>
+            m.content.startsWith('OFFER|PENDING') && m.sender_id !== currentUser.id
+        );
+
+        if (lastPending) {
+            const origAmt = lastPending.content.split('|')[2];
+
+            await window.supabase
+            .from('messages')
+            .update({ content: `OFFER|COUNTERED|${origAmt}` })
+            .eq('id', lastPending.id);
+        }
+
+    }
+
+    await insertMsg(`OFFER|PENDING|${amount.toFixed(2)}`);
+    closeOfferModal();
+    await refresh();
+}
+
+async function completePurchase(amount) {
+    // marks as sold
+    await window.supabase
+    .from('items')
+    .update({ is_sold: true })
+    .eq('id', currentConvMeta.itemId);
+
+    // get buyer information
+    const { data: buyerData } = await window.supabase.from('users').select('username').eq('id', currentUser.id).single();
+
+    const username = buyerData?.username || 'Buyer';
+    await insertMsg(`SOLD|${username}|${currentConvMeta.itemTitle}|${parseFloat(amount).toFixed(2)}`);
+
+    await refresh();
+}
+
+//send message functions,
+
+//send message cheks if there's a message to be sent 
+async function sendMessage(content) {
+
+//currentConvId checks if there is any content in the message or content trim checks if the message is spaces or blank chars, it wont send if this is true
+if (!currentConvId || !content.trim()) return;
+    await insertMsg(content.trim());
+    document.getElementById('msgInput').value = '';
+    await refresh();
+}
+
+//uploads message to database
+async function insertMsg(content) {
+    await window.supabase.from('messages').insert({
+    conversation_id : currentConvId,
+    sender_id       : currentUser.id,
+    content,
+    is_read         : false
+    });
+}
+
+async function refresh() {
+    lastRenderedKey = '';
+    await loadMessages();
+    await loadConversations();
+}
+
+function renderConversationActions() {
+    const actions = document.getElementById('chatActions');
+    if (!actions) return;
+    actions.innerHTML = '';
+
+    if (!currentConvOrder) {
+        actions.style.display = 'none';
+        return;
+    }
+
+    actions.style.display = 'flex';
+    const orderStatus = currentConvOrder.status;
+    const buttonGroup = [];
+    const notice = document.createElement('div');
+    notice.className = 'chat-action-note';
+
+    if (!currentConvMeta?.isBuyer) {
+        if (orderStatus === 'pending') {
+            notice.textContent = `This order is pending shipment.`;
+            buttonGroup.push(`<button class="chat-action-btn" onclick="markAsShipped()">Mark as shipped</button>`);
+        } else if (orderStatus === 'shipped') {
+            notice.textContent = `Order has shipped. Mark it delivered once the buyer confirms.`;
+            buttonGroup.push(`<button class="chat-action-btn" onclick="markAsDelivered()">Mark as delivered</button>`);
+        } else if (orderStatus === 'delivered') {
+            notice.textContent = `This order is delivered. Waiting for buyer acceptance.`;
+        }
+    } else {
+        if (orderStatus === 'delivered') {
+            notice.textContent = `The item is marked delivered. Accept or report an issue.`;
+            buttonGroup.push(`<button class="chat-action-btn" onclick="buyerAcceptOrder()">Accept order</button>`);
+            buttonGroup.push(`<button class="chat-action-btn secondary" onclick="buyerReportIssue()">Report issue</button>`);
+        } else if (orderStatus === 'shipped') {
+            notice.textContent = `Your order is on the way. You will be able to accept it once delivered.`;
+        } else if (orderStatus === 'pending') {
+            notice.textContent = `Your order is placed. Waiting for the seller to ship it.`;
+        }
+    }
+
+    actions.appendChild(notice);
+    buttonGroup.forEach((html) => actions.insertAdjacentHTML('beforeend', html));
+}
+
+async function markAsShipped() {
+    if (!currentConvOrder) return;
+
+    const tracking = prompt('Enter a tracking number or leave blank:');
+    const { error } = await window.supabase
+    .from('orders')
+    .update({ status: 'shipped', tracking_number: tracking || null, updated_at: new Date().toISOString() })
+    .eq('id', currentConvOrder.id);
+
+    if (error) {
+        alert('Unable to mark as shipped. Please try again.');
+        return;
+    }
+
+    currentConvOrder.status = 'shipped';
+    currentConvOrder.tracking_number = tracking || null;
+    await insertMsg(`ORDERSTATUS|shipped|${currentConvOrder.id}|${tracking || ''}`);
+    await refresh();
+}
+
+async function markAsDelivered() {
+    if (!currentConvOrder) return;
+
+    const { error } = await window.supabase
+    .from('orders')
+    .update({ status: 'delivered', updated_at: new Date().toISOString() })
+    .eq('id', currentConvOrder.id);
+
+    if (error) {
+        alert('Unable to mark as delivered. Please try again.');
+        return;
+    }
+
+    currentConvOrder.status = 'delivered';
+    await insertMsg(`ORDERSTATUS|delivered|${currentConvOrder.id}|${currentConvOrder.tracking_number || ''}`);
+    await refresh();
+}
+
+async function buyerAcceptOrder() {
+    if (!currentConvOrder) return;
+    await insertMsg(`ORDERSTATUS|accepted|${currentConvOrder.id}|${currentConvOrder.tracking_number || ''}`);
+    window.location.href = `review.html?itemId=${currentConvOrder.item_id}`;
+}
+
+async function buyerReportIssue() {
+    if (!currentConvOrder) return;
+    await insertMsg(`REPORTISSUE|${currentConvOrder.id}|The buyer reported an issue with this order.`);
+    await refresh();
+}
+
+document.getElementById('sendBtn').addEventListener('click', () =>
+sendMessage(document.getElementById('msgInput').value));
+
+document.getElementById('msgInput').addEventListener('keydown', (e) => {
+if (e.key === 'Enter' && !e.shiftKey) {
+
+    e.preventDefault();
+
+    sendMessage(document.getElementById('msgInput').value);
+
+    }
+});
+
+document.getElementById('offerModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('offerModal')) closeOfferModal();
+});
+
+
+function msgPreview(content) {
+    if (!content) return '';
+
+    const p = content.split('|');
+
+    if (p[0] === 'OFFER') {
+
+        const labels = { PENDING:'Offer', ACCEPTED:'Offer accepted', DECLINED:'Offer declined', COUNTERED:'Counter offer' };
+        return `${labels[p[1]] || 'Offer'}: £${parseFloat(p[2]).toFixed(2)}`;
+    }
+    if (p[0] === 'BUYNOW') return `Buy Now: £${parseFloat(p[1]).toFixed(2)}`;
+    if (p[0] === 'PURCHASECONFIRM') return `Purchase confirmed: ${p[1] || 'item'} for £${parseFloat(p[2] || '0').toFixed(2)}`;
+    if (p[0] === 'REPORTISSUE') return `Issue reported`;
+    if (p[0] === 'ORDERSTATUS') {
+        const status = p[1];
+        const labels = {
+            pending: 'Order update: Pending shipment',
+            shipped: 'Order update: Shipped',
+            in_transit: 'Order update: In transit',
+            delivered: 'Order update: Delivered'
+        };
+        return labels[status] || 'Order update';
+    }
+    return content;
+}
+
+function formatTime(iso) {
+    const d = new Date(iso), now = new Date(), diff = now - d;
+
+    if (diff < 60000)      return 'just now';
+    if (diff < 3600000)    return `${Math.floor(diff/60000)}m ago`;
+
+    if (diff < 86400000)   return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    if (diff < 604800000)  return d.toLocaleDateString([], { weekday:'short' });
+    return d.toLocaleDateString([], { day:'numeric', month:'short' });
+}
+
+function esc(str) {
+    return String(str)
+
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+
+window.openOfferModal   = openOfferModal;
+
+window.closeOfferModal  = closeOfferModal;
+window.submitOffer      = submitOffer;
+window.completePurchase = completePurchase;

@@ -15,11 +15,13 @@
     }
 
     .inbox-header {
-      padding: 20px;
+      padding: 0 20px;
       border-bottom: 1px solid #e5e7eb;
       font-size: 18px;
       font-weight: 700;
-      color: #111;
+      height: 60px;
+      background-color: #7032a0;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -45,7 +47,7 @@
     }
 
     .conversation-item:hover,
-    .conversation-item.active { background: #f0fdf4; }
+    .conversation-item.active { background: #ac86c9; }
 
     .conversation-item.unread .conv-preview {
       font-weight: 600;
@@ -80,9 +82,26 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    .conv-time { font-size: 11px; color: #9ca3af; flex-shrink: 0; margin-left: 8px; }
-    .conv-item-title { font-size: 11px; color: #007782; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .conv-preview { font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-time { 
+      font-size: 11px; color: #333; 
+      flex-shrink: 0; 
+      margin-left: 8px; 
+    }
+    .conv-item-title { 
+      font-size: 11px; 
+      color: #000; 
+      margin-bottom: 2px; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
+    .conv-preview { 
+      font-size: 13px; 
+      color: #333; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
 
     .unread-dot {
       width: 8px; height: 8px;
@@ -93,12 +112,29 @@
     .inbox-empty { padding: 40px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
 
     .chat-panel {
-      flex: 1; display: flex; flex-direction: column; background: #f6f7f9;
+      flex: 1; 
+      display: none; 
+      flex-direction: column; 
+      background: #f6f7f9;
+    }
+
+    #chatPanel.active {
+      display: flex;
+    }
+
+    .chatView {
+      display:flex; 
+      flex-direction:column; 
+      flex:1; 
+      overflow:hidden;
     }
 
     .chat-placeholder {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      flex: 1; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center;
       color: #9ca3af; gap: 12px;
     }
 
@@ -106,8 +142,13 @@
 
     
     .chat-header {
-      background: #fff; border-bottom: 1px solid #e5e7eb;
-      padding: 16px 24px; display: flex; align-items: center; gap: 14px;
+      background-color: #7032a0;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 24px; 
+      display: flex; 
+      align-items: center; 
+      gap: 14px;
+      height: 60px;
     }
 
     .chat-actions {
@@ -155,13 +196,19 @@
     .chat-header-avatar img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
     .chat-header-info { flex: 1; }
     .chat-header-name { font-weight: 700; font-size: 15px; color: #111; }
-    .chat-header-item { font-size: 12px; color: #007782; text-decoration: none; }
+    .chat-header-item { font-size: 12px; color: #fff; text-decoration: none; font-weight: bold;}
     .chat-header-item:hover { text-decoration: underline; }
 
    
     .chat-messages {
       flex: 1; overflow-y: auto; padding: 24px;
       display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .message-back {
+      cursor: pointer;
+      color: #fff;
+      display: none;
     }
 
     .message-row {
@@ -420,9 +467,21 @@
     .modal-submit:hover { background: #005f66; }
     .modal-submit:disabled { background: #9ca3af; cursor: not-allowed; }
 
-    @media (max-width: 680px) {
+    @media (max-width: 600px) {
+
+      .chat-placeholder {
+        display: none; 
+      }
       .inbox-panel { width: 100%; }
-      .chat-panel { display: none; }
-      .chat-panel.mobile-open { display: flex; }
-      .inbox-panel.mobile-hide { display: none; }
+      /* .chat-panel { display: none; } */
+      /* .chat-panel.mobile-open { display: flex; }
+      .inbox-panel.mobile-hide { display: none; } */
+
+      #inboxPanel.hidden {
+        display: none;
+      }
+
+      .message-back {
+        display: block;
+      }
     }
