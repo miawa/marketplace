@@ -25,6 +25,38 @@
   box-shadow: 0 0 0 3px rgba(0, 119, 130, 0.08);
 }
 
+.product-image-wrapper {
+  position: relative;
+}
+
+.card-like-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: transform 0.1s ease;
+}
+
+.card-like-btn:hover {
+  transform: scale(1.1);
+}
+
+.like-icon {
+  width: 20px;
+  height: 18px;
+  object-fit: contain;
+}
+
 /*the create listing + circle*/
 .floating-btn {
   position: fixed;

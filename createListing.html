@@ -20,6 +20,19 @@
               <input type="text" id="title" required placeholder="e.g. Computer Science Textbook">
             </div>
 
+            <div class="imageUploadSection">
+            <label>Images *</label>
+            <div class="imageGrid" id="imageGrid">
+              <div class="imageGridAdd" id="imageUploadBox">
+                <div class="imageGridAdd-inner">
+                  <span>Add photos</span>
+                </div>
+                <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+              </div>
+            </div>
+            <p class="dragHint">Click and drag to rearrange</p>
+          </div>
+
             <div class="inputGroup">
               <label for="description">Description</label>
               <textarea id="description" placeholder="Describe your item..."></textarea>
@@ -66,19 +79,7 @@
               </select>
             </div>
 
-            <div class="imageUploadSection
-            ">
-              <label>Images *</label>
-              <div class="imageUploadBox" id="imageUploadBox">
-                <div>
-                  <div style="font-size: 24px; margin-bottom: 10px;">Images</div>
-                  <div>Click to upload images or drag and drop</div>
-                  <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">Multiple images allowed</div>
-                </div>
-                <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
-              </div>
-              <div class="imagePreview" id="imagePreview"></div>
-            </div>
+            
 
             <button type="submit" class="btn-submit" id="submitBtn">Create Listing</button>
           </form>
@@ -104,50 +105,105 @@
     const editItemId = urlParams.get('edit');
     const isEditMode = Boolean(editItemId);
     let editItem = null;
+    let existingImages = []; 
 
     window.removeImage = removeImage;
 
 
     //let uploadedImageUrls = [];
-    let selectedImages = [];
+   let selectedImages = [];
+let dragSrcIndex = null;
 
-    // basic listener to see if images being added to image upload area
-    imageUploadBox.addEventListener('click', () => {
-      imageInput.click();
-    });
-//allows drag and drop logic
-    imageInput.addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files);
-      await handleImageFiles(files);
-    });
-    imageUploadBox.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      imageUploadBox.classList.add('dragover');});
+imageUploadBox.addEventListener('click', () => imageInput.click());
 
-    imageUploadBox.addEventListener('dragleave', () => {imageUploadBox.classList.remove('dragover');});
+imageUploadBox.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  imageUploadBox.classList.add('dragover');
+});
+imageUploadBox.addEventListener('dragleave', () => imageUploadBox.classList.remove('dragover'));
+imageUploadBox.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  imageUploadBox.classList.remove('dragover');
+  await handleImageFiles(Array.from(e.dataTransfer.files));
+});
 
-      imageUploadBox.addEventListener('drop', async (e) => {
+imageInput.addEventListener('change', async (e) => {
+  await handleImageFiles(Array.from(e.target.files));
+  imageInput.value = ''; // reset so same file can be re-added
+});
 
-        e.preventDefault();
-        imageUploadBox.classList.remove('dragover');
-        const files = Array.from(e.dataTransfer.files);
-        await handleImageFiles(files); });
+async function handleImageFiles(files) {
+  const imageFiles = files.filter(f => f.type.startsWith('image/'));
+  const resized = await Promise.all(imageFiles.map(resizeImageFile));
+  selectedImages = selectedImages.concat(resized);
+  updateImagePreview();
+}
 
-    //on event e when user selects the image it takes the files and puts them into an array, then passes to next function to check they're actually images
-    async function handleImageSelect(e) {
-      const files = Array.from(e.target.files);
-      await handleImageFiles(files);
-    }
+function updateImagePreview() {
+  const grid = document.getElementById('imageGrid');
+  // Remove all existing image items (keep the add button)
+  grid.querySelectorAll('.imageGridItem').forEach(el => el.remove());
+
+  selectedImages.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const item = document.createElement('div');
+      item.className = 'imageGridItem';
+      item.draggable = true;
+      item.dataset.index = index;
+
+      item.innerHTML = `
+        <img src="${e.target.result}" alt="Preview ${index + 1}">
+        ${index === 0 ? '<span class="main-badge">First Page</span>' : ''}
+        <button type="button" class="remove-btn" data-index="${index}">&times;</button>
+      `;
+
+      // Remove button
+      item.querySelector('.remove-btn').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        removeImage(parseInt(ev.currentTarget.dataset.index));
+      });
+
+      // Drag events for reordering
+      item.addEventListener('dragstart', () => {
+        dragSrcIndex = index;
+        setTimeout(() => item.classList.add('dragging'), 0);
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        grid.querySelectorAll('.imageGridItem').forEach(el => el.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+        grid.querySelectorAll('.imageGridItem').forEach(el => el.classList.remove('drag-over'));
+        item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (dragSrcIndex === null || dragSrcIndex === index) return;
+        // Reorder
+        const moved = selectedImages.splice(dragSrcIndex, 1)[0];
+        selectedImages.splice(index, 0, moved);
+        dragSrcIndex = null;
+        updateImagePreview();
+      });
+
+      // Insert before the add button
+      grid.insertBefore(item, document.getElementById('imageUploadBox'));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeImage(index) {
+  selectedImages.splice(index, 1);
+  updateImagePreview();
+}
 
     //error checking by checking if the file being uploaded is an image and is being stored correctly with the image/ check
 
-    //so if they upload anything thats not an image it just ignores it and will only add images (if any) to the files array
-    async function handleImageFiles(files) {
-      const imageFiles = files.filter(file => file.type.startsWith('image/'));
-      const resizedFiles = await Promise.all(imageFiles.map(file => resizeImageFile(file)));
-      selectedImages = selectedImages.concat(resizedFiles);
-      updateImagePreview();
-    }
+    
 
     async function resizeImageFile(file) {
       const maxDimension = 1200;
@@ -198,30 +254,7 @@
     //CODE IDEA? 
     //Have it so you can change the order of images that will appear on the listing by dragging the image previews or selecting numbered order maybe?
 
-    function updateImagePreview() {
-      imagePreview.innerHTML = '';
-      selectedImages.forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-
-          const previewItem = document.createElement('div');
-
-
-          previewItem.className = 'imagePreviewItem';
-          previewItem.innerHTML = `<img src="${e.target.result}" alt="Preview ${index + 1}"><button type="button" class="removeImage" onclick="removeImage(${index})">&times;</button>`;
-          imagePreview.appendChild(previewItem);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
     
-    //when pressing the x button on a preview of the image, it will remove it by finding the image at the first index of the array and removing it with splice
-    //each image should be stored in the array so 'first image of the array' basically is just the image thats being clicked on
-    function removeImage(index) {
-      selectedImages.splice(index, 1);
-
-      updateImagePreview();
-    }
 
     
 
@@ -442,34 +475,93 @@ console.log('window.createNotification type:', typeof window.createNotification)
     //puts all information from existing listing into the form so user can change it and see 
     //what it was origianllty
     async function loadItemForEdit(itemId, user) {
-      const { data: item, error } = await window.supabase
-        .from('items')
-        .select('id, seller_id, title, description, price, brand, size, condition, category, is_sold')
-        .eq('id', itemId)
-        .single();
+  const { data: item, error } = await window.supabase
+    .from('items')
+    .select('id, seller_id, title, description, price, brand, size, condition, category, is_sold')
+    .eq('id', itemId)
+    .single();
 
-      if (error || !item) {
-        showMsg('Listing not found.', 'error');
-        setTimeout(() => window.location.href = 'index.html', 2000);
-        return;
+  if (error || !item) {
+    showMsg('Listing not found.', 'error');
+    setTimeout(() => window.location.href = 'index.html', 2000);
+    return;
+  }
+
+  if (!user || item.seller_id !== user.id) {
+    showMsg('You can only edit your own listing.', 'error');
+    setTimeout(() => window.location.href = 'index.html', 2000);
+    return;
+  }
+
+  editItem = item;
+  document.getElementById('title').value = item.title;
+  document.getElementById('description').value = item.description || '';
+  document.getElementById('price').value = item.price;
+  document.getElementById('brand').value = item.brand || 'No Brand';
+  document.getElementById('size').value = item.size || 'One Size';
+  document.getElementById('condition').value = item.condition;
+  document.getElementById('category').value = item.category;
+
+  // Load existing images
+  const { data: images } = await window.supabase
+    .from('item_images')
+    .select('image_url, display_order')
+    .eq('item_id', itemId)
+    .order('display_order', { ascending: true });
+
+  existingImages = (images || []).map(img => ({ url: img.image_url, display_order: img.display_order }));
+  renderExistingImages();
+}
+
+function renderExistingImages() {
+  const grid = document.getElementById('imageGrid');
+  grid.querySelectorAll('.imageGridItem, .imageGridItemExisting').forEach(el => el.remove());
+
+  existingImages.forEach((img, index) => {
+    const item = document.createElement('div');
+    item.className = 'imageGridItem imageGridItemExisting';
+    item.draggable = true;
+    item.dataset.existingIndex = index;
+
+    item.innerHTML = `
+      <img src="${img.url}" alt="Existing image ${index + 1}">
+      ${index === 0 && selectedImages.length === 0 ? '<span class="main-badge">First Page</span>' : ''}
+      <span class="existing-badge">Saved</span>
+    `;
+
+    item.addEventListener('dragstart', () => {
+      dragSrcIndex = 'existing-' + index;
+      setTimeout(() => item.classList.add('dragging'), 0);
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      grid.querySelectorAll('.imageGridItem, .imageGridItemExisting').forEach(el => el.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragover', (ev) => {
+      ev.preventDefault();
+      grid.querySelectorAll('.imageGridItem, .imageGridItemExisting').forEach(el => el.classList.remove('drag-over'));
+      item.classList.add('drag-over');
+    });
+    item.addEventListener('drop', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (dragSrcIndex === null) return;
+      const destIndex = index;
+
+      if (typeof dragSrcIndex === 'string' && dragSrcIndex.startsWith('existing-')) {
+        const srcIdx = parseInt(dragSrcIndex.split('-')[1]);
+        if (srcIdx === destIndex) return;
+        const moved = existingImages.splice(srcIdx, 1)[0];
+        existingImages.splice(destIndex, 0, moved);
       }
+      dragSrcIndex = null;
+      renderExistingImages();
+      updateImagePreview();
+    });
 
-      if (!user || item.seller_id !== user.id) {
-        showMsg('You can only edit your own listing.', 'error');
-        setTimeout(() => window.location.href = 'index.html', 2000);
-        return;
-        }
-
-      editItem = item;
-      document.getElementById('title').value = item.title;
-      document.getElementById('description').value = item.description || '';
-      document.getElementById('price').value = item.price;
-      document.getElementById('brand').value = item.brand || 'No Brand';
-      document.getElementById('size').value = item.size || 'One Size';
-      document.getElementById('condition').value = item.condition;
-      document.getElementById('category').value = item.category;
-      
-    }
+    grid.insertBefore(item, document.getElementById('imageUploadBox'));
+  });
+}
   </script>
   
   <footer>

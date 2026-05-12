@@ -524,26 +524,26 @@ function renderConversationActions() {
     notice.className = 'chat-action-note';
 
     if (!currentConvMeta?.isBuyer) {
-        if (orderStatus === 'pending') {
-            notice.textContent = `This order is pending shipment.`;
-            buttonGroup.push(`<button class="chat-action-btn" onclick="markAsShipped()">Mark as shipped</button>`);
-        } else if (orderStatus === 'shipped') {
-            notice.textContent = `Order has shipped. Mark it delivered once the buyer confirms.`;
-            buttonGroup.push(`<button class="chat-action-btn" onclick="markAsDelivered()">Mark as delivered</button>`);
-        } else if (orderStatus === 'delivered') {
-            notice.textContent = `This order is delivered. Waiting for buyer acceptance.`;
-        }
-    } else {
-        if (orderStatus === 'delivered') {
-            notice.textContent = `The item is marked delivered. Accept or report an issue.`;
-            buttonGroup.push(`<button class="chat-action-btn" onclick="buyerAcceptOrder()">Accept order</button>`);
-            buttonGroup.push(`<button class="chat-action-btn secondary" onclick="buyerReportIssue()">Report issue</button>`);
-        } else if (orderStatus === 'shipped') {
-            notice.textContent = `Your order is on the way. You will be able to accept it once delivered.`;
-        } else if (orderStatus === 'pending') {
-            notice.textContent = `Your order is placed. Waiting for the seller to ship it.`;
-        }
+    if (orderStatus === 'pending') {
+        notice.textContent = `This order is pending shipment.`;
+        buttonGroup.push(`<button class="chat-action-btn" onclick="markAsShipped()">Mark as shipped</button>`);
+    } else if (orderStatus === 'shipped') {
+        notice.textContent = `Order has shipped. Waiting for buyer to confirm delivery.`;
+    } else if (orderStatus === 'delivered') {
+        notice.textContent = `This order is delivered. Waiting for buyer acceptance.`;
     }
+} else {
+    if (orderStatus === 'delivered') {
+        notice.textContent = `The item is marked delivered. Accept or report an issue.`;
+        buttonGroup.push(`<button class="chat-action-btn" onclick="buyerAcceptOrder()">Accept order</button>`);
+        buttonGroup.push(`<button class="chat-action-btn secondary" onclick="buyerReportIssue()">Report issue</button>`);
+    } else if (orderStatus === 'shipped') {
+        notice.textContent = `Has your order arrived?`;
+        buttonGroup.push(`<button class="chat-action-btn" onclick="markAsDelivered()">Mark as delivered</button>`);
+    } else if (orderStatus === 'pending') {
+        notice.textContent = `Your order is placed. Waiting for the seller to ship it.`;
+    }
+}
 
     actions.appendChild(notice);
     buttonGroup.forEach((html) => actions.insertAdjacentHTML('beforeend', html));
@@ -555,7 +555,7 @@ async function markAsShipped() {
     const tracking = prompt('Enter a tracking number or leave blank:');
     const { error } = await window.supabase
     .from('orders')
-    .update({ status: 'shipped', tracking_number: tracking || null, updated_at: new Date().toISOString() })
+    .update({ status: 'shipped', tracking_number: tracking || null,dispatched_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', currentConvOrder.id);
 
     if (error) {

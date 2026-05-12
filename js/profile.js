@@ -132,8 +132,30 @@ async function loadUserProfile() {
     const followingCountEl = document.getElementById('followingCount');
     if (followingCountEl) followingCountEl.textContent = followingCount || 0;
 
+
+    // Fast shipping badge
+const { data: dispatchOrders } = await window.supabase
+  .from('orders')
+  .select('created_at, dispatched_at, items!inner(seller_id)')
+  .eq('items.seller_id', targetUser.id)
+  .not('dispatched_at', 'is', null);
+
+const fastShippingBadge = document.getElementById('fastShippingBadge');
+if (fastShippingBadge) {
+  if (dispatchOrders && dispatchOrders.length >= 3) {
+    const avgDays = dispatchOrders.reduce((sum, o) => {
+      const diff = (new Date(o.dispatched_at) - new Date(o.created_at)) / (1000 * 60 * 60 * 24);
+      return sum + diff;
+    }, 0) / dispatchOrders.length;
+    fastShippingBadge.style.display = avgDays <= 3 ? 'inline-flex' : 'none';
+  } else {
+    fastShippingBadge.style.display = 'none';
+  }
+}
     // Update sidebar
     // document.querySelector('.sidebar-avatar').src = targetUser.avatar_url || 'https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg';
+
+
 
     // Show/hide Edit Profile and Follow buttons based on whether it's own profile
     const editBtn = document.getElementById('editProfileBtn');

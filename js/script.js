@@ -37,7 +37,7 @@ async function loadItems() {
       .select(`
         id, title, description, price, old_price, brand, size,
         condition, category, created_at, is_sold,
-        users!inner(username, avatar_url),
+        users!inner(id, username, avatar_url),
         item_images(image_url)
       `)
       .eq('is_sold', false)
@@ -76,18 +76,17 @@ function getFilteredItems() {
   return filtered;
 }
 
-  document.querySelectorAll('input[name="category"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      currentCategory = e.target.value;
-      resetAndRender();
-    });
+document.querySelectorAll('input[name="category"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    currentCategory = e.target.value;
+    resetAndRender();
   });
+});
 
 let watchListActive = false;
 
 document.getElementById('bookmarkBtn')?.addEventListener('click', () => {
   watchListActive = !watchListActive;
-
   if (watchListActive) {
     currentCategory = "Watch List";
     grid.innerHTML = "";
@@ -144,7 +143,12 @@ function loadNextPage() {
         const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
 
         card.innerHTML = `
-          <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
+          <div class="product-image-wrapper">
+            <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
+            <button class="card-like-btn" data-item-id="${item.id}" data-category="${item.category}">
+              <img src="images/like-empty.png" alt="Like" class="like-icon">
+            </button>
+          </div>
           <div class="product-body">
             <div class="title-row">
               <div class="product-title">${item.title}</div>
@@ -158,6 +162,49 @@ function loadNextPage() {
             </div>
           </div>`;
 
+        // Like button logic
+        const likeBtn = card.querySelector('.card-like-btn');
+        const likeIcon = likeBtn.querySelector('.like-icon');
+
+        window.supabase.auth.getUser().then(({ data: { user } }) => {
+          if (!user) return;
+          window.supabase.from('likes').select('id')
+            .eq('user_id', user.id).eq('item_id', item.id).maybeSingle()
+            .then(({ data }) => {
+              if (data) likeIcon.src = 'images/like-full.png';
+            });
+        });
+
+        likeBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const { data: { user } } = await window.supabase.auth.getUser();
+          if (!user) { window.location.href = 'login.html'; return; }
+          const liked = await toggleLike(item.id, item.category);
+          likeIcon.src = liked ? 'images/like-full.png' : 'images/like-empty.png';
+        });
+
+        // Fast shipping badge
+        if (item.users.id) {
+          window.supabase
+            .from('orders')
+            .select('created_at, dispatched_at, items!inner(seller_id)')
+            .eq('items.seller_id', item.users.id)
+            .not('dispatched_at', 'is', null)
+            .then(({ data: dispatchOrders }) => {
+              if (dispatchOrders && dispatchOrders.length >= 3) {
+                const avgDays = dispatchOrders.reduce((sum, o) => {
+                  return sum + (new Date(o.dispatched_at) - new Date(o.created_at)) / (1000 * 60 * 60 * 24);
+                }, 0) / dispatchOrders.length;
+                if (avgDays <= 3) {
+                  const userEl = card.querySelector('.product-user-name');
+                  if (userEl) {
+                    userEl.insertAdjacentHTML('afterend', `<img src="images/fastShipBadge.png" class="fast-shipping-badge" alt="Fast shipper">`);
+                  }
+                }
+              }
+            });
+        }
+
         grid.appendChild(card);
       });
     }
@@ -166,10 +213,8 @@ function loadNextPage() {
     currentPage++;
     isLoading = false;
     spinner.classList.remove('active');
-  }, 400); // small delay so spinner is visible
+  }, 400);
 }
-
-
 
 // Filter toggles
 document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -254,21 +299,12 @@ document.querySelectorAll('input[name="sort"]').forEach(radio => {
   });
 });
 
-searchInput?.addEventListener("input", (e) => {
+document.getElementById('searchInput')?.addEventListener("input", (e) => {
   currentFilter = e.target.value;
   resetAndRender();
 });
 
-sidebarItems.forEach(item => {
-  item.addEventListener("click", () => {
-    sidebarItems.forEach(i => i.classList.remove("active"));
-    item.classList.add("active");
-    currentCategory = item.textContent.trim();
-    resetAndRender();
-  });
-});
-
-createListingButton?.addEventListener("click", () => {
+document.getElementById('createListingBtn')?.addEventListener("click", () => {
   window.location.href = "createListing.html";
 });
 
@@ -319,7 +355,6 @@ async function loadWatchList(filter = "") {
 
   grid.innerHTML = "";
   watchItems.forEach(item => {
-    // reuse same card structure as above
     const card = document.createElement("div");
     card.className = "productLoad";
     card.addEventListener("click", () => {
@@ -357,7 +392,6 @@ async function toggleLike(itemId, itemCategory) {
   const { data: { user } } = await window.supabase.auth.getUser();
   if (!user) return null;
 
-  // check if already liked
   const { data: existing } = await window.supabase
     .from('likes')
     .select('id')
@@ -365,7 +399,6 @@ async function toggleLike(itemId, itemCategory) {
     .eq('item_id', itemId)
     .maybeSingle();
 
-  // get current category count
   const { data: catRow } = await window.supabase
     .from('user_category_likes')
     .select('like_count')
@@ -374,7 +407,6 @@ async function toggleLike(itemId, itemCategory) {
     .maybeSingle();
 
   if (existing) {
-    // unlike
     await window.supabase.from('likes').delete().eq('id', existing.id);
     await window.supabase
       .from('user_category_likes')
@@ -383,10 +415,8 @@ async function toggleLike(itemId, itemCategory) {
         category: itemCategory,
         like_count: Math.max((catRow?.like_count || 1) - 1, 0)
       }, { onConflict: 'user_id,category' });
-    return false; // unliked
-
+    return false;
   } else {
-    // like
     await window.supabase.from('likes').insert({ user_id: user.id, item_id: itemId });
     await window.supabase
       .from('user_category_likes')
@@ -395,7 +425,7 @@ async function toggleLike(itemId, itemCategory) {
         category: itemCategory,
         like_count: (catRow?.like_count || 0) + 1
       }, { onConflict: 'user_id,category' });
-    return true; // liked
+    return true;
   }
 }
 

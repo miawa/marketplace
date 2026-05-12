@@ -75,6 +75,8 @@ async function loadOrders() {
   }
 }
 
+
+
 function renderActiveOrders() {
   const listEl = document.getElementById('activeOrdersList');
   const active = activeOrders.filter((order) => order.status !== 'delivered');

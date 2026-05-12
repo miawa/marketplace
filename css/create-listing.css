@@ -1,15 +1,15 @@
 .create-listing-container {
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 0;
     padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: none;
 }
 
 .create-listing-container h1 {
     margin-bottom: 30px;
-    color: #2f855a;
+    color: #7032a0;
     text-align: center;
 }
 
@@ -39,7 +39,7 @@
 .inputGroup textarea:focus,
 .inputGroup select:focus {
     outline: none;
-    border-color: #2f855a;
+    border-color: #7032a0;
     box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.1);
 }
 
@@ -60,68 +60,130 @@
 }
 
 .imageUploadBox {
-    border: 2px dashed #b0c0b7;
+    border: 2px dashed #c097df;
     border-radius: 8px;
     padding: 40px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.2s ease;
-    background: #f0fdf4;
+    background: #7032a0;
 }
 
 .imageUploadBox:hover {
-    border-color: #2f855a;
-    background: #f0fdf4;
+    border-color: #7032a0;
+    background: #7032a0;
 }
 
 .imageUploadBox.dragover {
-    border-color: #2f855a;
-    background: #f0fdf4;
+    border-color: #7032a0;
+    background: #7032a0;
 }
 
-.imagePeview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
+.imageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.imagePreviewItem {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #f0fdf4;
+.imageGridItem {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: grab;
+  flex-shrink: 0;
 }
 
-.imagePreviewItem img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.imageGridItem.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
 }
 
-.imagePreviewItem .remove-image {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: rgba(239, 68, 68, 0.9);
-    color: #f0fdf4;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.imageGridItem.drag-over {
+  border: 2px dashed #7032a0;
+}
+
+.imageGridItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.imageGridItem .remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.imageGridItem .main-badge {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.imageGridAdd {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  border: 2px dashed #b0c0b7;
+  background: #e4d5ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.imageGridAdd:hover {
+  border-color: #7032a0;
+}
+
+.imageGridAdd-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.camera-icon {
+  font-size: 24px;
+}
+
+.dragHint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
 }
 
 .btn-submit {
     width: 100%;
     padding: 14px;
-    background: #2f855a;
+    background: #7032a0;
     color: #f0fdf4;
     border: none;
     border-radius: 8px;
@@ -132,7 +194,7 @@
 }
 
 .btn-submit:hover {
-    background: #276749;
+    background: #7032a0;
 }
 
 .btn-submit:disabled {
