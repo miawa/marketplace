@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Guidelines & Legal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f6f7f9;
+            color: #333;
+            display: flex;
+            height: 100vh; /* Locks the screen height */
+            overflow: hidden; /* Prevents the whole page from bouncing */
+        }
+
+        /* Sidebar remains fixed */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            gap: 10px;
+            z-index: 10;
+            flex-shrink: 0; /* Prevents sidebar from squishing */
+        }
+
+        .sidebar h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #7032a0;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #4b5563;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar a:hover {
+            background: #f3f4f6;
+            color: #7032a0;
+        }
+
+        /* THIS IS THE FIX: Matches the HTML class and handles scrolling */
+        .main-container {
+            flex: 1;
+            overflow-y: auto; /* Allows only this side to scroll */
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            background: #f6f7f9;
+            height: 100vh;
+        }
+
+        .content-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 40px 150px 40px; /* Extra bottom padding so button doesn't hide text */
+        }
+
+        section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #7032a0; font-size: 32px; margin-bottom: 20px; }
+        h2 { color: #640349; font-size: 22px; margin-top: 25px; margin-bottom: 15px; border-bottom: 2px solid #ede1f7; padding-bottom: 5px; }
+        h3 { font-size: 18px; margin-top: 20px; color: #7032a0; }
+        
+        p { line-height: 1.6; color: #4b5563; margin-bottom: 15px; font-size: 15px; }
+        ul { margin-left: 20px; margin-bottom: 20px; }
+        li { margin-bottom: 8px; color: #4b5563; font-size: 15px; }
+
+        /* Fixed Footer styling */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: calc(100% - 280px); /* Matches the width of the main area */
+            background: rgba(246, 247, 249, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid #e5e7eb;
+            z-index: 20;
+        }
+
+        .done-btn {
+            background: #7032a0;
+            color: white;
+            border: none;
+            padding: 12px 60px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(112, 50, 160, 0.3);
+            transition: 0.2s ease;
+        }
+
+        .done-btn:hover {
+            background: #ac86c9;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-container { width: 100%; height: auto; overflow: visible; }
+            .footer { width: 100%; position: sticky; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2>Guidelines</h2>
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#terms">Terms & Conditions</a>
+        <a href="#accessibility">Accessibility Statement</a>
+    </aside>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            
+            <section id="privacy">
+                <h1>Privacy Policy</h1>
+                <p>Across the marketplace, the application collects limited user data and information to provide functionality and communications between sellers and buyers. While developing the system, we considered user privacy as it was crucial to how we handled user personal information across the marketplace.</p>
+
+                <h3>Data Collection</h3>
+                <p>Data collection consists of user input that facilitates the user’s ability to access and make use of the marketplace. Data collected includes:</p>
+                <ul>
+                    <li>Usernames</li>
+                    <li>Email Addresses</li>
+                    <li>Product listings</li>
+                    <li>Home / Delivery Addresses</li>
+                    <li>Login credentials</li>
+                    <li>User messages and communicated data</li>
+                </ul>
+
+                <h3>How we use User Data</h3>
+                <ul>
+                    <li>Create and authenticate user accounts</li>
+                    <li>Manage user product listings in line with marketplace guidelines</li>
+                    <li>Facilitate communication between users</li>
+                    <li>Improve functionality using user feedback</li>
+                    <li>Maintain security and ensure moderation practices</li>
+                </ul>
+
+                <h3>User Data Storage and Security</h3>
+                <p>During the development process, we selected <strong>Supabase</strong> as our backend system due to its secure data protection services. We have implemented appropriate access restrictions to reduce the risk of unauthorised access.</p>
+                <p>Passwords are not stored in plain text; they are hashed and dependent on secure authentication systems provided through Supabase’s backend.</p>
+
+                <h3>User Rights</h3>
+                <ul>
+                    <li>Request access to their information stored by us</li>
+                    <li>Update and remove inaccurate account details</li>
+                    <li>Request the deletion of their accounts and any related data</li>
+                    <li>Report inappropriate listings or harmful content</li>
+                </ul>
+
+                <h3>Session Data and Cookies</h3>
+                <p>Our marketplace uses temporary session or cookie data to maintain login sessions and improve usability. Users are given the opportunity to choose between essential cookies or accepting all cookies including analytics.</p>
+            </section>
+
+            <section id="terms">
+                <h1>Terms and Conditions</h1>
+                <h3>Acceptable Practices</h3>
+                <ul>
+                    <li>Users must provide acceptable and accurate user information</li>
+                    <li>Users must upload genuine product listings</li>
+                    <li>Communication between users must be respectful</li>
+                    <li>The platform must be used lawfully in line with guidelines</li>
+                </ul>
+
+                <h3>Prohibited Practices</h3>
+                <ul>
+                    <li>Uploading illegal or inappropriate items</li>
+                    <li>Fraudulent or misleading product listings</li>
+                    <li>Harassing or promoting abuse of other users</li>
+                    <li>Unauthorised access attempts to accounts or databases</li>
+                    <li>Impersonation of other users</li>
+                    <li>Sending inappropriate data via the messaging system</li>
+                </ul>
+
+                <h3>Content Moderation</h3>
+                <p>Administrators possess the right to remove listings or accounts deemed in violation of marketplace guidelines ensuring user safety across the platform.</p>
+
+                <h3>Limitation of Responsibility</h3>
+                <p><strong>Note:</strong> This marketplace is a <strong>prototype system</strong>. Users remain responsible for the accuracy of listings. We cannot guarantee the legitimacy of uploaded listings nor take responsibility for communication between users.</p>
+
+                <h3>Future Improvements</h3>
+                <ul>
+                    <li>Automated moderation systems</li>
+                    <li>User reports on system functionality</li>
+                    <li>AI detection to reduce misleading listings</li>
+                    <li>Two-factor authentication (2FA)</li>
+                    <li>Improved privacy controls</li>
+                </ul>
+            </section>
+
+            <section id="accessibility">
+                <h1>Accessibility Statement</h1>
+                <p>We are committed to ensuring digital accessibility for all users of our marketplace. We are continually improving the user experience for everyone and applying the relevant accessibility standards.</p>
+                <h3>Conformance Status</h3>
+                <p>The system is designed to follow WCAG 2.1 Level AA guidelines. This includes maintaining appropriate color contrast, providing alt text for images, and ensuring keyboard navigation for all interactive components like the messaging system and listing forms.</p>
+            </section>
+
+        </div>
+
+        <footer class="footer">
+            
+    <button class="done-btn" onclick="location.href='index.html'">Done</button>
+        </footer>
+    </div>
+
+    <script>
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html'; 
+            }
+        }
+    </script>
+</body>
+</html>
