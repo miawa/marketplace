@@ -55,7 +55,6 @@ function renderDropdown(notifications) {
     `;
     document.body.appendChild(dropdown);
   }
-
   if (notifications.length === 0) {
     dropdown.innerHTML = `
       <div style="padding:20px; text-align:center; color:#6b7280; font-size:14px;">
@@ -63,7 +62,6 @@ function renderDropdown(notifications) {
       </div>`;
     return;
   }
-
   dropdown.innerHTML = `
     <div style="padding:14px 16px; font-weight:700; font-size:15px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
       Notifications

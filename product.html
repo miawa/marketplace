@@ -1,161 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Product Details</title>
-  <link rel="stylesheet" href="css/product-style.css">
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/top-menu.css">
-</head>
-<body>
-  
-  <div class="content-wrapper">
+  <head>
+    <meta charset="UTF-8">
+    <title>Product Details</title>
 
-    <!-- Top Menu Bar HTML -->
-    <div class="top-menu">
-      
-        <div class="logo">
-          <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
-          <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+    <!-- CSS Includes -->
+    <link rel="stylesheet" href="css/product-style.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/top-menu.css">
+  </head>
+  <body>
+    
+    <div class="content-wrapper">
+
+      <!-- Top Menu Bar HTML -->
+      <div class="top-menu">
+        
+          <div class="logo">
+            <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
+            <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+          </div>
+        
+        
+        <div class="profile-options">
+          <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+          <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
+          <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
+          <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+          <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
+          <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
+          <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
         </div>
-      
-      
-      <div class="profile-options">
-        <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-        <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
-        <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
-        <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
-        <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
-        <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
-        <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
+      </div>
+      <!-- End Top Menu Bar HTML -->
+
+      <main class="main-content" id="productDetail">
+      </main>
+    </div>
+
+    <!-- Javascript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/product.js"></script>
+    <!-- End Javascript Includes -->
+
+    <!-- Item Offer Popup -->
+    <div id="offerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); margin:20px;">
+        <h2 style="font-size:20px; font-weight:700; color:#111; margin-bottom:6px;">Make an Offer</h2>
+        <div id="offerItemTitle" style="font-size:13px; color:#7032a0; margin-bottom:24px;"></div>
+        <div style="position:relative; margin-bottom:20px;">
+          <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; font-weight:600; color:#7032a0;">£</span>
+          <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="0.01"
+            style="width:100%; padding:14px 14px 14px 32px; font-size:22px; font-weight:600; border:2px solid #7032a0; border-radius:10px; outline:none; box-sizing:border-box; font-family:inherit;"
+            onfocus="this.style.borderColor='#7032a0'" onblur="this.style.borderColor='#e5e7eb'">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button onclick="closeOfferModal()" style="flex:1; padding:12px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:15px; cursor:pointer; font-weight:500; color:#374151;">Cancel</button>
+          <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:2; padding:12px; background:#7032a0; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Send Offer</button>
+        </div>
       </div>
     </div>
-    <!-- End Top Menu Bar HTML -->
+    <!-- End Item Offer Popup -->
 
-    <main class="main-content" id="productDetail">
-    </main>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/global.js"></script>
-  <script src="js/product.js"></script>
-
-  
-  <div id="offerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.15); margin:20px;">
-      <h2 style="font-size:20px; font-weight:700; color:#111; margin-bottom:6px;">Make an Offer</h2>
-      <div id="offerItemTitle" style="font-size:13px; color:#7032a0; margin-bottom:24px;"></div>
-      <div style="position:relative; margin-bottom:20px;">
-        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; font-weight:600; color:#7032a0;">£</span>
-        <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="0.01"
-          style="width:100%; padding:14px 14px 14px 32px; font-size:22px; font-weight:600; border:2px solid #7032a0; border-radius:10px; outline:none; box-sizing:border-box; font-family:inherit;"
-          onfocus="this.style.borderColor='#7032a0'" onblur="this.style.borderColor='#e5e7eb'">
-      </div>
-      <div style="display:flex; gap:10px;">
-        <button onclick="closeOfferModal()" style="flex:1; padding:12px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:15px; cursor:pointer; font-weight:500; color:#374151;">Cancel</button>
-        <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:2; padding:12px; background:#7032a0; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">Send Offer</button>
+    <!-- Item Buy Now Popup -->
+    <div id="buyNowModal" class="modal-overlay">
+      <div class="modal-box">
+        <h2>Confirm purchase</h2>
+        <div class="modal-subtitle" id="buyNowItemTitle"></div>
+        <div class="receipt-row">
+          <span>Item price</span>
+          <strong id="buyNowItemPrice">£0.00</strong>
+        </div>
+        <div class="receipt-row">
+          <span>Delivery option</span>
+          <select id="buyNowDeliverySelect" class="modal-select"></select>
+        </div>
+        <div class="receipt-row">
+          <span>Delivery fee</span>
+          <strong id="buyNowDeliveryCost">£0.00</strong>
+        </div>
+        <div class="receipt-row">
+          <span>App fee <a href="#" id="buyNowFeeLink">What does this fee mean?</a></span>
+          <strong>£1.50</strong>
+        </div>
+        <div class="receipt-total">
+          <span>Total</span>
+          <strong id="buyNowTotalPrice">£0.00</strong>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeBuyNowModal()">Cancel</button>
+          <button id="buyNowConfirmBtn" class="modal-submit" onclick="submitBuyNow()">Buy now</button>
+        </div>
       </div>
     </div>
-  </div>
+    <!-- End Item Buy Now Popup -->
 
-  <div id="buyNowModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2>Confirm purchase</h2>
-      <div class="modal-subtitle" id="buyNowItemTitle"></div>
-      <div class="receipt-row">
-        <span>Item price</span>
-        <strong id="buyNowItemPrice">£0.00</strong>
-      </div>
-      <div class="receipt-row">
-        <span>Delivery option</span>
-        <select id="buyNowDeliverySelect" class="modal-select"></select>
-      </div>
-      <div class="receipt-row">
-        <span>Delivery fee</span>
-        <strong id="buyNowDeliveryCost">£0.00</strong>
-      </div>
-      <div class="receipt-row">
-        <span>App fee <a href="#" id="buyNowFeeLink">What does this fee mean?</a></span>
-        <strong>£1.50</strong>
-      </div>
-      <div class="receipt-total">
-        <span>Total</span>
-        <strong id="buyNowTotalPrice">£0.00</strong>
-      </div>
-      <div class="modal-actions">
-        <button class="modal-cancel" onclick="closeBuyNowModal()">Cancel</button>
-        <button id="buyNowConfirmBtn" class="modal-submit" onclick="submitBuyNow()">Buy now</button>
+    <!-- Buy Now Success Popup -->
+    <div id="buyNowSuccessModal" class="modal-overlay">
+      <div class="modal-box">
+        <h2>Congrats on your purchase!</h2>
+        <p class="modal-text">Your order is placed and the seller will receive a shipping request.</p>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeBuyNowSuccessModal()">Close</button>
+          <button id="buyNowSuccessBtn" class="modal-submit" onclick="goToMessagesAfterPurchase()">Go to messages</button>
+        </div>
       </div>
     </div>
-  </div>
+    <!-- End Buy Now Success Popup -->
 
-  <div id="buyNowSuccessModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2>Congrats on your purchase!</h2>
-      <p class="modal-text">Your order is placed and the seller will receive a shipping request.</p>
-      <div class="modal-actions">
-        <button class="modal-cancel" onclick="closeBuyNowSuccessModal()">Close</button>
-        <button id="buyNowSuccessBtn" class="modal-submit" onclick="goToMessagesAfterPurchase()">Go to messages</button>
+    <!-- Report Item Popup -->
+    <div id="reportModal" class="modal-overlay">
+      <div class="modal-box">
+        <h2>Report this listing</h2>
+        <p class="modal-text">Choose a reason and add details to help us review this report.</p>
+        <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
+          <label for="reportReason" style="font-weight:600;">Reason</label>
+          <select id="reportReason" class="modal-select" style="width:100%;">
+            <option value="">Select a reason</option>
+            <option value="Fake, counterfeit or other intellectual property infringement">Fake, counterfeit or other intellectual property infringement</option>
+            <option value="Nudity, violence or hate speech">Nudity, violence or hate speech</option>
+            <option value="Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other">Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other</option>
+            <option value="Requests to be paid outside of Minted">Requests to be paid outside of Minted</option>
+            <option value="Misleading listing">Misleading listing</option>
+            <option value="Bulk selling">Bulk selling</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px; margin-top:16px;">
+          <label for="reportDescription" style="font-weight:600;">More information</label>
+          <textarea id="reportDescription" rows="5" style="width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:12px; resize:vertical; font-family:inherit;"></textarea>
+        </div>
+        <div class="modal-actions" style="margin-top:20px; gap:10px; flex-wrap:wrap;">
+          <button class="modal-cancel" onclick="closeReportModal()">Cancel</button>
+          <button id="reportSubmitBtn" class="modal-submit" onclick="submitReport()">Submit</button>
+        </div>
       </div>
     </div>
-  </div>
+    <!-- End Report Item Popup -->
 
-  <div id="reportModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2>Report this listing</h2>
-      <p class="modal-text">Choose a reason and add details to help us review this report.</p>
-      <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
-        <label for="reportReason" style="font-weight:600;">Reason</label>
-        <select id="reportReason" class="modal-select" style="width:100%;">
-          <option value="">Select a reason</option>
-          <option value="Fake, counterfeit or other intellectual property infringement">Fake, counterfeit or other intellectual property infringement</option>
-          <option value="Nudity, violence or hate speech">Nudity, violence or hate speech</option>
-          <option value="Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other">Forbidden item - counterfeit goods, used cosmetics, hazardous materials, food/drink, weapons, pharmaceuticals, live animals, other</option>
-          <option value="Requests to be paid outside of Minted">Requests to be paid outside of Minted</option>
-          <option value="Misleading listing">Misleading listing</option>
-          <option value="Bulk selling">Bulk selling</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="receipt-row" style="flex-direction:column; align-items:flex-start; gap:10px; margin-top:16px;">
-        <label for="reportDescription" style="font-weight:600;">More information</label>
-        <textarea id="reportDescription" rows="5" style="width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:12px; resize:vertical; font-family:inherit;"></textarea>
-      </div>
-      <div class="modal-actions" style="margin-top:20px; gap:10px; flex-wrap:wrap;">
-        <button class="modal-cancel" onclick="closeReportModal()">Cancel</button>
-        <button id="reportSubmitBtn" class="modal-submit" onclick="submitReport()">Submit</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    //display bits
-    document.getElementById('offerModal').style.display = 'none';
-    document.getElementById('buyNowModal').style.display = 'none';
-    document.getElementById('buyNowSuccessModal').style.display = 'none';
-    const _origHandleOffer = window.handleOffer;
-    window.handleOffer = function(...args) {
-        document.getElementById('offerModal').style.display = 'flex';
-        _origHandleOffer(...args);
-    };
-    window.closeOfferModal = function() {
-
+    <script>
+      //display bits
       document.getElementById('offerModal').style.display = 'none';
-
-      document.getElementById('offerSubmitBtn').disabled = false;
-      document.getElementById('offerSubmitBtn').textContent = 'Send Offer';
-    };
-
-    window.closeBuyNowModal = function() {
       document.getElementById('buyNowModal').style.display = 'none';
-      document.getElementById('buyNowConfirmBtn').disabled = false;
-      document.getElementById('buyNowConfirmBtn').textContent = 'Buy now';
-    };
-
-    window.closeBuyNowSuccessModal = function() {
       document.getElementById('buyNowSuccessModal').style.display = 'none';
-    };
+      const _origHandleOffer = window.handleOffer;
+      window.handleOffer = function(...args) {
+          document.getElementById('offerModal').style.display = 'flex';
+          _origHandleOffer(...args);
+      };
+      window.closeOfferModal = function() {
+
+        document.getElementById('offerModal').style.display = 'none';
+
+        document.getElementById('offerSubmitBtn').disabled = false;
+        document.getElementById('offerSubmitBtn').textContent = 'Send Offer';
+      };
+
+      window.closeBuyNowModal = function() {
+        document.getElementById('buyNowModal').style.display = 'none';
+        document.getElementById('buyNowConfirmBtn').disabled = false;
+        document.getElementById('buyNowConfirmBtn').textContent = 'Buy now';
+      };
+
+      window.closeBuyNowSuccessModal = function() {
+        document.getElementById('buyNowSuccessModal').style.display = 'none';
+      };
 
     window.goToMessagesAfterPurchase = function() {
       const conversationId = window._buyNowConversationId;

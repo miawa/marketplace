@@ -1,59 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review Item | Minted</title>
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/review-style.css">
-</head>
-<body>
-  <div class="review-container">
-    <div class="review-header">
-      <h1>Review Your Purchase</h1>
-      <p>Help others by sharing your experience with this item</p>
-    </div>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Item | Minted</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/review-style.css">
+  </head>
+  <body>
 
-    <div class="review-content">
-      <div class="item-display">
-        <img id="itemImage" src="" alt="Item" class="item-image">
-        <div class="item-details">
-          <h2 id="itemTitle">Loading...</h2>
-          <p id="itemPrice">£0.00</p>
-          <p id="sellerInfo">Sold by: <span id="sellerName">@seller</span></p>
-        </div>
+    <!-- Main Review Container Start -->
+    <div class="review-container">
+      <!-- Review Header -->
+      <div class="review-header">
+        <h1>Review Your Purchase</h1>
+        <p>Help others by sharing your experience with this item</p>
       </div>
 
-      <div class="review-form">
-        <div class="rating-section">
-          <label>Rate this item:</label>
-          <div class="star-rating" id="starRating">
-            <span class="star" data-rating="1">★</span>
-            <span class="star" data-rating="2">★</span>
-            <span class="star" data-rating="3">★</span>
-            <span class="star" data-rating="4">★</span>
-            <span class="star" data-rating="5">★</span>
+      <div class="review-content">
+        <!-- Reviewed Item Details -->
+        <div class="item-display">
+          <img id="itemImage" src="" alt="Item" class="item-image">
+          <div class="item-details">
+            <h2 id="itemTitle">Loading...</h2>
+            <p id="itemPrice">£0.00</p>
+            <p id="sellerInfo">Sold by: <span id="sellerName">@seller</span></p>
           </div>
-          <div class="rating-text" id="ratingText">Click to rate</div>
         </div>
 
-        <div class="comment-section">
-          <label for="reviewComment">Tell others about your experience (optional):</label>
-          <textarea id="reviewComment" placeholder="Share details about the item's condition, shipping, or your overall experience..." rows="4"></textarea>
-        </div>
+        <div class="review-form">
+          <!-- Review Rating Section -->
+          <div class="rating-section">
+            <label>Rate this item:</label>
+            <div class="star-rating" id="starRating">
+              <span class="star" data-rating="1">★</span>
+              <span class="star" data-rating="2">★</span>
+              <span class="star" data-rating="3">★</span>
+              <span class="star" data-rating="4">★</span>
+              <span class="star" data-rating="5">★</span>
+            </div>
+            <div class="rating-text" id="ratingText">Click to rate</div>
+          </div>
 
-        <div class="review-actions">
-          <button class="btn-secondary" onclick="skipReview()">Skip Review</button>
-          <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+          <!-- Review Comments Section -->
+          <div class="comment-section">
+            <label for="reviewComment">Tell others about your experience (optional):</label>
+            <textarea id="reviewComment" placeholder="Share details about the item's condition, shipping, or your overall experience..." rows="4"></textarea>
+          </div>
+
+          <!-- Review Actions -->
+          <div class="review-actions">
+            <button class="btn-secondary" onclick="skipReview()">Skip Review</button>
+            <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    <!-- Main Review Container End -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/review.js"></script>
-  <script src="js/global.js"></script>
-</body>
+    <!-- Javascript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/review.js"></script>
+    <script src="js/global.js"></script>
+    <!-- End Javascript Includes -->
+  </body>
 </html>

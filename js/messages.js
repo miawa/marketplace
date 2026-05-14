@@ -7,18 +7,18 @@ let isCounter       = false;
 let currentConvMeta = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-const session = await requireAuth('login.html');
-currentUser = session.user;
-await loadConversations();
+    const session = await requireAuth('login.html');
+    currentUser = session.user;
+    await loadConversations();
 
-const params = new URLSearchParams(window.location.search);
-const convParam = params.get('conversation');
-//const convParam = params.get('messageLoad');
-if (convParam) openConversation(convParam);
+    // Gets url paramaters from the URL
+    const params = new URLSearchParams(window.location.search);
+    const convParam = params.get('conversation');
+
+    if (convParam) openConversation(convParam);
 });
 
-//could optimise by fetching conversations on initial load, e/g only loading last 10 messages for each convo and loading rest on scroll up
-
+//Loads all conversations for current user and displays them on the page
 async function loadConversations() {
     const { data, error } = await window.supabase
     .from('conversations')
@@ -32,10 +32,6 @@ async function loadConversations() {
     .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
     .order('created_at', { ascending: false });
 
-    //debug to check messages are loading from db or if its display issue
-    //      console.log('loadConversations fired');
-    //      console.log('error:', error);
-    //      console.log('data:', data); 
     const listEl = document.getElementById('inboxList');
 
     if (error || !data || data.length === 0) {
@@ -81,6 +77,7 @@ async function loadConversations() {
     });
 }
 
+// Gets all messages in a selected conversation and displays them in the messages panel
 async function openConversation(convId) {
     currentConvId = convId;
 
@@ -157,6 +154,7 @@ async function openConversation(convId) {
     pollingInterval = setInterval(loadMessages, 4000);
 }
 
+// Hides the conversation panel, used for mobile view to declutter
 function hideConvo() {
     document.getElementById('inboxPanel').classList.remove('hidden');
     document.getElementById('inboxPanel').classList.add('active');
@@ -167,11 +165,14 @@ function hideConvo() {
     clearConvoList();
 };
 
+// Clears the list of messages in the current conversation
+// Bugfix for the persistant messages on changing conversation bug
 function clearConvoList() {
     const container = document.getElementById('chatMessages');
     container.innerHTML = '';
 }
 
+// Loads all messages in the current active conversation
 async function loadMessages() {
     if (!currentConvId) return;
 
@@ -380,7 +381,7 @@ async function loadMessages() {
     renderConversationActions();
 }
 
-// offering
+// Accepts the current offer for the item linked to the conversation
 async function acceptOffer(msgId, amount) {
     // marks offer as accepted
     await window.supabase
@@ -393,6 +394,7 @@ async function acceptOffer(msgId, amount) {
     await refresh();
 }
 
+// Declines the current offer for the item linked to the conversation
 async function declineOffer(msgId, amount) {
     await window.supabase
     .from('messages')
@@ -402,6 +404,7 @@ async function declineOffer(msgId, amount) {
     await refresh();
 }
 
+// Sends a counter offer for the item linked to the conversation
 function openCounterModal(originalAmount) {
     isCounter = true;
     document.getElementById('offerModalTitle').textContent = 'Counter Offer';
@@ -411,6 +414,7 @@ function openCounterModal(originalAmount) {
     setTimeout(() => document.getElementById('offerAmount').focus(), 100);
 }
 
+// Opens the popup for the selected items offer
 function openOfferModal(itemTitle) {
     isCounter = false;
     document.getElementById('offerModalTitle').textContent = 'Make an Offer';
@@ -420,6 +424,7 @@ function openOfferModal(itemTitle) {
     setTimeout(() => document.getElementById('offerAmount').focus(), 100);
 }
 
+// Closes the popup for the selected items offer
 function closeOfferModal() {
     document.getElementById('offerModal').classList.remove('open');
     document.getElementById('offerSubmitBtn').disabled    = false;
@@ -427,6 +432,7 @@ function closeOfferModal() {
     isCounter = false;
 }
 
+// Updates the offer for the item in supabase
 async function submitOffer() {
     const amount = parseFloat(document.getElementById('offerAmount').value);
     if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
@@ -463,6 +469,8 @@ async function submitOffer() {
     await refresh();
 }
 
+// Marks an item as sold and gets the buyer information
+// Refreshes the messages
 async function completePurchase(amount) {
     // marks as sold
     await window.supabase
@@ -501,12 +509,14 @@ async function insertMsg(content) {
     });
 }
 
+// Refreshes conversations and messages
 async function refresh() {
     lastRenderedKey = '';
     await loadMessages();
     await loadConversations();
 }
 
+// Updates visual aspects of conversation actions (Offer updates, items being sold etc)
 function renderConversationActions() {
     const actions = document.getElementById('chatActions');
     if (!actions) return;
@@ -549,6 +559,8 @@ function renderConversationActions() {
     buttonGroup.forEach((html) => actions.insertAdjacentHTML('beforeend', html));
 }
 
+// Marks an item as shipped in supabase
+// Refreshes messages after
 async function markAsShipped() {
     if (!currentConvOrder) return;
 
@@ -569,6 +581,8 @@ async function markAsShipped() {
     await refresh();
 }
 
+// Marks an item as delivered in supabase
+// Refreshes messages after
 async function markAsDelivered() {
     if (!currentConvOrder) return;
 
@@ -587,12 +601,14 @@ async function markAsDelivered() {
     await refresh();
 }
 
+// Accepts an order and redirects to the reviews page
 async function buyerAcceptOrder() {
     if (!currentConvOrder) return;
     await insertMsg(`ORDERSTATUS|accepted|${currentConvOrder.id}|${currentConvOrder.tracking_number || ''}`);
     window.location.href = `review.html?itemId=${currentConvOrder.item_id}`;
 }
 
+// Creates a report in supabase from the buyer and refreshes the messages
 async function buyerReportIssue() {
     if (!currentConvOrder) return;
     await insertMsg(`REPORTISSUE|${currentConvOrder.id}|The buyer reported an issue with this order.`);
@@ -616,7 +632,8 @@ document.getElementById('offerModal').addEventListener('click', (e) => {
     if (e.target === document.getElementById('offerModal')) closeOfferModal();
 });
 
-
+// Generates a preview of the last recieved message for a conversation
+// and displays it in the inbox panel under the conversation
 function msgPreview(content) {
     if (!content) return '';
 
@@ -643,6 +660,7 @@ function msgPreview(content) {
     return content;
 }
 
+// Formats time and date strings into local time and date
 function formatTime(iso) {
     const d = new Date(iso), now = new Date(), diff = now - d;
 
@@ -654,6 +672,7 @@ function formatTime(iso) {
     return d.toLocaleDateString([], { day:'numeric', month:'short' });
 }
 
+// Input sanitisation
 function esc(str) {
     return String(str)
 

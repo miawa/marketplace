@@ -31,6 +31,41 @@
   position: relative;
 }
 
+
+.product-image-wrapper {
+  position: relative;
+}
+
+/* 
+.card-like-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: transform 0.1s ease;
+}
+
+.card-like-btn:hover {
+  transform: scale(1.1);
+}
+
+.like-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+} */
+
+
 .card-like-btn {
   position: absolute;
   top: 5px;

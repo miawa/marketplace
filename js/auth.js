@@ -4,11 +4,9 @@
 //its difficult to implement both (as i had written before) as it clashes. you either generally use their functions or completely your own 
 
 
-
-
+// Sign up as a new user, takes basic user information and adds to supabase table
 async function signUp({ username, email, password, fullName, bio, avatarBase64 }) {
 
-  
   const { data: authData, error: authError } =
     await window.supabase.auth.signUp({ email, password });
     //in supabase this table isn't in public schema its in the AUTH schema, as it says in the call. this information 
@@ -53,41 +51,33 @@ async function signUp({ username, email, password, fullName, bio, avatarBase64 }
   return authData;
 }
 
-
+// Attempts to authorise a user and returns user data
 async function logIn(email, password) {
   const { data, error } = await window.supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
 }
 
-
-//async function logInWithGoogle() {
-//  const { error } = await window.supabase.auth.signInWithOAuth({
- //   provider: "google",
- //   options:  { redirectTo: window.location.origin + "/index.html" }
- // });
- // if (error) throw error;
-//}
-
-
+// Logs out current user and redirects to login page
 async function logOut() {
   const { error } = await window.supabase.auth.signOut();
   if (error) throw error;
   window.location.href = "login.html";
 }
 
-
+// Gets session for current user and returns it if applicable
 async function getSession() {
   const { data } = await window.supabase.auth.getSession();
   return data.session;
 }
 
+// Gets the currently signed in user and returns their data
 async function getCurrentUser() {
   const { data } = await window.supabase.auth.getUser();
   return data.user ?? null;
 }
 
-
+// Function to require authorisation to access a page. Redirects to login page if no authorisation
 async function requireAuth(redirectTo = "login.html") {
   const session = await getSession();
   if (!session) {
