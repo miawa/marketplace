@@ -61,14 +61,14 @@
   border-radius:6px; 
 }
 
-#logoutBtn, #messageBtn, #orderHistoryBtn, #adminBtn, #notificationBtn, #bookmarkBtn {
+#logoutBtn, #messageBtn, #orderHistoryBtn, #adminBtn, #notificationBtn, #bookmarkBtn,#settingsBtn {
     
   height: 30px;
   width: 30px;
   cursor:pointer;
 }
 
-#logoutBtn:hover, #messageBtn:hover, #orderHistoryBtn:hover, #adminBtn:hover, #notificationBtn:hover, #bookmarkBtn:hover, .top-avatar:hover {
+#logoutBtn:hover, #messageBtn:hover, #orderHistoryBtn:hover, #adminBtn:hover, #notificationBtn:hover, #bookmarkBtn:hover, #settingsBtn:hover, .top-avatar:hover {
   transform: translateY(-4px);
 }
 

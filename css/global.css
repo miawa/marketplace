@@ -4,6 +4,264 @@
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+html.high-contrast body {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+html.high-contrast .top-menu { background: #111 !important; }
+html.high-contrast .top-menu img { filter: brightness(0) invert(1) !important; }
+html.high-contrast .site-logo, 
+html.high-contrast .site-logo-text { filter: brightness(0) invert(1) !important; }
+
+html.high-contrast input,
+html.high-contrast select { background: #222 !important; color: #fff !important; border-color: #555 !important; }
+
+html.high-contrast .productLoad { background: #111 !important; }
+html.high-contrast .product-title { background: #000 !important; color: #fff !important; }
+html.high-contrast .product-price { background: #222 !important; color: #fff !important; }
+html.high-contrast .product-user { background: #111 !important; }
+
+html.high-contrast .filter-btn { background: #111 !important; color: #fff !important; border-color: #fff !important; }
+html.high-contrast .filter-menu { background: #111 !important; color: #fff !important; }
+html.high-contrast .filter-menu label { color: #fff !important; }
+
+html.high-contrast .details-sidebar { background: #111 !important; color: #fff !important; }
+html.high-contrast .info-table td { color: #fff !important; border-color: #444 !important; }
+html.high-contrast .info-table tr { border-color: #444 !important; }
+html.high-contrast .description-box { color: #fff !important; }
+html.high-contrast .description-box p { color: #fff !important; }
+html.high-contrast h1 { color: #fff !important; }
+html.high-contrast .price-tag { color: #fff !important; }
+html.high-contrast .secondary-text { color: #ccc !important; }
+html.high-contrast .btn-secondary { background: #222 !important; color: #fff !important; border-color: #555 !important; }
+html.high-contrast .btn-watch, 
+html.high-contrast .btn-like { background: #222 !important; color: #fff !important; border-color: #555 !important; }
+
+
+html.high-contrast .floating-btn,
+html.high-contrast .filter-btn.active,
+html.high-contrast #applyPrice,
+html.high-contrast .product-title,
+html.high-contrast .btn-primary,
+html.high-contrast button {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #fff !important;
+}
+
+html.high-contrast .product-user-name {
+  background: #333 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+
+
+html.high-contrast .floating-btn:hover,
+html.high-contrast .filter-btn:hover,
+html.high-contrast button:hover {
+  background: #e5e5e5 !important;
+  color: #000 !important;
+}
+
+
+html.high-contrast .product-user-name,
+html.high-contrast .reviewer-name,
+html.high-contrast .username,
+html.high-contrast #userName {
+  color: #fff !important;
+}
+
+
+html.high-contrast a,
+html.high-contrast .seller-link {
+  color: #fff !important;
+}
+
+html.high-contrast .product-price {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+html.high-contrast body {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+html.high-contrast .profileContainer,
+html.high-contrast .profileContent,
+html.high-contrast .main-layout,
+html.high-contrast .navContainer {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+html.high-contrast .profile-header {
+  border-bottom: 2px solid #fff !important;
+}
+
+
+html.high-contrast #userName,
+html.high-contrast #userBio,
+html.high-contrast .user-bio {
+  color: #fff !important;
+}
+
+
+html.high-contrast .stats,
+html.high-contrast .stat-link,
+html.high-contrast .rating-count {
+  color: #fff !important;
+}
+
+html.high-contrast .stars {
+  color: #ffd700 !important;
+}
+
+
+html.high-contrast .profile-tabs {
+  border-bottom: 2px solid #fff !important;
+}
+
+html.high-contrast .profile-tabs a {
+  color: #fff !important;
+  background: transparent !important;
+  border-bottom: 3px solid transparent !important;
+  font-weight: 700 !important;
+}
+
+html.high-contrast .profile-tabs a.active {
+  border-bottom: 3px solid #fff !important;
+}
+
+html.high-contrast .profile-tabs a:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+
+html.high-contrast .itemBox,
+html.high-contrast .productLoad {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+
+html.high-contrast .itemBox img,
+html.high-contrast .product-image {
+  border-bottom: 2px solid #fff !important;
+}
+
+
+html.high-contrast .item-price {
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+html.high-contrast .item-size,
+html.high-contrast .item-brand {
+  color: #dcdcdc !important;
+}
+
+
+html.high-contrast .items-grid div[style*="border-top"] {
+  border-top: 2px solid #fff !important;
+  color: #fff !important;
+}
+
+
+html.high-contrast .btn-secondary,
+html.high-contrast button {
+  background: #fff !important;
+  color: #000 !important;
+  border: 2px solid #fff !important;
+  font-weight: 700 !important;
+}
+
+html.high-contrast .btn-secondary:hover,
+html.high-contrast button:hover {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+html.high-contrast .modal-content {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+
+html.high-contrast input,
+html.high-contrast textarea {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+html.high-contrast input::placeholder,
+html.high-contrast textarea::placeholder {
+  color: #ccc !important;
+}
+
+
+html.high-contrast a {
+  color: #fff !important;
+}
+
+
+html.high-contrast .top-menu {
+  background: #000 !important;
+  border-bottom: 2px solid #fff !important;
+}
+
+
+html.high-contrast .top-menu img,
+html.high-contrast .profile-options img {
+  filter: brightness(0) invert(1) !important;
+}
+
+
+html.high-contrast .avatar img,
+html.high-contrast #userAvatar {
+  border: 3px solid #fff !important;
+}
+
+
+html.high-contrast footer {
+  background: #000 !important;
+  border-top: 2px solid #fff !important;
+  color: #fff !important;
+}
+
+html.high-contrast footer a,
+html.high-contrast .footer-contact,
+html.high-contrast .footer-copyright {
+  color: #fff !important;
+}
+
+
+html.high-contrast .reviewBox {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  color: #fff !important;
+}
+
+html.high-contrast .review-comment,
+html.high-contrast .review-date,
+html.high-contrast .reviewer-name {
+  color: #fff !important;
+}
+
+
+html.high-contrast *:focus {
+  outline: 3px solid #ffff00 !important;
+  outline-offset: 3px !important;
+}
 
 body {
   background: #f6f7f9;
