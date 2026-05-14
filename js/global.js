@@ -4,10 +4,10 @@ const createListingButton = document.getElementById("createListingBtn");
 
 document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   await window.supabase.auth.signOut();
-    window.location.href = 'login.html';
-    });
+  window.location.href = 'login.html';
+});
 
-    
+// Gets accessibility settings from local storage and applies them if applicable
 (function applyAccessibilitySettings() {
   // High contrast
   if (localStorage.getItem('mintedHighContrast') === 'true') {

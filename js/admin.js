@@ -1,11 +1,13 @@
 const reportsBody = document.getElementById('reportsBody');
 const reportStatusBanner = document.getElementById('reportStatus');
 
+// Signout Function, Logs User Out of session and redirects to login page
 async function signOut() {
   await window.supabase.auth.signOut();
   window.location.href = 'login.html';
 }
 
+// Updates the status of a report
 function showStatus(message, type = 'success') {
   if (!reportStatusBanner) return;
   reportStatusBanner.textContent = message;
@@ -16,8 +18,7 @@ function showStatus(message, type = 'success') {
   }, 4500);
 }
 
-//basic cross site scripting to prevent malicious code through text boxes
-
+//Input sanitisation
 function escapeHTML(value) {
   return String(value || '')
     .replace(/&/g, '&amp;')
@@ -27,12 +28,13 @@ function escapeHTML(value) {
     .replace(/'/g, '&#039;');
 }
 
-    async function requireAdmin() {
-        const { data: { user } } = await window.supabase.auth.getUser();
-        if (!user) {
-            window.location.href = 'login.html';
-            return null;
-        }
+//Checks if user is admin and returns appropriately
+async function requireAdmin() {
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (!user) {
+      window.location.href = 'login.html';
+      return null;
+  }
 
   const { data, error } = await window.supabase
     .from('users')
@@ -45,11 +47,12 @@ function escapeHTML(value) {
 
     window.location.href = 'index.html';
     return null;
-    }
+  }
 
-    return user;
-    }
+  return user;
+}
 
+// Loads all current reports and updates the html
 async function loadReports() {
   if (!reportsBody) return;
   reportsBody.innerHTML = '<tr><td colspan="6" style="padding: 32px; text-align: center; color: #6b7280;">Loading reports…</td></tr>';
@@ -120,6 +123,7 @@ async function loadReports() {
   }).join('');
 }
 
+// Sets a new status on a report
 async function setReportStatus(reportId, newStatus) {
 
   try {
@@ -170,8 +174,8 @@ async function setReportStatus(reportId, newStatus) {
   }
 }
 
-    window.setReportStatus = setReportStatus;
-    window.signOut = signOut;
+window.setReportStatus = setReportStatus;
+window.signOut = signOut;
 
 window.addEventListener('DOMContentLoaded', async () => {
   const adminUser = await requireAdmin();

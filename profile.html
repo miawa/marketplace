@@ -1,171 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile | Minted</title>
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/profile-style.css">
-  <link rel="stylesheet" href="css/top-menu.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Minted</title>
 
-  <div class="profileContainer">
+    <!-- CSS Includes -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/profile-style.css">
+    <link rel="stylesheet" href="css/top-menu.css">
+  </head>
+  <body>
 
-    <!-- Top Menu Bar HTML -->
-    <div class="top-menu">
-      
-        <div class="logo">
-          <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
-          <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
-        </div>
-      
-      
-      <div class="profile-options">
-        <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-        <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
-        <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
-        <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
-        <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
-        <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
-         <img src="images/settings.png" alt="settings" id="settingsBtn" onclick="window.location.href='settings.html'" />
-        <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
-      </div>
-    </div>
-    <!-- End Top Menu Bar HTML -->
+    <div class="profileContainer">
 
-    <div class="main-layout">
-
-      <div class="profileContent">
-        <header class="profile-header">
-          <div class="user-info">
-            <div class="avatar">
-              <img id="userAvatar" src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="User Avatar">
-            </div>
-            <div class="user-details">
-              <h1 id="userName">Loading...</h1>
-              
-              <div class="ratings">
-                <span class="stars">★★★★★</span>
-                <span class="rating-count">(42)</span>
-              </div>
-              <div class="stats">
-                <span class="stat-link" onclick="showFollowers()"><strong id="followerCount">0</strong> followers</span>
-                <span class="stat-link" onclick="showFollowing()"><strong id="followingCount">0</strong> following</span>
-              </div>
-              <p id="userBio" class="user-bio"></p>
-              <img id="fastShippingBadge" src="images/fastShipBadge.png" alt="Fast shipper" title="This user ships in 3 days or less." style="display:none; width:30px; height:auto; margin-top:8px;">
-            </div>
-          </div>
-          <div class="header-actions">
-            <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
-            <button class="btn-secondary" id="followProfileBtn">Follow</button>
-            <button class="btn-secondary">Share</button>
-          </div>
-        </header>
-
+      <!-- Top Menu Bar HTML -->
+      <div class="top-menu">
         
-
-        <nav class="profile-tabs">
-          <a href="#" id='itemsTab' class="active">Items</a>
-          <a href="#" id="reviewsTab">Reviews</a>
-          <a href="#" id="aboutTab">About</a>
-        </nav>
-
-        <main class="navContainer" id="navContainer"></main>
-        <!-- <main class="items-grid" id="userCloset"></main> -->
-      </div>
-    </div>
-
-
-    <div id="reviewsModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Reviews</h2>
-          <button id="closeReviewsBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-        </div>
-        <div id="reviewsList" class="reviews-list">
+          <div class="logo">
+            <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
+            <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+          </div>
+        
+        
+        <div class="profile-options">
+          <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+          <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
+          <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
+          <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+          <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
+          <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
+          <img src="images/settings.png" alt="settings" id="settingsBtn" onclick="window.location.href='settings.html'" />
+          <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
         </div>
       </div>
-    </div> 
+      <!-- End Top Menu Bar HTML -->
 
-    <div id="editProfileModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Edit Profile</h2>
-          <button id="closeEditBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-        </div>
-        <form id="editProfileForm">
-          <div class="input-group" style="margin-bottom: 20px;">
-            <label for="avatarInput" style="display: block; margin-bottom: 10px; font-weight: 600;">Profile Picture</label>
-            <div style="display: flex; align-items: center; gap: 15px;">
-              <img id="editAvatarPreview" src="images/default.png" alt="Avatar Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
-              <input type="file" id="avatarInput" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+      <div class="main-layout">
+
+        <!-- Main Profile Content Start -->
+        <div class="profileContent">
+          <!-- Profile Header Start -->
+          <header class="profile-header">
+            <div class="user-info">
+              <!-- User Avatar -->
+              <div class="avatar">
+                <img id="userAvatar" src="https://rmawimcxlvvmhuznzsnt.supabase.co/storage/v1/object/public/profilePictures/default-avatar.jpg" alt="User Avatar">
+              </div>
+              <!-- Main User Details -->
+              <div class="user-details">
+                <h1 id="userName">Loading...</h1>
+                
+                <!-- User Ratings -->
+                <div class="ratings">
+                  <span class="stars">★★★★★</span>
+                  <span class="rating-count">(42)</span>
+                </div>
+                <!-- User Follower Stats -->
+                <div class="stats">
+                  <span class="stat-link" onclick="showFollowers()"><strong id="followerCount">0</strong> followers</span>
+                  <span class="stat-link" onclick="showFollowing()"><strong id="followingCount">0</strong> following</span>
+                </div>
+                <!-- User Bio -->
+                <p id="userBio" class="user-bio"></p>
+                <img id="fastShippingBadge" src="images/fastShipBadge.png" alt="Fast shipper" title="This user ships in 3 days or less." style="display:none; width:30px; height:auto; margin-top:8px;">
+              </div>
             </div>
-          </div>
 
-          <div class="input-group" style="margin-bottom: 20px;">
-            <label for="editFullName" style="display: block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
-            <input type="text" id="editFullName" placeholder="Enter your full name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
-          </div>
+            <!-- User Action Buttons -->
+            <div class="header-actions">
+              <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
+              <button class="btn-secondary" id="followProfileBtn">Follow</button>
+              <button class="btn-secondary">Share</button>
+            </div>
+            <!-- End User Action Buttons -->
+          </header>
+          <!-- Profile Header End -->
 
-          <div class="input-group" style="margin-bottom: 20px;">
-            <label for="editBio" style="display: block; margin-bottom: 5px; font-weight: 600;">Bio</label>
-            <textarea id="editBio" placeholder="Tell us about yourself..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box; resize: vertical; min-height: 80px;"></textarea>
-          </div>
+          <!-- Profile Section Tabs -->
+          <nav class="profile-tabs">
+            <a href="#" id='itemsTab' class="active">Items</a>
+            <a href="#" id="reviewsTab">Reviews</a>
+            <a href="#" id="aboutTab">About</a>
+          </nav>
 
-          <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn-secondary" style="flex: 1; background-color: #7032a0; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Save Changes</button>
-            <button type="button" id="cancelEditBtn" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
-          </div>
-        </form>
+          <!-- Dynamic Content Div -->
+          <main class="navContainer" id="navContainer"></main>
+        </div>
+        <!-- Main Profile Content End -->
       </div>
-    </div>
 
-    <div id="followersModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Followers</h2>
-          <button id="closeFollowersBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-        </div>
-        <div id="followersList" class="user-list">
-        </div>
-      </div>
-    </div>
-
-    <div id="followingModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Following</h2>
-          <button id="closeFollowingBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-        </div>
-        <div id="followingList" class="user-list">
+      <!-- User Reviews Popup -->
+      <div id="reviewsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Reviews</h2>
+            <button id="closeReviewsBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+          </div>
+          <div id="reviewsList" class="reviews-list">
+          </div>
         </div>
       </div>
+      <!-- End User Reviews Popup -->
+
+      <!-- Edit User Details Popup -->
+      <div id="editProfileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Edit Profile</h2>
+            <button id="closeEditBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+          </div>
+          <form id="editProfileForm">
+            <div class="input-group" style="margin-bottom: 20px;">
+              <label for="avatarInput" style="display: block; margin-bottom: 10px; font-weight: 600;">Profile Picture</label>
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <img id="editAvatarPreview" src="images/default.png" alt="Avatar Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                <input type="file" id="avatarInput" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+              </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+              <label for="editFullName" style="display: block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
+              <input type="text" id="editFullName" placeholder="Enter your full name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+              <label for="editBio" style="display: block; margin-bottom: 5px; font-weight: 600;">Bio</label>
+              <textarea id="editBio" placeholder="Tell us about yourself..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box; resize: vertical; min-height: 80px;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn-secondary" style="flex: 1; background-color: #7032a0; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Save Changes</button>
+              <button type="button" id="cancelEditBtn" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- End Edit User Details Popup -->
+
+      <!-- Followers Popup -->
+      <div id="followersModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Followers</h2>
+            <button id="closeFollowersBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+          </div>
+          <div id="followersList" class="user-list">
+          </div>
+        </div>
+      </div>
+      <!-- End Followers Popup -->
+
+      <!-- Following Popup -->
+      <div id="followingModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Following</h2>
+            <button id="closeFollowingBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+          </div>
+          <div id="followingList" class="user-list">
+          </div>
+        </div>
+      </div>
+      <!-- End Following Popup -->
     </div>
 
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer-contact">
+        <strong>Contact Us</strong><br>
+        📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
+      </div>
+      <div class="footer-links">
+        <a href="terms.html">Terms of Use</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="accessibility.html">Accessibility Statement</a>
+      </div>
+      <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
+    </footer>
+    <!-- End Footer Section -->
     
-
-  </div>
-
-  <footer>
-  <div class="footer-contact">
-    <strong>Contact Us</strong><br>
-    📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
-  </div>
-  <div class="footer-links">
-    <a href="terms.html">Terms of Use</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="accessibility.html">Accessibility Statement</a>
-  </div>
-  <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
-</footer>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/profile.js"></script>
-  <script src="js/global.js"></script>
-  
-</body>
+    <!-- Javascript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/global.js"></script>
+    <!-- End Javascript Includes -->
+    
+  </body>
 </html>

@@ -1,616 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minted - Settings</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/top-menu.css" />
-  <style>
-   
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minted - Settings</title>
 
-    body { background: #f6f7f9; padding: 10px; transition: background 0.3s, color 0.3s; }
+    <!-- CSS Includes -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/top-menu.css" />
+    <link rel="stylesheet" href="css/settings.css" />
+  </head>
+  <body>
+    <div class="page-wrapper">
 
-   
-    body.high-contrast {
-  background: #000 !important;
-  color: #fff !important;
-  filter: invert(1) hue-rotate(180deg);
-}
-
-body.high-contrast img {
-  filter: invert(1) hue-rotate(180deg);
-}
-    body.high-contrast .settings-sidebar,
-    body.high-contrast .settings-card {
-      background: #111 !important;
-      border-color: #fff !important;
-      color: #fff !important;
-    }
-    body.high-contrast .nav-item { color: #fff !important; }
-    body.high-contrast .nav-item.active,
-    body.high-contrast .nav-item:hover { background: #333 !important; color: #fff !important; }
-    body.high-contrast .setting-row { border-bottom-color: #444 !important; }
-    body.high-contrast input,
-    body.high-contrast select,
-    body.high-contrast textarea { background: #222 !important; color: #fff !important; border-color: #666 !important; }
-    body.high-contrast .btn-danger { background: #fff !important; color: #000 !important; }
-    body.high-contrast .section-label { color: #aaa !important; }
-    body.high-contrast .setting-desc { color: #bbb !important; }
-    body.high-contrast .top-menu { background: #111 !important; border-bottom: 1px solid #444 !important; }
-
-  
-    .page-wrapper {
-      display: flex;
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 1% 1%;
-      flex-direction: column;
-    }
-
-    .top-menu {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0 16px;
-      margin-bottom: 10px;
-    }
-    .logo { display: flex; align-items: center; gap: 8px; }
-    .site-logo { height: 36px; }
-    .site-logo-text { height: 24px; }
-    .profile-options { display: flex; align-items: center; gap: 14px; }
-    .profile-options img { width: 28px; height: 28px; cursor: pointer; object-fit: contain; }
-    .top-avatar { width: 32px !important; height: 32px !important; border-radius: 50%; object-fit: cover; }
-
-    .page-heading {
-      font-size: 22px;
-      font-weight: 700;
-      color: #7032a0;
-      margin-bottom: 24px;
-    }
-
-    .settings-layout {
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-    }
-
-    .settings-sidebar {
-      width: 210px;
-      flex-shrink: 0;
-      background: #fff;
-      border-radius: 14px;
-      padding: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .sidebar-title {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-      padding: 4px 10px 10px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #374151;
-      transition: background 0.15s, color 0.15s;
-      user-select: none;
-    }
-    .nav-item:hover { background: #f3e8ff; color: #7032a0; }
-    .nav-item.active { background: #7032a0; color: #fff; font-weight: 600; }
-    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-
-    .sidebar-divider { height: 1px; background: #f3f4f6; margin: 8px 0; }
-
-
-    .settings-main { flex: 1; min-width: 0; }
-
-    .settings-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 28px 32px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      display: none;
-    }
-    .settings-card.active { display: block; }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 6px;
-    }
-    .card-subtitle {
-      font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 28px;
-    }
-
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-      margin: 24px 0 12px;
-    }
-    .section-label:first-of-type { margin-top: 0; }
-
-    .setting-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid #f3f4f6;
-      gap: 20px;
-    }
-    .setting-row:last-of-type { border-bottom: none; }
-
-    .setting-info { flex: 1; }
-    .setting-title { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 3px; }
-    .setting-desc { font-size: 13px; color: #6b7280; line-height: 1.4; }
-
- 
-    .toggle-wrap { flex-shrink: 0; }
-    .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0;
-      background: #d1d5db;
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .slider:before {
-      content: "";
-      position: absolute;
-      width: 18px; height: 18px;
-      left: 3px; bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    input:checked + .slider { background: #7032a0; }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-  
-    .setting-control select,
-    .setting-control input[type="text"],
-    .setting-control input[type="email"] {
-      padding: 7px 12px;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 9px;
-      font-size: 14px;
-      color: #374151;
-      background: #fff;
-      outline: none;
-      transition: border-color 0.15s;
-      min-width: 140px;
-    }
-    .setting-control select:focus,
-    .setting-control input:focus { border-color: #7032a0; }
-
-
-    .font-preview {
-      margin-top: 16px;
-      padding: 14px 18px;
-      background: #f9fafb;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      transition: font-size 0.2s;
-    }
-    .font-preview-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .font-preview-text { color: #374151; line-height: 1.5; }
-
-
-    .danger-zone {
-      margin-top: 32px;
-      padding: 20px;
-      border: 1.5px solid #fee2e2;
-      border-radius: 12px;
-      background: #fff5f5;
-    }
-    .danger-title { font-size: 14px; font-weight: 700; color: #dc2626; margin-bottom: 4px; }
-    .danger-desc { font-size: 13px; color: #6b7280; margin-bottom: 14px; }
-
-    .btn-danger {
-      padding: 9px 20px;
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-danger:hover { background: #b91c1c; }
-
-    .btn-primary {
-      padding: 9px 20px;
-      background: #7032a0;
-      color: white;
-      border: none;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-primary:hover { background: #5a2880; }
-
-  
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 420px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-    .modal h3 { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
-    .modal p { font-size: 14px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; }
-    .modal input {
-      width: 100%; padding: 10px 14px;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 9px; font-size: 14px;
-      margin-bottom: 16px; outline: none;
-    }
-    .modal input:focus { border-color: #dc2626; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-cancel {
-      padding: 9px 18px; background: #f3f4f6; color: #374151;
-      border: none; border-radius: 9px; font-size: 14px; cursor: pointer;
-    }
-    .btn-cancel:hover { background: #e5e7eb; }
-
-  
-
-    
-    @media (max-width: 600px) {
-      .settings-layout { flex-direction: column; }
-      .settings-sidebar { width: 100%; }
-      .settings-card { padding: 20px 18px; }
-    }
-  </style>
-</head>
-<body>
-<div class="page-wrapper">
-
-  <!-- Top Menu (mirrors index.html) -->
-  <div class="top-menu">
-    <div class="logo">
-      <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Logo" onerror="this.style.display='none'"></a>
-      <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted" onerror="this.style.display='none'"></a>
-    </div>
-    <div class="profile-options">
-      <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-      <img src="images/notificaiton.png" alt="Notifications" id="notificationBtn" onerror="this.style.display='none'"/>
-      <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn" onerror="this.style.display='none'"/>
-      <img src="images/messages.png" alt="Messages" onclick="window.location.href='messages.html'" onerror="this.style.display='none'"/>
-      <img src="images/logout.png" alt="Logout" id="logoutBtn" onerror="this.style.display='none'"/>
-    </div>
-  </div>
-
-  <div class="page-heading">Settings</div>
-
-  <div class="settings-layout">
-
-    
-    <nav class="settings-sidebar">
-      <div class="sidebar-title">Settings</div>
-      <div class="nav-item active" data-panel="general">
-        <span class="icon"> </span> General
-      </div>
-      <div class="nav-item" data-panel="accessibility">
-        <span class="icon"> </span> Accessibility
-      </div>
-      <div class="sidebar-divider"></div>
-      <div class="nav-item" data-panel="account">
-        <span class="icon"> </span> Account
-      </div>
-    </nav>
-
-   
-    <div class="settings-main">
-
-     
-      <div class="settings-card active" id="panel-general">
-        <div class="card-title">General</div>
-        <div class="card-subtitle">Manage your preferences and notification settings.</div>
-
-        <div class="section-label">Notifications</div>
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Order updates</div>
-            <div class="setting-desc">Notify me when an order status changes.</div>
-          </div>
-          <div class="toggle-wrap">
-            <label class="toggle">
-              <input type="checkbox" id="orderUpdates" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
+      <!-- Top Menu (mirrors index.html) -->
+      <div class="top-menu">
+        <div class="logo">
+          <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Logo" onerror="this.style.display='none'"></a>
+          <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted" onerror="this.style.display='none'"></a>
         </div>
-
-        <div class="section-label">Listings</div>
-
-    
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Default sort order</div>
-            <div class="setting-desc">How listings are sorted when you first visit the marketplace.</div>
-          </div>
-          <div class="setting-control">
-            <select id="defaultSort">
-              <option value="recommended">Recommended</option>
-              <option value="newest">Newest first</option>
-              <option value="low">Price: low to high</option>
-              <option value="high">Price: high to low</option>
-            </select>
-          </div>
+        <div class="profile-options">
+          <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+          <img src="images/notificaiton.png" alt="Notifications" id="notificationBtn" onerror="this.style.display='none'"/>
+          <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn" onerror="this.style.display='none'"/>
+          <img src="images/messages.png" alt="Messages" onclick="window.location.href='messages.html'" onerror="this.style.display='none'"/>
+          <img src="images/logout.png" alt="Logout" id="logoutBtn" onerror="this.style.display='none'"/>
         </div>
+      </div>
+      <!-- End Top Menu -->
 
+      <div class="page-heading">Settings</div>
+
+      <div class="settings-layout">
+
+        <!-- Settings Sidebar Section -->
+        <nav class="settings-sidebar">
+          <div class="sidebar-title">Settings</div>
+          <div class="nav-item active" data-panel="general">
+            <span class="icon"> </span> General
+          </div>
+          <div class="nav-item" data-panel="accessibility">
+            <span class="icon"> </span> Accessibility
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="nav-item" data-panel="account">
+            <span class="icon"> </span> Account
+          </div>
+        </nav>
+        <!-- End Settings Sidebar Section -->
       
-
-        <div style="margin-top: 24px;">
-          <button class="btn-primary" onclick="saveGeneral()">Save changes</button>
-        </div>
-      </div>
-
-    
-      <div class="settings-card" id="panel-accessibility">
-        <div class="card-title">Accessibility</div>
-        <div class="card-subtitle">Customise the appearance of the interface.</div>
-
-        <div class="section-label">Display</div>
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">High contrast mode</div>
-            <div class="setting-desc">Switches the interface to black and white with increased contrast for better readability.</div>
-          </div>
-          <div class="toggle-wrap">
-            <label class="toggle">
-              <input type="checkbox" id="highContrast">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-        <div style="margin-top: 24px;">
-          <button class="btn-primary" onclick="saveAccessibility()">Save changes</button>
-        </div>
-      </div>
-
-      
-      <div class="settings-card" id="panel-account">
-        <div class="card-title">Account</div>
-        <div class="card-subtitle">Manage your account details and data.</div>
-
-        <div class="section-label">Profile</div>
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Display name</div>
-            <div class="setting-desc">Your name shown on your public profile.</div>
-          </div>
-          <div class="setting-control">
-            <input type="text" id="displayName" placeholder="Your name">
-          </div>
-        </div>
-
-        <div class="setting-row">
-          <div class="setting-info">
-            <div class="setting-title">Email address</div>
-            <div class="setting-desc">The email linked to your account.</div>
-          </div>
-          <div class="setting-control">
-            <input type="email" id="emailAddr" placeholder="you@example.com">
-          </div>
-        </div>
-
-        <div style="margin-top: 24px;">
-          <button class="btn-primary" onclick="saveAccount()">Save changes</button>
-        </div>
+        <!-- Main Settings Section -->
+        <div class="settings-main">
 
         
-        <div class="danger-zone">
-          <div class="danger-title">Danger zone</div>
-          <div class="danger-desc">Deleting your account is permanent and cannot be undone. All your listings, messages, and order history will be removed.</div>
-          <button class="btn-danger" onclick="openDeleteModal()">Delete my account</button>
+          <div class="settings-card active" id="panel-general">
+            <div class="card-title">General</div>
+            <div class="card-subtitle">Manage your preferences and notification settings.</div>
+
+            <div class="section-label">Notifications</div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-title">Order updates</div>
+                <div class="setting-desc">Notify me when an order status changes.</div>
+              </div>
+              <div class="toggle-wrap">
+                <label class="toggle">
+                  <input type="checkbox" id="orderUpdates" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="section-label">Listings</div>
+
+        
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-title">Default sort order</div>
+                <div class="setting-desc">How listings are sorted when you first visit the marketplace.</div>
+              </div>
+              <div class="setting-control">
+                <select id="defaultSort">
+                  <option value="recommended">Recommended</option>
+                  <option value="newest">Newest first</option>
+                  <option value="low">Price: low to high</option>
+                  <option value="high">Price: high to low</option>
+                </select>
+              </div>
+            </div>
+
+          
+
+            <div style="margin-top: 24px;">
+              <button class="btn-primary" onclick="saveGeneral()">Save changes</button>
+            </div>
+          </div>
+
+        
+          <div class="settings-card" id="panel-accessibility">
+            <div class="card-title">Accessibility</div>
+            <div class="card-subtitle">Customise the appearance of the interface.</div>
+
+            <div class="section-label">Display</div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-title">High contrast mode</div>
+                <div class="setting-desc">Switches the interface to black and white with increased contrast for better readability.</div>
+              </div>
+              <div class="toggle-wrap">
+                <label class="toggle">
+                  <input type="checkbox" id="highContrast">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="margin-top: 24px;">
+              <button class="btn-primary" onclick="saveAccessibility()">Save changes</button>
+            </div>
+          </div>
+
+          
+          <div class="settings-card" id="panel-account">
+            <div class="card-title">Account</div>
+            <div class="card-subtitle">Manage your account details and data.</div>
+
+            <div class="section-label">Profile</div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-title">Display name</div>
+                <div class="setting-desc">Your name shown on your public profile.</div>
+              </div>
+              <div class="setting-control">
+                <input type="text" id="displayName" placeholder="Your name">
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-title">Email address</div>
+                <div class="setting-desc">The email linked to your account.</div>
+              </div>
+              <div class="setting-control">
+                <input type="email" id="emailAddr" placeholder="you@example.com">
+              </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button class="btn-primary" onclick="saveAccount()">Save changes</button>
+            </div>
+
+            
+            <div class="danger-zone">
+              <div class="danger-title">Danger zone</div>
+              <div class="danger-desc">Deleting your account is permanent and cannot be undone. All your listings, messages, and order history will be removed.</div>
+              <button class="btn-danger" onclick="openDeleteModal()">Delete my account</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- End Main Settings Section -->
+      </div>
+    </div>
+
+    <!-- Delete Account Popup -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal">
+        <h3>Delete your account?</h3>
+        <p>This cannot be undone. All your listings, messages, and order history will be permanently removed. Type <strong>DELETE</strong> to confirm.</p>
+        <input type="text" id="deleteConfirmInput" placeholder="Type DELETE to confirm">
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+          <button class="btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
         </div>
       </div>
-
     </div>
-  </div>
-</div>
+    <!-- End Delete Account Popup -->
 
-
-<div class="modal-overlay" id="deleteModal">
-  <div class="modal">
-    <h3>Delete your account?</h3>
-    <p>This cannot be undone. All your listings, messages, and order history will be permanently removed. Type <strong>DELETE</strong> to confirm.</p>
-    <input type="text" id="deleteConfirmInput" placeholder="Type DELETE to confirm">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/global.js"></script>
-<script src="js/supabase.js"></script>
-<script>
-
-  
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.settings-card').forEach(p => p.classList.remove('active'));
-      item.classList.add('active');
-      document.getElementById('panel-' + item.dataset.panel).classList.add('active');
-    });
-  });
-
-
-  function loadSettings() {
-    
-    const hc = localStorage.getItem('mintedHighContrast') === 'true';
-    document.getElementById('highContrast').checked = hc;
-    if (hc) document.body.classList.add('high-contrast');
-
-   
-    const ds = localStorage.getItem('mintedDefaultSort') || 'recommended';
-    document.getElementById('defaultSort').value = ds;
-
-    const offerAlerts = localStorage.getItem('mintedOfferAlerts') !== 'false';
-    document.getElementById('offerAlerts').checked = offerAlerts;
-
-    const orderUpdates = localStorage.getItem('mintedOrderUpdates') !== 'false';
-    document.getElementById('orderUpdates').checked = orderUpdates;
-  }
-
-  
-  document.getElementById('highContrast').addEventListener('change', function() {
-    document.body.classList.toggle('high-contrast', this.checked);
-    localStorage.setItem('mintedHighContrast', this.checked);
-  });
-  document.getElementById('reduceMotion').addEventListener('change', function() {
-    applyReduceMotion(this.checked);
-  });
-
-
-  function saveAccessibility() {
-    localStorage.setItem('mintedHighContrast', document.getElementById('highContrast').checked);
-   
-    
-  }
-
-  function saveGeneral() {
-
-    localStorage.setItem('mintedDefaultSort', document.getElementById('defaultSort').value);
-    localStorage.setItem('mintedOfferAlerts', document.getElementById('offerAlerts').checked);
-    localStorage.setItem('mintedOrderUpdates', document.getElementById('orderUpdates').checked);
-    
-  }
-
-  async function saveAccount() {
-    const displayName = document.getElementById('displayName').value.trim();
-    const email = document.getElementById('emailAddr').value.trim();
-
-    if (!window.supabase) { return; }
-
-    try {
-      const { data: { user } } = await window.supabase.auth.getUser();
-      if (!user) { return; }
-
-     
-      if (displayName) {
-        await window.supabase.from('users').update({ full_name: displayName }).eq('id', user.id);
-      }
-
-      
-      if (email && email !== user.email) {
-        await window.supabase.auth.updateUser({ email });
-        
-        return;
-      }
-
-     
-    } catch(e) {
-     
-      console.error(e);
-    }
-  }
-
- 
-  async function loadAccountData() {
-    if (!window.supabase) return;
-    try {
-      const { data: { user } } = await window.supabase.auth.getUser();
-      if (!user) return;
-
-      document.getElementById('emailAddr').value = user.email || '';
-
-      const { data: profile } = await window.supabase
-        .from('users').select('full_name').eq('id', user.id).single();
-
-      if (profile?.full_name) {
-        document.getElementById('displayName').value = profile.full_name;
-      }
-    } catch(e) { console.error(e); }
-  }
-
- 
-  function openDeleteModal() {
-    document.getElementById('deleteModal').classList.add('open');
-    document.getElementById('deleteConfirmInput').value = '';
-  }
-
-  function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.remove('open');
-  }
-
-  async function confirmDeleteAccount() {
-    const input = document.getElementById('deleteConfirmInput').value.trim();
-    if (input !== 'DELETE') {
-     
-      return;
-    }
-
-    if (!window.supabase) { return; }
-
-    try {
-      const { data: { user } } = await window.supabase.auth.getUser();
-      if (!user) { return; }
-
-      
-      await window.supabase.from('users').delete().eq('id', user.id);
-      await window.supabase.auth.signOut();
-
-      
-      setTimeout(() => window.location.href = 'index.html', 1800);
-    } catch(e) {
-      
-      console.error(e);
-    }
-  }
-
- 
-  document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) closeDeleteModal();
-  });
-
- 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadSettings();
-    loadAccountData();
-  });
-
-</script>
-</body>
+    <!-- Javascript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/global.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/settings.js"></script>
+    <!-- End Javascript Includes -->
+  </body>
 </html>

@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Messages | Minted</title>
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/messages.css">
-  <link rel="stylesheet" href="css/top-menu.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Minted</title>
 
-  <!-- Top Menu Bar HTML -->
-  <div class="top-menu">
-    
-      <div class="logo">
-        <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
-        <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
-      </div>
-    
-    
-    <div class="profile-options">
-      <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-      <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
-      <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
-      <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
-      <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
-      <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
-      <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
-    </div>
-  </div>
-  <!-- End Top Menu Bar HTML -->
+    <!-- CSS Includes -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/messages.css">
+    <link rel="stylesheet" href="css/top-menu.css">
+  </head>
+  <body>
 
-  <div class="messages-layout">
-    
-   
-    <div class="inbox-panel" id="inboxPanel">
-      <div class="inbox-header">
-         Messages
-        <!-- <a href="index.html" class="inbox-back-link">← Back</a> -->
-      </div>
-      <div class="inbox-list" id="inboxList">
-        <div class="inbox-empty">Loading conversations…</div>
+    <!-- Top Menu Bar HTML -->
+    <div class="top-menu">
+      
+        <div class="logo">
+          <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
+          <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+        </div>
+      
+      
+      <div class="profile-options">
+        <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+        <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
+        <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
+        <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+        <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
+        <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
+        <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
       </div>
     </div>
+    <!-- End Top Menu Bar HTML -->
 
-   
-    <div class="chat-panel" id="chatPanel">
-      <div class="chat-placeholder" id="chatPlaceholder">
-        <div class="chat-placeholder-icon">💬</div>
-        <div>Select a conversation to start messaging</div>
+    <div class="messages-layout">
+      
+      <!-- Inbox Panel Start -->
+      <div class="inbox-panel" id="inboxPanel">
+        <div class="inbox-header">
+          Messages
+          <!-- <a href="index.html" class="inbox-back-link">← Back</a> -->
+        </div>
+        <div class="inbox-list" id="inboxList">
+          <div class="inbox-empty">Loading conversations…</div>
+        </div>
       </div>
+      <!-- Inbox Panel End -->
 
-      <div id="chatView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-        <div class="chat-header" id="chatHeader"></div>
-      <div class="chat-actions" id="chatActions" style="display:none;"></div>
-      <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-input-bar">
-          <textarea id="msgInput" placeholder="Type a message…" rows="1"></textarea>
-          <button class="send-btn" id="sendBtn" title="Send">&#9658;</button>
+      <!-- Message Panel Start -->
+      <div class="chat-panel" id="chatPanel">
+        <div class="chat-placeholder" id="chatPlaceholder">
+          <div class="chat-placeholder-icon">💬</div>
+          <div>Select a conversation to start messaging</div>
+        </div>
+
+        <div id="chatView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+          <div class="chat-header" id="chatHeader"></div>
+        <div class="chat-actions" id="chatActions" style="display:none;"></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-bar">
+            <textarea id="msgInput" placeholder="Type a message…" rows="1"></textarea>
+            <button class="send-btn" id="sendBtn" title="Send">&#9658;</button>
+          </div>
+        </div>
+      </div>
+      <!-- Message Panel End -->
+
+    </div>
+
+    <!-- Item Offer Popup Start -->
+    <div class="modal-overlay" id="offerModal">
+      <div class="modal-box">
+        <h2 id="offerModalTitle">Make an Offer</h2>
+        <div class="modal-subtitle" id="offerItemTitle"></div>
+        <div class="offer-input-wrap">
+          <span class="offer-symbol">£</span>
+          <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="1.00">
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeOfferModal()">Cancel</button>
+          <button class="modal-submit" id="offerSubmitBtn" onclick="submitOffer()">Send</button>
         </div>
       </div>
     </div>
+    <!-- Item Offer Popup End -->
 
-  </div>
+    <!-- Javascript Includes Start -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/global.js"></script>
+    <!-- Javascript Includes End -->
 
-  
-  <div class="modal-overlay" id="offerModal">
-    <div class="modal-box">
-      <h2 id="offerModalTitle">Make an Offer</h2>
-      <div class="modal-subtitle" id="offerItemTitle"></div>
-      <div class="offer-input-wrap">
-        <span class="offer-symbol">£</span>
-        <input type="number" id="offerAmount" placeholder="0.00" min="0.01" step="1.00">
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer-contact">
+        <strong>Contact Us</strong><br>
+        📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
       </div>
-      <div class="modal-actions">
-        <button class="modal-cancel" onclick="closeOfferModal()">Cancel</button>
-        <button class="modal-submit" id="offerSubmitBtn" onclick="submitOffer()">Send</button>
+      <div class="footer-links">
+        <a href="terms.html">Terms of Use</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="accessibility.html">Accessibility Statement</a>
       </div>
-    </div>
-  </div>
+      <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
+    </footer>
+    <!-- End Footer Section -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/messages.js"></script>
-  <script src="js/global.js"></script>
-
-  <footer>
-  <div class="footer-contact">
-    <strong>Contact Us</strong><br>
-    📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
-  </div>
-  <div class="footer-links">
-    <a href="terms.html">Terms of Use</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="accessibility.html">Accessibility Statement</a>
-  </div>
-  <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
-</footer>
-
-</body>
+  </body>
 </html>

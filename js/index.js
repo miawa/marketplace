@@ -9,6 +9,7 @@ let currentFilter = "";
 const grid = document.getElementById("productGrid");
 const spinner = document.getElementById("loadingSpinner");
 
+// Checks if the user is an admin before displaying the admin page button in the top menu
 async function checkAdminAccess() {
   const adminBtn = document.getElementById('adminBtn');
   if (adminBtn) {
@@ -26,6 +27,8 @@ async function checkAdminAccess() {
 }
 checkAdminAccess();
 
+// Loads product items from the database and stores them in allItems variable
+//Resets the current item view and renders new items
 async function loadItems() {
   try {
     const searchParams = new URLSearchParams(window.location.search);
@@ -58,6 +61,8 @@ let minPrice = null;
 let maxPrice = null;
 let sortOrder = 'newest';
 
+// Filters and sorts the list of all items based on currently selected filters and sorting
+// Returns new array of filtered and sorted items
 function getFilteredItems() {
   let filtered = allItems.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(currentFilter.toLowerCase()) ||
@@ -76,6 +81,7 @@ function getFilteredItems() {
   return filtered;
 }
 
+// Resets page information and reloads the items
 function resetAndRender() {
   currentPage = 0;
   allLoaded = false;
@@ -83,6 +89,7 @@ function resetAndRender() {
   loadNextPage();
 }
 
+// Loads the next page of items and displays them
 function loadNextPage() {
   if (isLoading || allLoaded) return;
 
@@ -252,37 +259,7 @@ sidebarItems.forEach(item => {
   });
 });
 
-.product-image-wrapper {
-  position: relative;
-}
 
-.card-like-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(255,255,255,0.85);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  transition: transform 0.1s ease;
-}
-
-.card-like-btn:hover {
-  transform: scale(1.1);
-}
-
-.like-icon {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
 
 createListingButton?.addEventListener("click", () => {
   window.location.href = "createListing.html";

@@ -1,461 +1,461 @@
-let allItems = [];
-let currentCategory = "All Items";
-let currentPage = 0;
-const PAGE_SIZE = 12;
-let isLoading = false;
-let allLoaded = false;
-let currentFilter = "";
+// let allItems = [];
+// let currentCategory = "All Items";
+// let currentPage = 0;
+// const PAGE_SIZE = 12;
+// let isLoading = false;
+// let allLoaded = false;
+// let currentFilter = "";
 
-const grid = document.getElementById("productGrid");
-const spinner = document.getElementById("loadingSpinner");
+// const grid = document.getElementById("productGrid");
+// const spinner = document.getElementById("loadingSpinner");
 
-async function checkAdminAccess() {
-  const adminBtn = document.getElementById('adminBtn');
-  if (adminBtn) {
-    adminBtn.style.display = 'none';
-    const { data: { user } } = await window.supabase.auth.getUser();
-    if (user) {
-      const { data: profile } = await window.supabase
-        .from('users')
-        .select('is_admin')
-        .eq('id', user.id)
-        .single();
-      if (profile?.is_admin) adminBtn.style.display = 'block';
-    }
-  }
-}
-checkAdminAccess();
+// async function checkAdminAccess() {
+//   const adminBtn = document.getElementById('adminBtn');
+//   if (adminBtn) {
+//     adminBtn.style.display = 'none';
+//     const { data: { user } } = await window.supabase.auth.getUser();
+//     if (user) {
+//       const { data: profile } = await window.supabase
+//         .from('users')
+//         .select('is_admin')
+//         .eq('id', user.id)
+//         .single();
+//       if (profile?.is_admin) adminBtn.style.display = 'block';
+//     }
+//   }
+// }
+// checkAdminAccess();
 
-async function loadItems() {
-  try {
-    const searchParams = new URLSearchParams(window.location.search);
-    const cat = searchParams.get('category');
-    currentCategory = cat ?? 'All Items';
+// async function loadItems() {
+//   try {
+//     const searchParams = new URLSearchParams(window.location.search);
+//     const cat = searchParams.get('category');
+//     currentCategory = cat ?? 'All Items';
 
-    const { data, error } = await window.supabase
-      .from('items')
-      .select(`
-        id, title, description, price, old_price, brand, size,
-        condition, category, created_at, is_sold,
-        users!inner(id, username, avatar_url),
-        item_images(image_url)
-      `)
-      .eq('is_sold', false)
-      .order('created_at', { ascending: false });
+//     const { data, error } = await window.supabase
+//       .from('items')
+//       .select(`
+//         id, title, description, price, old_price, brand, size,
+//         condition, category, created_at, is_sold,
+//         users!inner(id, username, avatar_url),
+//         item_images(image_url)
+//       `)
+//       .eq('is_sold', false)
+//       .order('created_at', { ascending: false });
 
-    if (error) { console.error('Error loading items:', error); return; }
+//     if (error) { console.error('Error loading items:', error); return; }
 
-    allItems = data || [];
-    resetAndRender();
-  } catch (err) {
-    console.error('Error:', err);
-  }
-}
+//     allItems = data || [];
+//     resetAndRender();
+//   } catch (err) {
+//     console.error('Error:', err);
+//   }
+// }
 
-// Filter state
-let activeConditions = [];
-let minPrice = null;
-let maxPrice = null;
-let sortOrder = 'newest';
+// // Filter state
+// let activeConditions = [];
+// let minPrice = null;
+// let maxPrice = null;
+// let sortOrder = 'newest';
 
-function getFilteredItems() {
-  let filtered = allItems.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(currentFilter.toLowerCase()) ||
-      item.description?.toLowerCase().includes(currentFilter.toLowerCase()) ||
-      item.brand?.toLowerCase().includes(currentFilter.toLowerCase());
-    const matchesCategory = currentCategory === "All Items" || item.category === currentCategory;
-    const matchesCondition = activeConditions.length === 0 || activeConditions.includes(item.condition);
-    const matchesMin = minPrice === null || item.price >= minPrice;
-    const matchesMax = maxPrice === null || item.price <= maxPrice;
-    return matchesSearch && matchesCategory && matchesCondition && matchesMin && matchesMax;
-  });
+// function getFilteredItems() {
+//   let filtered = allItems.filter(item => {
+//     const matchesSearch = item.title.toLowerCase().includes(currentFilter.toLowerCase()) ||
+//       item.description?.toLowerCase().includes(currentFilter.toLowerCase()) ||
+//       item.brand?.toLowerCase().includes(currentFilter.toLowerCase());
+//     const matchesCategory = currentCategory === "All Items" || item.category === currentCategory;
+//     const matchesCondition = activeConditions.length === 0 || activeConditions.includes(item.condition);
+//     const matchesMin = minPrice === null || item.price >= minPrice;
+//     const matchesMax = maxPrice === null || item.price <= maxPrice;
+//     return matchesSearch && matchesCategory && matchesCondition && matchesMin && matchesMax;
+//   });
 
-  if (sortOrder === 'low') filtered.sort((a, b) => a.price - b.price);
-  else if (sortOrder === 'high') filtered.sort((a, b) => b.price - a.price);
+//   if (sortOrder === 'low') filtered.sort((a, b) => a.price - b.price);
+//   else if (sortOrder === 'high') filtered.sort((a, b) => b.price - a.price);
 
-  return filtered;
-}
+//   return filtered;
+// }
 
-document.querySelectorAll('input[name="category"]').forEach(radio => {
-  radio.addEventListener('change', (e) => {
-    currentCategory = e.target.value;
-    resetAndRender();
-  });
-});
+// document.querySelectorAll('input[name="category"]').forEach(radio => {
+//   radio.addEventListener('change', (e) => {
+//     currentCategory = e.target.value;
+//     resetAndRender();
+//   });
+// });
 
-let watchListActive = false;
+// let watchListActive = false;
 
-document.getElementById('bookmarkBtn')?.addEventListener('click', () => {
-  watchListActive = !watchListActive;
-  if (watchListActive) {
-    currentCategory = "Watch List";
-    grid.innerHTML = "";
-    allLoaded = false;
-    isLoading = false;
-    loadWatchList(currentFilter);
-    document.getElementById('bookmarkBtn').style.opacity = '1';
-  } else {
-    currentCategory = new URLSearchParams(window.location.search).get('category') ?? 'All Items';
-    document.getElementById('bookmarkBtn').style.opacity = '0.5';
-    resetAndRender();
-  }
-});
+// document.getElementById('bookmarkBtn')?.addEventListener('click', () => {
+//   watchListActive = !watchListActive;
+//   if (watchListActive) {
+//     currentCategory = "Watch List";
+//     grid.innerHTML = "";
+//     allLoaded = false;
+//     isLoading = false;
+//     loadWatchList(currentFilter);
+//     document.getElementById('bookmarkBtn').style.opacity = '1';
+//   } else {
+//     currentCategory = new URLSearchParams(window.location.search).get('category') ?? 'All Items';
+//     document.getElementById('bookmarkBtn').style.opacity = '0.5';
+//     resetAndRender();
+//   }
+// });
 
-function resetAndRender() {
-  currentPage = 0;
-  allLoaded = false;
-  grid.innerHTML = "";
-  loadNextPage();
-}
+// function resetAndRender() {
+//   currentPage = 0;
+//   allLoaded = false;
+//   grid.innerHTML = "";
+//   loadNextPage();
+// }
 
-function loadNextPage() {
-  if (isLoading || allLoaded) return;
+// function loadNextPage() {
+//   if (isLoading || allLoaded) return;
 
-  if (currentCategory === "Watch List") {
-    loadWatchList(currentFilter);
-    return;
-  }
+//   if (currentCategory === "Watch List") {
+//     loadWatchList(currentFilter);
+//     return;
+//   }
 
-  isLoading = true;
-  spinner.classList.add('active');
+//   isLoading = true;
+//   spinner.classList.add('active');
 
-  const filtered = getFilteredItems();
-  const start = currentPage * PAGE_SIZE;
-  const chunk = filtered.slice(start, start + PAGE_SIZE);
+//   const filtered = getFilteredItems();
+//   const start = currentPage * PAGE_SIZE;
+//   const chunk = filtered.slice(start, start + PAGE_SIZE);
 
-  setTimeout(() => {
-    if (chunk.length === 0 && currentPage === 0) {
-      grid.innerHTML = `
-        <div style="text-align:center;padding:40px;color:#6b7280;">
-          <div>No items found</div>
-          <div style="font-size:14px;margin-top:8px;">Try adjusting your search or category filter</div>
-        </div>`;
-    } else {
-      chunk.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "productLoad";
-        card.addEventListener("click", () => {
-          window.location.href = `product.html?category=${item.category}&id=${item.id}`;
-        });
+//   setTimeout(() => {
+//     if (chunk.length === 0 && currentPage === 0) {
+//       grid.innerHTML = `
+//         <div style="text-align:center;padding:40px;color:#6b7280;">
+//           <div>No items found</div>
+//           <div style="font-size:14px;margin-top:8px;">Try adjusting your search or category filter</div>
+//         </div>`;
+//     } else {
+//       chunk.forEach(item => {
+//         const card = document.createElement("div");
+//         card.className = "productLoad";
+//         card.addEventListener("click", () => {
+//           window.location.href = `product.html?category=${item.category}&id=${item.id}`;
+//         });
 
-        const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
-        const priceFormatted = `£${item.price.toFixed(2)}`;
-        const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
+//         const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
+//         const priceFormatted = `£${item.price.toFixed(2)}`;
+//         const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
 
-        card.innerHTML = `
-          <div class="product-image-wrapper">
-            <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
-            <button class="card-like-btn" data-item-id="${item.id}" data-category="${item.category}">
-              <img src="images/like-empty.png" alt="Like" class="like-icon">
-            </button>
-          </div>
-          <div class="product-body">
-            <div class="title-row">
-              <div class="product-title">${item.title}</div>
-              <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
-            </div>
-            <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
-              <div class="product-user-name">@${item.users.username}</div>
-              <div class="product-user-avatar">
-                <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
-              </div>
-            </div>
-          </div>`;
+//         card.innerHTML = `
+//           <div class="product-image-wrapper">
+//             <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
+//             <button class="card-like-btn" data-item-id="${item.id}" data-category="${item.category}">
+//               <img src="images/like-empty.png" alt="Like" class="like-icon">
+//             </button>
+//           </div>
+//           <div class="product-body">
+//             <div class="title-row">
+//               <div class="product-title">${item.title}</div>
+//               <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
+//             </div>
+//             <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+//               <div class="product-user-name">@${item.users.username}</div>
+//               <div class="product-user-avatar">
+//                 <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
+//               </div>
+//             </div>
+//           </div>`;
 
-        // Like button logic
-        const likeBtn = card.querySelector('.card-like-btn');
-        const likeIcon = likeBtn.querySelector('.like-icon');
+//         // Like button logic
+//         const likeBtn = card.querySelector('.card-like-btn');
+//         const likeIcon = likeBtn.querySelector('.like-icon');
 
-        window.supabase.auth.getUser().then(({ data: { user } }) => {
-          if (!user) return;
-          window.supabase.from('likes').select('id')
-            .eq('user_id', user.id).eq('item_id', item.id).maybeSingle()
-            .then(({ data }) => {
-              if (data) likeIcon.src = 'images/like-full.png';
-            });
-        });
+//         window.supabase.auth.getUser().then(({ data: { user } }) => {
+//           if (!user) return;
+//           window.supabase.from('likes').select('id')
+//             .eq('user_id', user.id).eq('item_id', item.id).maybeSingle()
+//             .then(({ data }) => {
+//               if (data) likeIcon.src = 'images/like-full.png';
+//             });
+//         });
 
-        likeBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const { data: { user } } = await window.supabase.auth.getUser();
-          if (!user) { window.location.href = 'login.html'; return; }
-          const liked = await toggleLike(item.id, item.category);
-          likeIcon.src = liked ? 'images/like-full.png' : 'images/like-empty.png';
-        });
+//         likeBtn.addEventListener('click', async (e) => {
+//           e.stopPropagation();
+//           const { data: { user } } = await window.supabase.auth.getUser();
+//           if (!user) { window.location.href = 'login.html'; return; }
+//           const liked = await toggleLike(item.id, item.category);
+//           likeIcon.src = liked ? 'images/like-full.png' : 'images/like-empty.png';
+//         });
 
-        // Fast shipping badge
-        if (item.users.id) {
-          window.supabase
-            .from('orders')
-            .select('created_at, dispatched_at, items!inner(seller_id)')
-            .eq('items.seller_id', item.users.id)
-            .not('dispatched_at', 'is', null)
-            .then(({ data: dispatchOrders }) => {
-              if (dispatchOrders && dispatchOrders.length >= 3) {
-                const avgDays = dispatchOrders.reduce((sum, o) => {
-                  return sum + (new Date(o.dispatched_at) - new Date(o.created_at)) / (1000 * 60 * 60 * 24);
-                }, 0) / dispatchOrders.length;
-                if (avgDays <= 3) {
-                  const userEl = card.querySelector('.product-user-name');
-                  if (userEl) {
-                    userEl.insertAdjacentHTML('afterend', `<img src="images/fastShipBadge.png" class="fast-shipping-badge" alt="Fast shipper">`);
-                  }
-                }
-              }
-            });
-        }
+//         // Fast shipping badge
+//         if (item.users.id) {
+//           window.supabase
+//             .from('orders')
+//             .select('created_at, dispatched_at, items!inner(seller_id)')
+//             .eq('items.seller_id', item.users.id)
+//             .not('dispatched_at', 'is', null)
+//             .then(({ data: dispatchOrders }) => {
+//               if (dispatchOrders && dispatchOrders.length >= 3) {
+//                 const avgDays = dispatchOrders.reduce((sum, o) => {
+//                   return sum + (new Date(o.dispatched_at) - new Date(o.created_at)) / (1000 * 60 * 60 * 24);
+//                 }, 0) / dispatchOrders.length;
+//                 if (avgDays <= 3) {
+//                   const userEl = card.querySelector('.product-user-name');
+//                   if (userEl) {
+//                     userEl.insertAdjacentHTML('afterend', `<img src="images/fastShipBadge.png" class="fast-shipping-badge" alt="Fast shipper">`);
+//                   }
+//                 }
+//               }
+//             });
+//         }
 
-        grid.appendChild(card);
-      });
-    }
+//         grid.appendChild(card);
+//       });
+//     }
 
-    if (chunk.length < PAGE_SIZE) allLoaded = true;
-    currentPage++;
-    isLoading = false;
-    spinner.classList.remove('active');
-  }, 400);
-}
+//     if (chunk.length < PAGE_SIZE) allLoaded = true;
+//     currentPage++;
+//     isLoading = false;
+//     spinner.classList.remove('active');
+//   }, 400);
+// }
 
-// Filter toggles
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const menu = btn.nextElementSibling;
-    const isOpen = menu.classList.contains('open');
-    document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if (!isOpen) { menu.classList.add('open'); btn.classList.add('active'); }
-    e.stopPropagation();
-  });
-});
+// // Filter toggles
+// document.querySelectorAll('.filter-btn').forEach(btn => {
+//   btn.addEventListener('click', (e) => {
+//     const menu = btn.nextElementSibling;
+//     const isOpen = menu.classList.contains('open');
+//     document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
+//     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+//     if (!isOpen) { menu.classList.add('open'); btn.classList.add('active'); }
+//     e.stopPropagation();
+//   });
+// });
 
-document.addEventListener('click', () => {
-  document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-});
+// document.addEventListener('click', () => {
+//   document.querySelectorAll('.filter-menu').forEach(m => m.classList.remove('open'));
+//   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+// });
 
-document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
-  cb.addEventListener('change', () => {
-    activeConditions = [...document.querySelectorAll('.filter-menu input[type="checkbox"]:checked')].map(c => c.value);
-    resetAndRender();
-  });
-});
+// document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
+//   cb.addEventListener('change', () => {
+//     activeConditions = [...document.querySelectorAll('.filter-menu input[type="checkbox"]:checked')].map(c => c.value);
+//     resetAndRender();
+//   });
+// });
 
-document.getElementById('applyPrice')?.addEventListener('click', () => {
-  minPrice = parseFloat(document.getElementById('minPrice').value) || null;
-  maxPrice = parseFloat(document.getElementById('maxPrice').value) || null;
-  resetAndRender();
-});
+// document.getElementById('applyPrice')?.addEventListener('click', () => {
+//   minPrice = parseFloat(document.getElementById('minPrice').value) || null;
+//   maxPrice = parseFloat(document.getElementById('maxPrice').value) || null;
+//   resetAndRender();
+// });
 
-document.querySelectorAll('input[name="sort"]').forEach(radio => {
-  radio.addEventListener('change', async (e) => {
-    sortOrder = e.target.value;
+// document.querySelectorAll('input[name="sort"]').forEach(radio => {
+//   radio.addEventListener('change', async (e) => {
+//     sortOrder = e.target.value;
 
-    if (sortOrder === 'recommended') {
-      grid.innerHTML = '';
-      spinner.classList.add('active');
+//     if (sortOrder === 'recommended') {
+//       grid.innerHTML = '';
+//       spinner.classList.add('active');
 
-      const items = await getRecommendations();
-      spinner.classList.remove('active');
+//       const items = await getRecommendations();
+//       spinner.classList.remove('active');
 
-      if (!items || items.length === 0) {
-        grid.innerHTML = `
-          <div style="text-align:center;padding:40px;color:#6b7280;">
-            <div>No recommendations yet</div>
-            <div style="font-size:14px;margin-top:8px;">Like some items to get personalised recommendations</div>
-          </div>`;
-        return;
-      }
+//       if (!items || items.length === 0) {
+//         grid.innerHTML = `
+//           <div style="text-align:center;padding:40px;color:#6b7280;">
+//             <div>No recommendations yet</div>
+//             <div style="font-size:14px;margin-top:8px;">Like some items to get personalised recommendations</div>
+//           </div>`;
+//         return;
+//       }
 
-      grid.innerHTML = '';
-      items.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "productLoad";
-        card.addEventListener("click", () => {
-          window.location.href = `product.html?category=${item.category}&id=${item.id}`;
-        });
-        const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
-        const priceFormatted = `£${item.price.toFixed(2)}`;
-        const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
-        card.innerHTML = `
-          <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
-          <div class="product-body">
-            <div class="title-row">
-              <div class="product-title">${item.title}</div>
-              <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
-            </div>
-            <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
-              <div class="product-user-name">@${item.users.username}</div>
-              <div class="product-user-avatar">
-                <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
-              </div>
-            </div>
-          </div>`;
-        grid.appendChild(card);
-      });
+//       grid.innerHTML = '';
+//       items.forEach(item => {
+//         const card = document.createElement("div");
+//         card.className = "productLoad";
+//         card.addEventListener("click", () => {
+//           window.location.href = `product.html?category=${item.category}&id=${item.id}`;
+//         });
+//         const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
+//         const priceFormatted = `£${item.price.toFixed(2)}`;
+//         const oldPriceHtml = item.old_price ? `<span class="old-price">£${Number(item.old_price).toFixed(2)}</span>` : '';
+//         card.innerHTML = `
+//           <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
+//           <div class="product-body">
+//             <div class="title-row">
+//               <div class="product-title">${item.title}</div>
+//               <div class="product-price">${priceFormatted}${oldPriceHtml}</div>
+//             </div>
+//             <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+//               <div class="product-user-name">@${item.users.username}</div>
+//               <div class="product-user-avatar">
+//                 <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
+//               </div>
+//             </div>
+//           </div>`;
+//         grid.appendChild(card);
+//       });
 
-    } else {
-      resetAndRender();
-    }
-  });
-});
+//     } else {
+//       resetAndRender();
+//     }
+//   });
+// });
 
-document.getElementById('searchInput')?.addEventListener("input", (e) => {
-  currentFilter = e.target.value;
-  resetAndRender();
-});
+// document.getElementById('searchInput')?.addEventListener("input", (e) => {
+//   currentFilter = e.target.value;
+//   resetAndRender();
+// });
 
-document.getElementById('createListingBtn')?.addEventListener("click", () => {
-  window.location.href = "createListing.html";
-});
+// document.getElementById('createListingBtn')?.addEventListener("click", () => {
+//   window.location.href = "createListing.html";
+// });
 
-async function loadWatchList(filter = "") {
-  isLoading = true;
-  spinner.classList.add('active');
+// async function loadWatchList(filter = "") {
+//   isLoading = true;
+//   spinner.classList.add('active');
 
-  const { data: { user } } = await window.supabase.auth.getUser();
-  if (!user) {
-    grid.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7280;"><div>Log in to view your Watch List</div></div>`;
-    spinner.classList.remove('active');
-    isLoading = false;
-    allLoaded = true;
-    return;
-  }
+//   const { data: { user } } = await window.supabase.auth.getUser();
+//   if (!user) {
+//     grid.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7280;"><div>Log in to view your Watch List</div></div>`;
+//     spinner.classList.remove('active');
+//     isLoading = false;
+//     allLoaded = true;
+//     return;
+//   }
 
-  const { data, error } = await window.supabase
-    .from('saved_items')
-    .select(`
-      item_id,
-      items(
-        id, title, description, price, old_price, brand, size,
-        condition, category, created_at, is_sold,
-        users!inner(username),
-        item_images(image_url)
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+//   const { data, error } = await window.supabase
+//     .from('saved_items')
+//     .select(`
+//       item_id,
+//       items(
+//         id, title, description, price, old_price, brand, size,
+//         condition, category, created_at, is_sold,
+//         users!inner(username),
+//         item_images(image_url)
+//       )
+//     `)
+//     .eq('user_id', user.id)
+//     .order('created_at', { ascending: false });
 
-  spinner.classList.remove('active');
-  isLoading = false;
-  allLoaded = true;
+//   spinner.classList.remove('active');
+//   isLoading = false;
+//   allLoaded = true;
 
-  if (error) {
-    grid.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7280;"><div>Could not load watch list.</div></div>`;
-    return;
-  }
+//   if (error) {
+//     grid.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7280;"><div>Could not load watch list.</div></div>`;
+//     return;
+//   }
 
-  const watchItems = (data || [])
-    .map(row => row.items)
-    .filter(item => {
-      if (!item) return false;
-      return item.title.toLowerCase().includes(filter.toLowerCase()) ||
-        item.description?.toLowerCase().includes(filter.toLowerCase()) ||
-        item.brand?.toLowerCase().includes(filter.toLowerCase());
-    });
+//   const watchItems = (data || [])
+//     .map(row => row.items)
+//     .filter(item => {
+//       if (!item) return false;
+//       return item.title.toLowerCase().includes(filter.toLowerCase()) ||
+//         item.description?.toLowerCase().includes(filter.toLowerCase()) ||
+//         item.brand?.toLowerCase().includes(filter.toLowerCase());
+//     });
 
-  grid.innerHTML = "";
-  watchItems.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "productLoad";
-    card.addEventListener("click", () => {
-      window.location.href = `product.html?category=${item.category}&id=${item.id}`;
-    });
-    const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
-    card.innerHTML = `
-      <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
-      <div class="product-body">
-        <div class="title-row">
-          <div class="product-title">${item.title}</div>
-          <div class="product-price">£${item.price.toFixed(2)}</div>
-        </div>
-        <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
-          <div class="product-user-name">@${item.users.username}</div>
-          <div class="product-user-avatar">
-            <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
-          </div>
-        </div>
-      </div>`;
-    grid.appendChild(card);
-  });
-}
+//   grid.innerHTML = "";
+//   watchItems.forEach(item => {
+//     const card = document.createElement("div");
+//     card.className = "productLoad";
+//     card.addEventListener("click", () => {
+//       window.location.href = `product.html?category=${item.category}&id=${item.id}`;
+//     });
+//     const imageUrl = item.item_images?.length > 0 ? item.item_images[0].image_url : 'images/default.png';
+//     card.innerHTML = `
+//       <img class="product-image" src="${imageUrl}" alt="${item.title}" onerror="this.src='images/default.png';">
+//       <div class="product-body">
+//         <div class="title-row">
+//           <div class="product-title">${item.title}</div>
+//           <div class="product-price">£${item.price.toFixed(2)}</div>
+//         </div>
+//         <div class="product-user" onclick="event.stopPropagation(); window.location.href='profile.html?user=${item.users.username}'">
+//           <div class="product-user-name">@${item.users.username}</div>
+//           <div class="product-user-avatar">
+//             <img src="${item.users.avatar_url || 'images/default.png'}" alt="${item.users.username}'s avatar" onerror="this.src='images/default.png';">
+//           </div>
+//         </div>
+//       </div>`;
+//     grid.appendChild(card);
+//   });
+// }
 
-const sentinel = document.getElementById('scrollSentinel');
-const observer = new IntersectionObserver((entries) => {
-  if (entries[0].isIntersecting && !isLoading && !allLoaded && allItems.length > 0) {
-    loadNextPage();
-  }
-}, { rootMargin: '100px' });
+// const sentinel = document.getElementById('scrollSentinel');
+// const observer = new IntersectionObserver((entries) => {
+//   if (entries[0].isIntersecting && !isLoading && !allLoaded && allItems.length > 0) {
+//     loadNextPage();
+//   }
+// }, { rootMargin: '100px' });
 
-if (sentinel) observer.observe(sentinel);
+// if (sentinel) observer.observe(sentinel);
 
-async function toggleLike(itemId, itemCategory) {
-  const { data: { user } } = await window.supabase.auth.getUser();
-  if (!user) return null;
+// async function toggleLike(itemId, itemCategory) {
+//   const { data: { user } } = await window.supabase.auth.getUser();
+//   if (!user) return null;
 
-  const { data: existing } = await window.supabase
-    .from('likes')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('item_id', itemId)
-    .maybeSingle();
+//   const { data: existing } = await window.supabase
+//     .from('likes')
+//     .select('id')
+//     .eq('user_id', user.id)
+//     .eq('item_id', itemId)
+//     .maybeSingle();
 
-  const { data: catRow } = await window.supabase
-    .from('user_category_likes')
-    .select('like_count')
-    .eq('user_id', user.id)
-    .eq('category', itemCategory)
-    .maybeSingle();
+//   const { data: catRow } = await window.supabase
+//     .from('user_category_likes')
+//     .select('like_count')
+//     .eq('user_id', user.id)
+//     .eq('category', itemCategory)
+//     .maybeSingle();
 
-  if (existing) {
-    await window.supabase.from('likes').delete().eq('id', existing.id);
-    await window.supabase
-      .from('user_category_likes')
-      .upsert({
-        user_id: user.id,
-        category: itemCategory,
-        like_count: Math.max((catRow?.like_count || 1) - 1, 0)
-      }, { onConflict: 'user_id,category' });
-    return false;
-  } else {
-    await window.supabase.from('likes').insert({ user_id: user.id, item_id: itemId });
-    await window.supabase
-      .from('user_category_likes')
-      .upsert({
-        user_id: user.id,
-        category: itemCategory,
-        like_count: (catRow?.like_count || 0) + 1
-      }, { onConflict: 'user_id,category' });
-    return true;
-  }
-}
+//   if (existing) {
+//     await window.supabase.from('likes').delete().eq('id', existing.id);
+//     await window.supabase
+//       .from('user_category_likes')
+//       .upsert({
+//         user_id: user.id,
+//         category: itemCategory,
+//         like_count: Math.max((catRow?.like_count || 1) - 1, 0)
+//       }, { onConflict: 'user_id,category' });
+//     return false;
+//   } else {
+//     await window.supabase.from('likes').insert({ user_id: user.id, item_id: itemId });
+//     await window.supabase
+//       .from('user_category_likes')
+//       .upsert({
+//         user_id: user.id,
+//         category: itemCategory,
+//         like_count: (catRow?.like_count || 0) + 1
+//       }, { onConflict: 'user_id,category' });
+//     return true;
+//   }
+// }
 
-async function getRecommendations() {
-  const { data: { user } } = await window.supabase.auth.getUser();
+// async function getRecommendations() {
+//   const { data: { user } } = await window.supabase.auth.getUser();
 
-  if (!user) return allItems;
+//   if (!user) return allItems;
 
-  const { data: catLikes } = await window.supabase
-    .from('user_category_likes')
-    .select('category, like_count')
-    .eq('user_id', user.id);
+//   const { data: catLikes } = await window.supabase
+//     .from('user_category_likes')
+//     .select('category, like_count')
+//     .eq('user_id', user.id);
 
-  if (!catLikes || catLikes.length === 0) return allItems;
+//   if (!catLikes || catLikes.length === 0) return allItems;
 
-  const scoreMap = {};
-  catLikes.forEach(({ category, like_count }) => {
-    scoreMap[category] = like_count;
-  });
+//   const scoreMap = {};
+//   catLikes.forEach(({ category, like_count }) => {
+//     scoreMap[category] = like_count;
+//   });
 
-  const scored = [...allItems].map(item => ({
-    ...item,
-    _score: scoreMap[item.category] || 0
-  }));
+//   const scored = [...allItems].map(item => ({
+//     ...item,
+//     _score: scoreMap[item.category] || 0
+//   }));
 
-  scored.sort((a, b) => b._score - a._score);
+//   scored.sort((a, b) => b._score - a._score);
 
-  return scored;
-}
+//   return scored;
+// }
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadItems();
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//   loadItems();
+// });

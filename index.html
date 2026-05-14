@@ -1,135 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minted - Student Marketplace</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/index.css" />
-  <link rel="stylesheet" href="css/top-menu.css" /> 
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minted - Student Marketplace</title>
 
-  <div class="layout">
+    <!-- CSS Includes -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/top-menu.css" /> 
+  </head>
+  <body>
 
-      <main class="content-wrapper">
+    <div class="layout">
 
-        <!-- Top Menu Bar HTML -->
-        <div class="top-menu">
-          
-            <div class="logo">
-              <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
-              <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+        <main class="content-wrapper">
+
+          <!-- Top Menu Bar HTML -->
+          <div class="top-menu">
+            
+              <div class="logo">
+                <a href="index.html"><img class="site-logo" src="images/logo-notext.png" alt="Minted Site Logo" class="top-logo" /></a>
+                <a href="index.html"><img class="site-logo-text" src="images/logo-text-only.png" alt="Minted Site Logo" class="top-logo" /></a>
+              </div>
+            
+            
+            <div class="profile-options">
+              <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
+              <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
+              <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
+              <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
+              <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
+              <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
+              <img src="images/settings.png" alt="settings" id="settingsBtn" onclick="window.location.href='settings.html'" />
+              <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
             </div>
-          
-          
-          <div class="profile-options">
-            <img src="images/default.png" alt="Profile" class="top-avatar" onclick="window.location.href='profile.html?'" />
-            <img src="images/notificaiton.png" alt="Notification" id="notificationBtn"/>
-            <img src="images/bookmark.png" alt="Bookmark" id="bookmarkBtn"/>
-            <img src="images/messages.png" alt="Messages" id="messageBtn" onclick="window.location.href='messages.html'" />
-            <img src="images/order-history.png" alt="Order History" id="orderHistoryBtn" onclick="window.location.href='orders.html'" />
-            <img src="images/admin.png" alt="admin" id="adminBtn" onclick="window.location.href='admin.html'" />
-             <img src="images/settings.png" alt="settings" id="settingsBtn" onclick="window.location.href='settings.html'" />
-            <img src="images/logout.png" alt="Logout" id="logoutBtn" />          
           </div>
-        </div>
-        <!-- End Top Menu Bar HTML -->
-      
-        <!-- <div class="top-bar"> -->
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search for items..."
-          />
-        <!-- </div> -->
+          <!-- End Top Menu Bar HTML -->
         
-        
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search for items..."
+            />
 
-        <div class="filter-bar">
-          <div class="filter-dropdown">
-          <button class="filter-btn">Category <span>∨</span></button>
-          <div class="filter-menu">
-            <label><input type="radio" name="category" value="All Items" checked> All</label>
-            <label><input type="radio" name="category" value="Clothing"> Clothing</label>
-            <label><input type="radio" name="category" value="Electronics"> Electronics</label>
-            <label><input type="radio" name="category" value="Furniture"> Furniture</label>
-            <label><input type="radio" name="category" value="Textbooks"> Textbooks</label>
-            <label><input type="radio" name="category" value="Other"> Other</label>
-          </div>
-        </div>
+          <!-- Product Filtering -->
+          <div class="filter-bar">
 
-          <div class="filter-dropdown">
-            <button class="filter-btn">Condition <span>∨</span></button>
-            <div class="filter-menu">
-              <label><input type="checkbox" value="New with tags"> New with tags</label>
-              <label><input type="checkbox" value="New without tags"> New without tags</label>
-              <label><input type="checkbox" value="Like New"> Like new</label>
-              <label><input type="checkbox" value="Very Good"> Very good</label>
-              <label><input type="checkbox" value="Good"> Good</label>
-              <label><input type="checkbox" value="Used"> Used</label>
-              <label><input type="checkbox" value="Poor"> Poor</label>
+            <!-- Category Filter Dropdown -->
+            <div class="filter-dropdown">
+              <button class="filter-btn">Category <span>∨</span></button>
+              <div class="filter-menu">
+                <label><input type="radio" name="category" value="All Items" checked> All</label>
+                <label><input type="radio" name="category" value="Clothing"> Clothing</label>
+                <label><input type="radio" name="category" value="Electronics"> Electronics</label>
+                <label><input type="radio" name="category" value="Furniture"> Furniture</label>
+                <label><input type="radio" name="category" value="Textbooks"> Textbooks</label>
+                <label><input type="radio" name="category" value="Other"> Other</label>
+              </div>
             </div>
-          </div>
 
-          <div class="filter-dropdown">
-            <button class="filter-btn">Price <span>∨</span></button>
-            <div class="filter-menu">
-              <label>Min £<input type="number" id="minPrice" min="0" placeholder="0"></label>
-              <label>Max £<input type="number" id="maxPrice" min="0" placeholder="Any"></label>
-              <button id="applyPrice">Apply</button>
+            <!-- Condition Filter Dropdown -->
+            <div class="filter-dropdown">
+              <button class="filter-btn">Condition <span>∨</span></button>
+              <div class="filter-menu">
+                <label><input type="checkbox" value="New with tags"> New with tags</label>
+                <label><input type="checkbox" value="New without tags"> New without tags</label>
+                <label><input type="checkbox" value="Like New"> Like new</label>
+                <label><input type="checkbox" value="Very Good"> Very good</label>
+                <label><input type="checkbox" value="Good"> Good</label>
+                <label><input type="checkbox" value="Used"> Used</label>
+                <label><input type="checkbox" value="Poor"> Poor</label>
+              </div>
             </div>
-          </div>
 
-          <div class="filter-dropdown">
-            <button class="filter-btn">Sort by <span>∨</span></button>
-            <div class="filter-menu">
-              <label><input type="radio" name="sort" value="recommended" checked> Recommended</label>
-              <label><input type="radio" name="sort" value="newest"> Newest first</label>
-              <label><input type="radio" name="sort" value="low"> Price: low to high</label>
-              <label><input type="radio" name="sort" value="high"> Price: high to low</label>
+            <!-- Price Filter Dropdown -->
+            <div class="filter-dropdown">
+              <button class="filter-btn">Price <span>∨</span></button>
+              <div class="filter-menu">
+                <label>Min £<input type="number" id="minPrice" min="0" placeholder="0"></label>
+                <label>Max £<input type="number" id="maxPrice" min="0" placeholder="Any"></label>
+                <button id="applyPrice">Apply</button>
+              </div>
             </div>
+
+            <!-- Sort By Dropdown -->
+            <div class="filter-dropdown">
+              <button class="filter-btn">Sort by <span>∨</span></button>
+              <div class="filter-menu">
+                <label><input type="radio" name="sort" value="recommended" checked> Recommended</label>
+                <label><input type="radio" name="sort" value="newest"> Newest first</label>
+                <label><input type="radio" name="sort" value="low"> Price: low to high</label>
+                <label><input type="radio" name="sort" value="high"> Price: high to low</label>
+              </div>
+            </div>
+
+            
           </div>
 
-          
-        </div>
-        
+          <div id="productGrid" class="product-grid"></div>
 
-        <div id="productGrid" class="product-grid"></div>
+        </main>
 
-      </main>
-    <!-- </main> -->
+    </div>
 
-  </div>
+  <!-- Floating Create Listing Button -->
+    <button id="createListingBtn" class="floating-btn" title="Create Listing">
+      <span>+</span>
+    </button>
 
- 
-  <button id="createListingBtn" class="floating-btn" title="Create Listing">
-    <span>+</span>
-  </button>
+    <div id="scrollSentinel"></div>
+      <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+      </div>
+    </div>
 
- <div id="scrollSentinel"></div>
-<div class="loading-spinner" id="loadingSpinner">
-  <div class="spinner"></div>
-</div>
-</div>
+    <!-- Javascript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/global.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/notifcations.js"></script>
+    <!-- End Javascript Includes -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/global.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/notifcations.js"></script>
-</body>
+  </body>
+
+  <!-- Footer Section -->
   <footer>
-  <div class="footer-contact">
-    <strong>Contact Us</strong><br>
-    📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
-  </div>
-  <div class="footer-links">
-    <a href="terms.html">Terms of Use</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="accessibility.html">Accessibility Statement</a>
-  </div>
-  <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
-</footer>
+    <div class="footer-contact">
+      <strong>Contact Us</strong><br>
+      📞 0123 456 789 &nbsp;|&nbsp; ✉️ minted@support.co.uk
+    </div>
+    <div class="footer-links">
+      <a href="terms.html">Terms of Use</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="accessibility.html">Accessibility Statement</a>
+    </div>
+    <div class="footer-copyright">© 2026 Minted. All rights reserved.</div>
+  </footer>
+  <!-- End Footer Section -->
 
 </html>

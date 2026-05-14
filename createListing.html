@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Listing - Minted</title>
+
+  <!-- CSS Includes -->
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/create-listing.css">
 </head>
@@ -13,13 +15,15 @@
         <div class="create-listing-container">
           <a href="index.html" class="goBack">← Back to Marketplace</a>
           <h1>Create New Listing</h1>
-
+          
+          <!-- New Listing Form -->
           <form id="createListingForm">
             <div class="inputGroup">
               <label for="title">Title *</label>
               <input type="text" id="title" required placeholder="e.g. Computer Science Textbook">
             </div>
-
+            
+            <!-- Images Section -->
             <div class="imageUploadSection">
             <label>Images *</label>
             <div class="imageGrid" id="imageGrid">
@@ -33,26 +37,31 @@
             <p class="dragHint">Click and drag to rearrange</p>
           </div>
 
+            <!-- Description Section -->
             <div class="inputGroup">
               <label for="description">Description</label>
               <textarea id="description" placeholder="Describe your item..."></textarea>
             </div>
 
+            <!-- Price Section -->
             <div class="inputGroup">
               <label for="price">Price (£) *</label>
               <input type="number" id="price" required step="0.01" min="0.01" placeholder="0.00">
             </div>
 
+            <!-- Brand Section -->
             <div class="inputGroup">
               <label for="brand">Brand</label>
               <input type="text" id="brand" placeholder="e.g. Apple" value="No Brand">
             </div>
 
+            <!-- Size Section -->
             <div class="inputGroup">
               <label for="size">Size</label>
               <input type="text" id="size" placeholder="e.g. M, 8, One Size" value="One Size">
             </div>
 
+            <!-- Condition Section -->
             <div class="inputGroup">
               <label for="condition">Condition *</label>
               <select id="condition" required>
@@ -66,7 +75,8 @@
                 <option value="Poor">Poor</option>
               </select>
             </div>
-
+            
+            <!-- Category Section -->
             <div class="inputGroup">
               <label for="category">Category *</label>
               <select id="category" required>
@@ -83,6 +93,7 @@
 
             <button type="submit" class="btn-submit" id="submitBtn">Create Listing</button>
           </form>
+          <!-- End New Listing Form -->
 
           <div id="msg" class="msg" style="display: none;"></div>
         </div>
