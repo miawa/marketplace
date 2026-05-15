@@ -45,6 +45,7 @@ async function loadConversations() {
         const otherUser = isBuyer ? conv.seller : conv.buyer;
         const msgs      = (conv.messages || []).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
         const lastMsg   = msgs[0];
+        
 
         const preview   = lastMsg ? msgPreview(lastMsg.content) : 'No messages yet';
         const time      = lastMsg ? formatTime(lastMsg.created_at) : '';
@@ -202,6 +203,7 @@ async function loadMessages() {
 
     const isSent  = msg.sender_id === currentUser.id;
     const parts   = msg.content.split('|');
+    const later   = data.slice(idx + 1);
 
     //offer
     if (parts[0] === 'OFFER') {
@@ -209,7 +211,7 @@ async function loadMessages() {
         const amount = parseFloat(parts[2]).toFixed(2);
 
         // offer superseded if there's a newer offer or buy now message later in the thread
-        const later      = data.slice(idx + 1);
+       
         const oldOffer = later.some(m => m.content.startsWith('OFFER|') || m.content.startsWith('BUYNOW|'));
 
         // seller sees action buttons on a pendingoffer they received; buyer sees "waiting"  and checks old offer status on their sent offer
@@ -472,17 +474,56 @@ async function submitOffer() {
 // Marks an item as sold and gets the buyer information
 // Refreshes the messages
 async function completePurchase(amount) {
-    // marks as sold
+    const { data: { user } } = await window.supabase.auth.getUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    // create order so it appears in order history
+    const { data: order, error: orderError } = await window.supabase
+    .from('orders')
+    .insert({
+        item_id: currentConvMeta.itemId,
+        buyer_id: user.id,
+        total_price: parseFloat(amount).toFixed(2),
+        status: 'pending'
+    })
+    .select('id')
+    .single();
+
+    if (orderError || !order) {
+        alert('Unable to complete purchase. Please try again.');
+        return;
+    }
+
+    // mark item as sold
     await window.supabase
     .from('items')
     .update({ is_sold: true })
     .eq('id', currentConvMeta.itemId);
 
-    // get buyer information
-    const { data: buyerData } = await window.supabase.from('users').select('username').eq('id', currentUser.id).single();
+    // notification for buyer
+    await window.supabase.from('notifications').insert({
+        user_id: user.id,
+        type: 'order_placed',
+        title: 'Order placed!',
+        message: `Your order for "${currentConvMeta.itemTitle}" has been placed successfully.`,
+        link: 'orders.html'
+    });
 
-    const username = buyerData?.username || 'Buyer';
-    await insertMsg(`SOLD|${username}|${currentConvMeta.itemTitle}|${parseFloat(amount).toFixed(2)}`);
+    // insert order status and purchase confirm messages
+    await window.supabase.from('messages').insert([
+    {
+        conversation_id: currentConvId,
+        sender_id: user.id,
+        content: `ORDERSTATUS|pending|${order.id}|`,
+        is_read: false
+    },
+    {
+        conversation_id: currentConvId,
+        sender_id: user.id,
+        content: `PURCHASECONFIRM|${currentConvMeta.itemTitle}|${parseFloat(amount).toFixed(2)}`,
+        is_read: false
+    }
+    ]);
 
     await refresh();
 }
